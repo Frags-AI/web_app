@@ -23,6 +23,5 @@
   },
   "homepage": "https://github.com/FragsAI/frags_app#readme",
   "devDependencies": {
-    "shadcn-ui": "^0.9.4"
   }
 }

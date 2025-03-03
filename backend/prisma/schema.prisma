@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,55 +8,29 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  clerk_user_id String   @unique
+  id            String        @id @default(uuid())
+  email         String        @unique
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+  clerk_user_id String        @unique
   stripe_id     String?
   full_name     String?
-
   subscriptions Subscription?
-  videos Video[]
+  videos        Video[]
 }
 
 model Video {
-  id String @id @default(uuid())
-  name String
-  
+  id     String @id @default(uuid())
+  name   String
   userId String
-  user User @relation(fields: [userId], references: [id])
-}
-
-model Price {
-  id        String  @id @default(uuid())
-  price     Int
-  stripe_id String
-  type      String
-  interval  String
-  productId String
-
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-}
-
-model Product {
-  id          String @id @default(uuid())
-  name        String
-  stripe_id   String
-  description String
-
-  prices       Price[]
-  Subscription Subscription[]
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Subscription {
   id         String    @id @default(uuid())
   stripe_id  String
-  productId  String
   userId     String    @unique
   created_at DateTime  @default(now())
   deleted_at DateTime?
-
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
