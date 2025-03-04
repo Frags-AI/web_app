@@ -93,6 +93,13 @@ const NavBar: React.FC<NavBarProps> = ({components}) => {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link to="/product">
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Product
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
     )
