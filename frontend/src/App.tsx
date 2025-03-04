@@ -1,4 +1,5 @@
 import React from 'react';
+import BlogPage from './components/Blog/BlogPage';
 import LandingPage from './components/LandingPage/LandingPage';
 import Subscription from './components/Subscription/Subscription';
 import Profile from './components/Profile/Profile';
@@ -89,6 +90,7 @@ const App = () => {
                 <Router>
                     <ScrollToTop>
                     <Routes>
+                        <Route path="/blog" element={<BlogPage/>}/>
                         <Route path="/profile" element={<Profile/>}/>
                         <Route path="/subscription" element={<Subscription/>}/>
                         <Route path="/login" element={<Login />} />
