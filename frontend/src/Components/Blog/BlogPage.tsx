@@ -70,20 +70,31 @@ const BlogPage: React.FC = () => {
           ))}
         </div>
         <div className="flex items-center space-x-2 mt-4 md:mt-0">
-          <span className="text-white">Sort by:</span>
-          <Button
-            variant={sortOrder === "Newest" ? "default" : "secondary"}
-            onClick={() => setSortOrder("Newest")}
-          >
-            Newest
-          </Button>
-          <Button
-            variant={sortOrder === "Oldest" ? "default" : "secondary"}
-            onClick={() => setSortOrder("Oldest")}
-          >
-            Oldest
-          </Button>
-        </div>
+  <span className="text-white">Sort by:</span>
+
+  <Button
+    className={`px-3 py-2 rounded-[7px] border ${
+      sortOrder === "Newest"
+        ? " bg-transparent text-white border-white"
+        : "bg-transparent text-gray-400  hover:border-white hover:text-white"
+    }`}
+    onClick={() => setSortOrder("Newest")}
+  >
+    Newest
+  </Button>
+
+  <Button
+    className={`px-3 py-2 rounded-[7px] border ${
+      sortOrder === "Oldest"
+        ? "bg-transparent text-white border-white "
+        : "bg-transparent text-gray-400  hover:border-white hover:text-white"
+    }`}
+    onClick={() => setSortOrder("Oldest")}
+  >
+    Oldest
+  </Button>
+</div>
+
       </div>
 
       {/* Blog Posts Grid */}
