@@ -54,7 +54,7 @@ const Pricing: React.FC = () => {
       {/* Pricing Cards */}
       <div className="flex flex-wrap justify-center gap-8 mt-12">
         {/* Creator Plan */}
-        <Card className="w-72 pt-4  flex flex-col justify-between h-full bg-[#050406] border border-[828282] text-white p-8 rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300">
+        <Card className="!bg-transparent w-72 pt-4  flex flex-col justify-between h-full bg-[#050406] border border-[828282] text-white p-8 rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300">
           <CardContent>
             <h2 className="text-3xl font-bold">Creator</h2>
             <p className="text-gray-400 text-sm">For Individual Creators</p>
@@ -79,7 +79,7 @@ const Pricing: React.FC = () => {
         </Card>
 
         {/* Clipper Plan (Most Popular) */}
-        <Card className="w-80 h-[600px] pt-4  rounded-[30px] scale-105 flex flex-col justify-between h-full	 bg-[#1A1A1C] text-white p-8 rounded-2xl shadow-lg border-2 border-teal-400 relative hover:scale-110 transition-transform duration-300">
+        <Card className="w-80 !bg-[#1A1A1C] h-[600px] pt-4 rounded-[10px] scale-105 flex flex-col justify-between h-full text-white p-8 rounded-2xl shadow-lg border-2 border-teal-400 relative hover:scale-110 transition-transform duration-300">
           
         <CardContent >
             {/* Title & Badge Together */}
@@ -124,7 +124,7 @@ const Pricing: React.FC = () => {
         </Card>
 
         {/* Business Plan */}
-        <Card className="w-73 bg-[#050406] pt-4  flex flex-col justify-between h-full border border-[828282] text-white p-8 rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300">
+        <Card className="!bg-transparent w-73 bg-[#050406] pt-4  flex flex-col justify-between h-full border border-[828282] text-white p-8 rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300">
           <CardContent>
             <h2 className="text-3xl font-bold">Business</h2>
             <p className="text-gray-400 text-sm">For businesses with custom needs</p>
