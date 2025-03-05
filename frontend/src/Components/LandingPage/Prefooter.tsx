@@ -5,7 +5,7 @@ const Prefooter: React.FC = () => {
     <section className="flex justify-center items-center h-[790px] px-5 text-center text-white mb-[70px] bg-cover bg-center">
       <div className="max-w-[800px] mx-auto mb-[50px]">
         {/* Title with exact gradient */}
-        <h1 className="text-[5rem] font-bold mb-5 font-['Helvetica_Neue'] bg-gradient-to-l from-white to-[#fff] text-transparent bg-clip-text">
+        <h1 className="text-[5rem] font-bold mb-5 bg-gradient-to-l from-white to-[#fff] text-transparent bg-clip-text">
           120 minutes of free clipping every month
         </h1>
 

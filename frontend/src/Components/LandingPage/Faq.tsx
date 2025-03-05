@@ -48,15 +48,15 @@ const Faq: React.FC = () => {
   };
   
   return (
-    <div className="max-w-[600px] mx-auto p-5 font-['Arial,_sans-serif']">
-      <h1 className="font-\[\'Helvetica_Neue\2c _sans-serif\'\] text-[3.5rem] font-normal text-center mb-[70px] text-white">
+    <div className="max-w-[600px] mx-auto p-5">
+      <h1 className="text-[3.5rem] font-normal text-center mb-[70px] text-white">
         Ask Away...
       </h1>
       <div className="flex flex-col mb-[100px]">
         {faqData.map((item, index) => (
           <div key={index} className="border-t border-[#909298] overflow-hidden transition-all duration-300 ease-in-out">
             <div
-              className="bg-[#050406] font-['Helvetica_Neue,_sans-serif'] py-[15px] px-[15px] flex justify-between items-center cursor-pointer text-white ml-[20px] mr-[20px] mt-[5px] hover:text-[#DE2F2A]"
+              className="bg-[#050406] py-[15px] px-[15px] flex justify-between items-center cursor-pointer text-white ml-[20px] mr-[20px] mt-[5px] hover:text-[#DE2F2A]"
               onClick={() => toggleAnswer(index)}
             >
               {item.question}

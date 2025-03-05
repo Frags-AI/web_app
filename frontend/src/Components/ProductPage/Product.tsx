@@ -57,7 +57,7 @@ const Product: React.FC = () => {
                 </button>
 
                 {/* Games Section */}
-                <span className="text-[16px] text-white font-['Helvetica_Neue'] mt-[90px] mb-[10px]">Games our product currently support</span>
+                <span className="text-[16px] text-white mt-[90px] mb-[10px]">Games our product currently support</span>
                 <div className="flex justify-between items-center gap-[20px] py-[20px]">
                     <img className="max-w-[100px] h-auto" src="./assets/valLogo.png" />
                     <img className="max-w-[100px] h-auto" src="./assets/codLogo.png" />
@@ -130,7 +130,7 @@ const Product: React.FC = () => {
             {/* Call to Action Section */}
             <section className="flex justify-center items-center h-[790px] px-5 text-center text-white mb-[70px] bg-cover bg-center">
                 <div className="max-w-[800px] mx-auto mb-[50px]">
-                    <h1 className="text-[5rem] font-bold mb-5 font-['Helvetica_Neue'] bg-gradient-to-l from-white to-[#fff] text-transparent bg-clip-text">
+                    <h1 className="text-[5rem] font-bold mb-5 bg-gradient-to-l from-white to-[#fff] text-transparent bg-clip-text">
                         Ready to Create Content That Goes Viral?
                     </h1>
                     <div className="flex flex-col items-center space-y-[20px]">
