@@ -5,7 +5,7 @@ import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <div className='dark font-inter'>
+  <div className='dark font-inter text-white'>
     <App />
   </div>
 );

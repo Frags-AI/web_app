@@ -6,6 +6,8 @@ import Header from '../Base/Header';
 import Faq from './Faq';
 import Footer from '../Base/Footer';
 import Credentials from './Credentials';
+import Carousel from "./Carousel";
+import Mission from "./Mission";
 
 const LandingPage: React.FC = () => {
 
@@ -15,6 +17,8 @@ const LandingPage: React.FC = () => {
       <Home />
       <Credentials/>
       <Features/>
+      <Carousel />
+      <Mission/>
       <Faq/>
       <Prefooter/>
       <Footer/>
