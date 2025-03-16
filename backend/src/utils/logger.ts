@@ -1,10 +1,10 @@
 import chalk from 'chalk'
 
-const info = (...params) => {
+const info = (...params: unknown[]) => {
     console.log(...params)
 }
 
-const error = (...params) => {
+const error = (...params: unknown[]) => {
     console.error(chalk.bold.red(...params))
 }
 

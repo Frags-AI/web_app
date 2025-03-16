@@ -7,13 +7,7 @@ import { Sparkles } from 'lucide-react';
 import Header from "../Base/Header";
 import Footer from "../Base/Footer"
 import FreePackage from "./FreePackage";
-import FAQSection from "./PricingFaq";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import Faq from "../Faq/Faq";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import { faFacebook, faXTwitter, faLinkedin, faDiscord, faYoutube, faTiktok, faInstagram }  from '@fortawesome/free-brands-svg-icons'
 
@@ -147,21 +141,15 @@ const Pricing: React.FC = () => {
       <FreePackage isYearly={isYearly}/>
       <div className="flex gap-5 mt-1 pt-1 mb-20 flex flex-col justify-between">
       <p className="text-gray-500 text-sm mb-5 text-center">Which platforms will you post to?</p>
-
-              {/* {socialIcons.map((icon) => (
-                <a href={icon.url} target="_blank" rel="noopener noreferrer" className='bg-[#181818] p-3 rounded-xl w-14 h-14 flex items-center justify-center hover:bg-[#232323] transition duration-250 shadow-sm shadow-gray-700'>
-                  <FontAwesomeIcon icon={icon.icon} size="lg" className=""></FontAwesomeIcon>
-                </a>
-              ))} */}
-              <div className='flex-1 flex gap-10 justify-center lg:justify-start'>
-                {socialIcons.map((icon) => (
-                  <a href={icon.url} target="_blank" rel="noopener noreferrer" className='flex items-center justify-center'>
-                    <FontAwesomeIcon icon={icon.icon} size="2xl" className=""></FontAwesomeIcon>
-                  </a>
-                ))}
-              </div>
-            </div>
-      <FAQSection/> 
+        <div className='flex-1 flex gap-10 justify-center lg:justify-start'>
+            {socialIcons.map((icon) => (
+              <a href={icon.url} target="_blank" rel="noopener noreferrer" className='flex items-center justify-center'>
+                <FontAwesomeIcon icon={icon.icon} size="2xl" className=""></FontAwesomeIcon>
+              </a>
+            ))}
+          </div>
+        </div>
+      <Faq/> 
     </div>
     
     <Footer/>

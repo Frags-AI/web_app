@@ -5,7 +5,6 @@ import Subscription from './components/Subscription/Subscription';
 import Profile from './components/Profile/Profile';
 import Pricing from './components/PricingPage/Pricing';
 import Product from './components/ProductPage/Product';
-import YearlyPrice from './components/PricingPage/YearlyPrice'; // Import the YearlyPrice component
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from "./components/Authentication/Login";
 import SignUp from "./components/Authentication/SignUp";
@@ -100,7 +99,6 @@ const App = () => {
                         <Route path="/" element={<LandingPage />} />
                         <Route path="/pricing" element={<Pricing />} />
                         <Route path="/product" element={<Product />} />
-                        <Route path="/yearlyprice" element={<YearlyPrice />} /> {/* Add the route for YearlyPrice */}
                     </Routes>
                     </ScrollToTop>
                 </Router>

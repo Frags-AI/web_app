@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "../Base/Header";
 import Footer from "../Base/Footer";
-import Faq from "../LandingPage/Faq";
+import Faq from "../Faq/Faq";
 
 const SECTIONS = [
     { id: "viralMoments", label: "Auto Detection" },

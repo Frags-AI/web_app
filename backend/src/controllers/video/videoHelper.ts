@@ -6,6 +6,7 @@ import { S3Client,
 } from "@aws-sdk/client-s3";
 import logger from '../../utils/logger.js';
 import config from '../../utils/config.js';
+import { User } from "@clerk/express";
 
 const s3 = new S3Client({
   region: config.S3_REGION,
@@ -15,7 +16,7 @@ const s3 = new S3Client({
   }
 })
 
-export const uploadVideo = async (user, videoFile) => {
+export const uploadVideo = async (user: User, videoFile: Express.Multer.File) => {
   if (!videoFile) {
     logger.error("Video file is missing in the request");
     throw new Error("No video file provided.");
@@ -39,7 +40,7 @@ export const uploadVideo = async (user, videoFile) => {
 
 };
 
-export const getAllVideos = async (user) => {
+export const getAllVideos = async (user: User) => {
   
   const params = {
     Bucket: config.S3_BUCKET,
@@ -53,7 +54,7 @@ export const getAllVideos = async (user) => {
   return videos;
 };
 
-export const getVideo = async (user, videoName) => {
+export const getVideo = async (user: User, videoName: string) => {
   const params = {
     Bucket: config.S3_BUCKET,
     Key: `${user.id}/uploads/${videoName}`
@@ -64,7 +65,7 @@ export const getVideo = async (user, videoName) => {
   return { Body, ContentType };
 };
 
-export const deleteVideo = async (user, videoName) => {
+export const deleteVideo = async (user: User, videoName: string) => {
   const key = `${user.id}/uploads/${videoName}`;
   const params = {
     Bucket: config.S3_BUCKET,

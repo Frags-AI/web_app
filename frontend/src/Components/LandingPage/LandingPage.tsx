@@ -3,7 +3,7 @@ import Home from "./Home";
 import Features from './Features';
 import Prefooter from './Prefooter';
 import Header from '../Base/Header';
-import Faq from './Faq';
+import Faq from '../Faq/Faq';
 import Footer from '../Base/Footer';
 import Credentials from './Credentials';
 import Carousel from "./Carousel";

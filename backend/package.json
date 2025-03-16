@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cross-env NODE_ENV=production node --import=specifier-resolution-node/register src/index",
-    "start:test": "cross-env NODE_ENV=test node --import=specifier-resolution-node/register src/index",
-    "dev": "cross-env NODE_ENV=development nodemon --import=specifier-resolution-node/register src/index"
+    "start": "cross-env NODE_ENV=production tsx src/index",
+    "start:test": "cross-env NODE_ENV=test tsx src/index",
+    "dev": "cross-env NODE_ENV=development tsx watch src/index"
   },
   "author": "",
   "license": "ISC",
@@ -15,8 +15,11 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.749.0",
     "@clerk/express": "^1.3.42",
+    "@ngrok/ngrok": "^1.4.1",
     "@prisma/client": "^6.3.1",
     "@supabase/supabase-js": "^2.48.0",
+    "@types/express": "^5.0.0",
+    "@types/multer": "^1.4.12",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "chalk": "^5.4.1",
@@ -28,13 +31,17 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
-    "ngrok": "^5.0.0-beta.2",
     "punycode": "^2.3.1",
     "response-time": "^2.3.3",
     "specifier-resolution-node": "^1.1.4",
     "stripe": "^17.5.0"
   },
   "devDependencies": {
-    "prisma": "^6.3.1"
+    "@clerk/types": "^4.48.0",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^22.13.10",
+    "@types/response-time": "^2.3.8",
+    "prisma": "^6.3.1",
+    "typescript": "^5.8.2"
   }
 }

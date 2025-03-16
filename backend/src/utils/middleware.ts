@@ -2,11 +2,9 @@
 import responseTime from "response-time"
 import logger from "./logger.js"
 import chalk from "chalk"
-import { PrismaClient } from "@prisma/client"
+import { Request, Response, NextFunction} from "express"
 
-const prisma = new PrismaClient()
-
-function getStatusColor(statusCode) {
+function getStatusColor(statusCode: number) {
   if (statusCode >= 200 && statusCode < 300) {
     return chalk.green
   } else if (statusCode >= 300 && statusCode < 400) {
@@ -18,7 +16,7 @@ function getStatusColor(statusCode) {
   } else return chalk.white
 }
 
-const requestLogger = responseTime((request, response, time) => {
+const requestLogger = responseTime((request: Request, response: Response, time: number) => {
     const color = getStatusColor(response.statusCode)
     logger.info("Method:", chalk.hex('#FFA500')(request.method))
     logger.info("Path:", chalk.yellow(request.path))
@@ -28,12 +26,12 @@ const requestLogger = responseTime((request, response, time) => {
     logger.info("----")
 })
 
-const unknownEndpoint = (request, response) => {
+const unknownEndpoint = (request: Request, response: Response) => {
     logger.error("Unknown endpoint, please use a valid url")
-    return response.status(404).send({ error: "unknown endpoint" })
+    response.status(404).send({ error: "unknown endpoint" })
 }
 
-const errorHandler = (err, req, res) => {
+const errorHandler = (err: any, req: Request, res: Response) => {
     logger.error(err.stack)
     res.status(err.status || 500).json({
       success: false,
