@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import {CreateUser, updateUserData, GetUserData} from './userHelper';
+import {CreateUser, updateUserData, GetUserData, deleteUser} from './userHelper';
 import { requireAuth, AuthObject } from "@clerk/express";
 
 const userManagementRouter = express.Router();
@@ -52,5 +52,15 @@ userManagementRouter.get('/', async (req: Request, res: Response) => {
         res.status(500).json({ error: "An error occurred" });
     }
 });
+
+userManagementRouter.post('/delete', async (req: Request, res: Response) => {
+    const response = await deleteUser(req);
+
+    if ( response){
+        res.status(200).json(response);
+    } else {
+        res.status(500).json(response);
+    }
+})
 
 export default userManagementRouter
