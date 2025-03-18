@@ -1,19 +1,26 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check } from 'lucide-react';
-import { Sparkles } from 'lucide-react';
+import { Check, Sparkles } from 'lucide-react';
 import Header from "../Base/Header";
 import Footer from "../Base/Footer"
 import FreePackage from "./FreePackage";
 import Faq from "../Faq/Faq";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import { faFacebook, faXTwitter, faLinkedin, faDiscord, faYoutube, faTiktok, faInstagram }  from '@fortawesome/free-brands-svg-icons'
-
+import { useNavigate } from "react-router-dom";
 
 const Pricing: React.FC = () => {
   const [isYearly, setIsYearly] = useState(false);
+  const navigate = useNavigate()
+
+  const handleButtonClick = async (lookupKey: string) => {
+    navigate("/checkout", {
+      state: {
+        lookupKey
+      }
+    })
+  }
 
   const toggleBilling = () => setIsYearly(!isYearly);
   const socialIcons = [
@@ -68,7 +75,12 @@ const Pricing: React.FC = () => {
                 </li>
               ))}
             </ul>
-            <Button className="mt-6 w-full border border-white rounded-full text-white bg-[#050406] hover:bg-teal-300 hover:text-black hover:border-none">Choose Hobby</Button>
+            <Button 
+              className="mt-6 w-full border border-white rounded-full text-white bg-[#050406] hover:bg-teal-300 hover:text-black hover:border-none"
+              onClick={() => handleButtonClick(`creator_${isYearly ? "yearly" : "monthly"}`)}
+            >
+              Choose Creator
+            </Button>
           </CardContent>
         </Card>
 
@@ -110,8 +122,11 @@ const Pricing: React.FC = () => {
             </ul>
 
             {/* Button */}
-            <Button className="mt-6 w-full rounded-full bg-white text-black hover:bg-teal-300">
-              Choose Creator
+            <Button 
+              className="mt-6 w-full rounded-full bg-white text-black hover:bg-teal-300"
+              onClick={() => handleButtonClick(`clipper_${isYearly ? "yearly" : "monthly"}`)}
+            >
+              Choose Clipper
             </Button>
         </CardContent>
 
@@ -132,7 +147,12 @@ const Pricing: React.FC = () => {
                 </li>
               ))}
             </ul>
-            <Button className="mt-6 w-full border border-white rounded-full text-white bg-[#050406] hover:bg-teal-300 hover:text-black hover:border-none">Get Business</Button>
+            <Button 
+              className="mt-6 w-full border border-white rounded-full text-white bg-[#050406] hover:bg-teal-300 hover:text-black hover:border-none"
+              onClick={() => handleButtonClick(`business_${isYearly ? "yearly" : "monthly"}`)}
+              >
+                Get Business
+              </Button>
           </CardContent>
         </Card>
        

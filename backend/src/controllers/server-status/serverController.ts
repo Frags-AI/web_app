@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import { PrismaClient } from '@prisma/client';
 
 const serverRouter = express.Router();
 
@@ -22,4 +23,7 @@ serverRouter.patch("/", (req: Request, res: Response) => {
     res.status(200).json({ message: "Server is running and can execute patch requests" });
 })
 
+
+
 export default serverRouter
+

@@ -1,5 +1,5 @@
 import stripe from "../../config/stripe";
-import express, {Request, Response, NextFunction} from 'express';
+import express, {Request, Response, NextFunction, Application  } from 'express';
 import {requireAuth, AuthObject } from "@clerk/express";
 import { getOrCreateStripeUser, createSubscription } from "./subscriptionHelper";
 
@@ -25,19 +25,24 @@ subscriptionRouter.post('/test-payment-intent', async (req: Request, res: Respon
     }
 });
 
-subscriptionRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
+subscriptionRouter.post('/', async (req: Request, res: Response, next: NextFunction)  => {
 
     const request = req as AuthRequest;
 
     try {
         const userId = request.auth.userId;
+        const lookupKey:string = req.body.lookupKey || null;
 
         if (!userId) {
-            res.status(401).send("User is not authorized");
+            res.status(401).json({message: "User is not authorized"});
+        } else if (lookupKey === null) { 
+            res.status(400).send({message: "Lookup key is required"});
+        } else {
+            const customer = await getOrCreateStripeUser(request.auth);
+            const subscription = await createSubscription(customer, lookupKey);
+            res.status(200).send(subscription);
         }
-        const customer = await getOrCreateStripeUser(request.auth)
-        const subscription = await createSubscription(customer, "price_1Qkq1jCMcuLX2RyD9ReWHWNm")
-        res.status(200).json(subscription);
+        
     } catch (error) {
         next(error);
     }

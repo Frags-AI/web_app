@@ -1,13 +1,25 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import Icons from '../icons';
 
 const LoadingScreen: React.FC = () => {
-    return (
-        <div className="flex items-center justify-center h-screen bg-white fs-1">
-            <div>Test 1</div>
-            <div>Test 2</div>
-            <div>Test 3</div>
-        </div>
-    )
-}
+    const [dots, setDots] = useState('');
 
-export default LoadingScreen
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setDots((prev) => (prev.length >= 5 ? '' : prev + '.'));
+        }, 300);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    return (
+        <div className="w-screen h-screen flex flex-col justify-center items-center bg-black text-white">
+            <Icons.Loader2 className="w-32 h-32 animate-spin text-gray-300" />
+            <div className="text-4xl mt-4 font-semibold tracking-wide">
+                Loading{dots}
+            </div>
+        </div>
+    );
+};
+
+export default LoadingScreen;

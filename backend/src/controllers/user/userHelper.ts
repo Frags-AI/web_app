@@ -74,5 +74,13 @@ async function GetUserData(userId: string) {
     }
 }
 
+async function deleteUser(userId: string) {
+    try {
+        return { message: "User deleted" };
+    } catch (error) {
+        logger.error("Failed to delete user")
+    }
+}
+
 
 export {CreateUser, updateUserData, GetUserData};

@@ -12,7 +12,7 @@ if (config.ENVIRONMENT === "development") {
         const listener = await ngrok.forward({
             addr: config.PORT,
             authtoken_from_env: true,
-            domain: config.NGROK_DOMAIN,
+            hostname: config.NGROK_DOMAIN,
         });
         logger.info(`Server running on ${listener.url()}\n`);
     })();

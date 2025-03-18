@@ -12,6 +12,7 @@ import { ClerkProvider } from '@clerk/clerk-react';
 import ScrollToTop from './components/Accessories/ScrollToLocation';
 import SignOut from './components/Authentication/SignOut';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Checkout from './components/Checkout/Checkout';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -92,7 +93,8 @@ const App = () => {
                     <Routes>
                         <Route path="/blog" element={<BlogPage/>}/>
                         <Route path="/profile" element={<Profile/>}/>
-                        <Route path="/subscription" element={<Subscription/>}/>
+                        <Route path="/subscription" element={<Subscription />}/>
+                        <Route path="/checkout" element={<Checkout />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/signup" element={<SignUp />} />
                         <Route path="/signout" element={<SignOut />} />

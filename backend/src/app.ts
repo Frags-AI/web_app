@@ -20,8 +20,6 @@ app.use('/api/subscription', subscriptionRouter);
 app.use('/api/video', videoRouter)
 app.use("/", serverRouter);
 
-
-// Handle unknown endpoints
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler)
 
