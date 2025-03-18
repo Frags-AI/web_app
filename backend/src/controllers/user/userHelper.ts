@@ -83,4 +83,4 @@ async function deleteUser(userId: string) {
 }
 
 
-export {CreateUser, updateUserData, GetUserData};
+export {CreateUser, updateUserData, GetUserData, deleteUser};

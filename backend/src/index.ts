@@ -7,6 +7,7 @@ app.listen(config.PORT, () => {
     logger.info(`Server running on port ${config.PORT}\n`);
 });
 
+
 if (config.ENVIRONMENT === "development") {
     (async () => {
         const listener = await ngrok.forward({
@@ -17,4 +18,5 @@ if (config.ENVIRONMENT === "development") {
         logger.info(`Server running on ${listener.url()}\n`);
     })();
 }
+
 
