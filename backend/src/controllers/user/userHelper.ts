@@ -74,13 +74,26 @@ async function GetUserData(userId: string) {
     }
 }
 
-async function deleteUser(userId: string) {
+async function deleteUser(req: Request) {
+    const request = req as AuthRequest;
+
     try {
-        return { message: "User deleted" };
+        if (!request.auth?.userId) {
+            logger.error("User not authenticated");
+            return {success: false, error: "User not authenticated"};
+
+        }
+        // Deletet user from Clerk 
+        await clerkClient.users.deleteUser(request.auth.userId);
+
+        logger.info("User ${request.auth.userId} deleted successfully");
     } catch (error) {
-        logger.error("Failed to delete user")
+        logger.error("Failed to delete user:", error);
+        return {success:false, error:"Failed to delete user"};
     }
 }
+
+
 
 
 export {CreateUser, updateUserData, GetUserData, deleteUser};
