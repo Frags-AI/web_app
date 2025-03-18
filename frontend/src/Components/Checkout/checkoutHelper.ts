@@ -13,4 +13,15 @@ export const getClientSecret = async (lookupKey: string, token: string) => {
   
     const data = await response.json()
     return data
-  }
+}
+
+export const setUserSubscription = async (subscriptionId: string, token: string) => {
+  const response = await fetch ("https://peaceful-enabling-snipe.ngrok-free.app/api/subscription", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ subscriptionId }),
+  })
+}

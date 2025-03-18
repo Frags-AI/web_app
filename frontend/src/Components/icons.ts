@@ -15,7 +15,8 @@ import {
     House, 
     LogOut, 
     Loader2, 
-    Lock 
+    Lock,
+    Upload 
 } from "lucide-react";
 
 const Icons = {
@@ -35,7 +36,8 @@ const Icons = {
     House,
     LogOut,
     Loader2,
-    Lock
+    Lock,
+    Upload
 }
 
 export default Icons

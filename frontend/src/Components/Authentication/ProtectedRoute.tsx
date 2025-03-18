@@ -1,6 +1,7 @@
 import React from "react"
 import { useAuth } from '@clerk/clerk-react'
 import { Navigate, useLocation } from "react-router"
+import LoadingScreen from "../Accessories/LoadingScreen"
 
 interface ProtectedRouteProps {
     children: React.ReactNode
@@ -11,7 +12,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({children}) => {
     const location = useLocation()
 
     if (!isLoaded) {
-        return <div>Loading...</div>
+        return <LoadingScreen />
     }
 
     if (!isSignedIn) {

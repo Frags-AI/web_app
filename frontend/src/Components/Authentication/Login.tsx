@@ -9,16 +9,21 @@ const SignInPage: React.FC = () => {
   const location = useLocation()
   const from = location.state?.from.pathname || '/'
 
+  if (location?.state?.from?.state?.lookupKey) {
+    console.log(location.state.from.state.lookupKey)
+    localStorage.setItem("lookupKey", location.state.from.state.lookupKey)
+  }
+
   return (
     <>
       <Header />
       <div className="flex justify-center items-center h-screen">
           <SignIn 
             appearance={appearance}
-             routing="path"
-             path="/login"
-             signUpUrl="/signup"
-             fallbackRedirectUrl={from}
+            routing="path"
+            path="/login"
+            signUpUrl="/signup"
+            fallbackRedirectUrl={from}
           />
       </div>
       <Footer />
