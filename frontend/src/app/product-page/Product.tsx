@@ -4,12 +4,38 @@ import Footer from "../base/Footer";
 import Faq from "../faq/Faq";
 
 const SECTIONS = [
-    { id: "viralMoments", label: "Auto Detection" },
-    { id: "editPro", label: "AI Editor" },
-    { id: "perfectFit", label: "Smart Format" },
-    { id: "storytelling", label: "Content Creation" },
-    { id: "global", label: "Global Access" },
+    {
+        id: "viralMoments",
+        label: "Auto Detection",
+        title: "Capture Viral Moments Instantly",
+        description: "AI-powered detection ensures you never miss a highlight by automatically selecting the best moments."
+    },
+    {
+        id: "editPro",
+        label: "AI Editor",
+        title: "Edit like a pro, instantly",
+        description: "Professional editing made effortless. Access AI-powered tools, gaming-specific assets, and smart effects in one intuitive interface."
+    },
+    {
+        id: "perfectFit",
+        label: "Smart Format",
+        title: "Perfect Fit, Every Platform",
+        description: "Perfect fit on every platform. Intelligent background generation and aspect ratio optimization ensure your content always fits perfectly on every platform from YouTube to TikTok and Instagram."
+    },
+    {
+        id: "storytelling",
+        label: "Content Creation",
+        title: "Tell Engaging Stories Effortlessly",
+        description: "Create compelling narratives with AI-assisted content structuring and visual enhancements."
+    },
+    {
+        id: "global",
+        label: "Global Access",
+        title: "Reach Global Audiences",
+        description: "Auto-generated subtitles and translations that understand gaming terminology and culture."
+    }
 ];
+
 
 const Product: React.FC = () => {
     const [activeSection, setActiveSection] = useState("");
@@ -88,22 +114,32 @@ const Product: React.FC = () => {
                 <span className="text-[50px] text-white font-inter mt-[90px] mb-[40px]">Transform Gameplay into Viral Content</span>
 
                 {/* Content Display (Blocks) */}
-                {SECTIONS.map(({ id }, index) => (
+                {SECTIONS.map(({ id, label, title, description }, index) => (
                     <div
                         key={id}
                         id={id}
                         className="flex justify-center items-center gap-[20px] py-[20px] flex-wrap mt-[90px] transition-opacity duration-500"
                     >
-                        <img className="max-w-[450px] h-auto" src={`./assets/${id}Text.png`} />
-                        <img className="max-w-[450px] h-auto" src={`./assets/block${String.fromCharCode(65 + index)}.png`} />
+                        {/* Text Content */}
+                        <div className="max-w-[450px]">
+                            <span className="text-white font-bold text-xl">{title}</span>
+                            <p className="text-white text-md">{description}</p>
+                        </div>
+
+                        {/* Image Block */}
+                        <div className="relative w-[513px] h-[400px] bg-[#1a1a1a] rounded-lg shadow-lg flex items-center justify-end pr-4">
+                            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-[40px] h-[2px]"></div>
+                        </div>
                     </div>
                 ))}
+
+
 
                 {/* How It Works Section */}
                 <span className="text-[16px] text-[#514D59] font-inter mt-[200px] mb-[10px]">How it works</span>
                 <span className="text-[45px] text-white font-inter mt-[5px] mb-[10px]">Create Frags viral clips in 3 steps</span>
 
-                {/* Steps Display (✔️ Fixed) */}
+                {/* Steps Display */}
                 <div className="flex flex-wrap justify-center items-center gap-[50px] py-[20px] mb-[100px]">
                     <div className="text-white">
                         {["Upload your gameplay", "AI Magic", "Viral Ready"].map((text, index) => (
@@ -120,7 +156,9 @@ const Product: React.FC = () => {
                             </div>
                         ))}
                     </div>
-                    <img className="max-w-[450px] h-auto" src="./assets/blockF.png" />
+                    <div className="relative w-[513px] h-[400px] bg-[#1a1a1a] rounded-lg shadow-lg flex items-center justify-end pr-4">
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-[40px] h-[2px]"></div>
+                    </div>
                 </div>
             </div>
 
