@@ -17,5 +17,3 @@ export function useIsMobile() {
 
   return !!isMobile
 }
-
-// asdasd
