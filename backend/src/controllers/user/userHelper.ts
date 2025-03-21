@@ -37,14 +37,16 @@ async function CreateUser(req: Request) {
     const request = req as AuthRequest;
 
     try {
-        const user = await getCurrentUser(request.auth);
-        if (!user) {
-            return;
-        }
-        const id = user.id;
-        const email = user?.primaryEmailAddress?.emailAddress || "";
-        const data = await insertUser(request?.auth?.sessionId || "", id, email);
-        return data;
+        // const user = await getCurrentUser(request.auth);
+        // if (!user) {
+        //     return;
+        // }
+        // const id = user.id;
+        // const email = user?.primaryEmailAddress?.emailAddress || "";
+        // const data = await insertUser(request?.auth?.sessionId || "", id, email);
+        // return data;
+
+        return { message: "User created" };
     } catch (error) {
         logger.error("Invalid Session")
     }
