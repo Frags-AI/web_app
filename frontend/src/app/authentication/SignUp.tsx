@@ -16,10 +16,8 @@ const SignUpPage: React.FC = () => {
       <div className="flex justify-center items-center h-screen mt-32 mb-16">
       <SignUp 
         appearance={appearance}
-        routing="path" 
         path="/signup"
-        signInUrl="/login"
-        fallbackRedirectUrl={from}
+        forceRedirectUrl={from}
       />
       </div>
       <Footer />
