@@ -76,7 +76,7 @@ root.render(
             publishableKey={PUBLISHABLE_KEY} 
             signInUrl={SIGNIN_URL}
             signUpUrl={SIGNUP_URL}
-            // localization={localization}
+            localization={localization}
             signInFallbackRedirectUrl='/'
             signUpFallbackRedirectUrl='/'
         >
