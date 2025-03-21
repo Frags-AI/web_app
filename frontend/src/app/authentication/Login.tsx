@@ -3,7 +3,7 @@ import { SignIn } from '@clerk/clerk-react';
 import { useLocation } from 'react-router-dom'
 import Header from "../base/Header";
 import Footer from "../base/Footer"
-import appearance from '@/clerkStyles';
+import appearance from '@/clerk/clerkStyles';
 
 const SignInPage: React.FC = () => {
   const location = useLocation()
