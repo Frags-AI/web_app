@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
 import { clerkClient, AuthObject } from "@clerk/express";
 import logger from "../../utils/logger";
+import { PrismaClient } from "@prisma/client";
 
 interface AuthRequest extends Request {
     auth: AuthObject
 }
-    
+
+const prisma = new PrismaClient();
 
 async function getCurrentUser(auth: AuthObject | null) {
     try {
@@ -85,13 +87,32 @@ async function deleteUser(req: Request) {
             return {success: false, error: "User not authenticated"};
 
         }
+        const userId = request.auth.userId;
+        // Check if user exists in Prisma
+        const user = await prisma.user.findUnique({
+            where: { clerk_user_id: userId },
+        });
+
+        if (!user) {
+            logger.error(`User with Clerk ID ${userId} not found in database.`);
+            return { success: false, error: "User not found in database" };
+        }
+
+        // Delete user from Prisma
+        await prisma.user.delete({
+            where: { clerk_user_id: userId },
+        });
+        logger.info(`User ${userId} deleted from database.`);
+
         // Deletet user from Clerk 
         await clerkClient.users.deleteUser(request.auth.userId);
 
-        logger.info("User ${request.auth.userId} deleted successfully");
+        return { success: true, message: "User deleted successfully" };
     } catch (error) {
         logger.error("Failed to delete user:", error);
-        return {success:false, error:"Failed to delete user"};
+        return { success: false, error: "Failed to delete user" };
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
