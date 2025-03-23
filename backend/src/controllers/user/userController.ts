@@ -55,12 +55,13 @@ userManagementRouter.get('/', async (req: Request, res: Response) => {
 });
 
 userManagementRouter.post('/delete', async (req: Request, res: Response) => {
-    const response = await deleteUser(req);
+    const request = req as AuthRequest;
+    const response = await deleteUser(request?.auth.userId as string);
 
     if ( response){
         res.status(200).json(response);
     } else {
-        res.status(500).json(response);
+        res.status(500).json({ error: "An error occurred" });
     }
 })
 

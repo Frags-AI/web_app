@@ -1,7 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { clerkClient, AuthObject } from "@clerk/express";
 import logger from "../../utils/logger";
 import { PrismaClient } from "@prisma/client";
+import { deleteVideo } from "../video/videoHelper";
+import { json } from "body-parser";
 
 interface AuthRequest extends Request {
     auth: AuthObject
@@ -78,45 +80,26 @@ async function GetUserData(userId: string) {
     }
 }
 
-async function deleteUser(req: Request) {
-    const request = req as AuthRequest;
-
-    try {
-        if (!request.auth?.userId) {
-            logger.error("User not authenticated");
-            return {success: false, error: "User not authenticated"};
-
-        }
-        const userId = request.auth.userId;
-        // Check if user exists in Prisma
-        const user = await prisma.user.findUnique({
-            where: { clerk_user_id: userId },
-        });
-
-        if (!user) {
-            logger.error(`User with Clerk ID ${userId} not found in database.`);
-            return { success: false, error: "User not found in database" };
-        }
-
-        // Delete user from Prisma
-        await prisma.user.delete({
-            where: { clerk_user_id: userId },
-        });
-        logger.info(`User ${userId} deleted from database.`);
-
-        // Deletet user from Clerk 
-        await clerkClient.users.deleteUser(request.auth.userId);
-
-        return { success: true, message: "User deleted successfully" };
-    } catch (error) {
-        logger.error("Failed to delete user:", error);
-        return { success: false, error: "Failed to delete user" };
-    } finally {
-        await prisma.$disconnect();
+async function deleteUser(userId: string) {
+    
+    if (!userId) {
+        throw new Error("User not authenticated");
+    
     }
+
+    const user = await prisma.user.findUnique({
+        where: {clerk_user_id: userId}, 
+    });
+    if (!user){
+        throw new Error("User not found in database");
+    
+    }
+    await prisma.user.delete({
+        where: {clerk_user_id: userId},
+    });
+    await clerkClient.users.deleteUser(userId);
+
+    return { message: "User deleted" };
 }
-
-
-
 
 export {CreateUser, updateUserData, GetUserData, deleteUser};
