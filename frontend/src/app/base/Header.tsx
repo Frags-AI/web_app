@@ -1,51 +1,50 @@
 import Icons from "@/components/icons"
 import NavBar from "./NavBar"
 import {motion, AnimatePresence} from "framer-motion"
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useClerk, useUser } from "@clerk/clerk-react";
 import MobileMenu from "./MobileMenu";
+import { ListItemProps, ListItemGroupProps } from "@/types";
 
-const components: { title: string; href: string; description: string }[] = [
+const resourceComponents: ListItemProps[] = [
   {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
+    title: "Blog",
+    href: "/blog",
+    description: "Find news, updates, and articles on the latest in gaming.",
   },
   {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
+    title: "Affiliates Program",
+    href: "/affiliates",
+    description: "Earn 20% on every sale you refer to us.",
   },
   {
-    title: "Progress",
-    href: "/docs/primitives/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
+    title: "Community Discord",
+    href: "/community",
+    description: "Join our community and get support from professionals.",
   },
   {
-    title: "Scroll-area",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
+    title: "Contact Us",
+    href: "/contact",
+    description: "Get in touch with us for any inquiries."
   },
   {
-    title: "Tabs",
-    href: "/docs/primitives/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
+    title: "Guides",
+    href: "/guides",
+    description: "Learn how to get started with our products."
+  }
+]
+
+const componentGroups: ListItemGroupProps[] = [
   {
-    title: "Tooltip",
-    href: "/docs/primitives/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  },
+    title: "Resources",
+    items: resourceComponents,
+  }
 ]
 
 const Header: React.FC = () => {
   const [expanded, setExpanded] = useState<boolean>(false);
+  const headerRef = useRef<HTMLDivElement>(null);
   const { signOut } = useClerk();
   const { isSignedIn } = useUser();
   const navigate = useNavigate();
@@ -74,13 +73,26 @@ const Header: React.FC = () => {
     signOut(() => navigate("/"));
   };
 
+  window.addEventListener("click", (e: MouseEvent) => {
+    console.log(e.clientY, headerRef.current?.clientHeight)
+    if (isMobileOpen && e.clientY > headerRef.current?.clientHeight!) {
+      setIsMobileOpen(false);
+    }
+  })
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 1024) {
+      setIsMobileOpen(false);
+    }
+  }) 
+
   return (
     <>
       {isMobileOpen && (
         <div className="fixed inset-0 backdrop-blur-lg bg-black bg-opacity-20 z-40"></div>
       )}
   
-      <header className={`fixed top-0 w-full z-50 mx-auto px-4 flex flex-col py-4 bg-[#0f0f0f] text-white font-inter shadow-lg ${isMobileOpen ? 'backdrop-blur bg-opacity-90' : ''}`}>
+      <header className={`fixed top-0 w-full z-50 mx-auto px-4 flex flex-col py-4 bg-[#0f0f0f] text-white font-inter shadow-lg ${isMobileOpen ? 'backdrop-blur bg-opacity-90' : ''}`} ref={headerRef}>
         <div className="flex flex-1 justify-between">
           <div className="flex items-center gap-4">
             <button id="sidebarToggle" className="lg:hidden transition duration-250 hover:scale-125 hover:text-gray-300" onClick={handleToggles}>
@@ -88,10 +100,10 @@ const Header: React.FC = () => {
             </button>
   
             <Link to="/">
-              <img src="../assets/Frame 50126812.png" alt="Frags Logo" className=""/>
+              <img src="../assets/frags_logo.svg" alt="Frags Logo" className=""/>
             </Link>
           </div>
-          <NavBar components={components} />
+          <NavBar components={componentGroups} />
           <div className="flex items-center gap-5 text-white">
             {isSignedIn ? (
               <>
@@ -124,7 +136,7 @@ const Header: React.FC = () => {
               }}
               transition={{ height: { duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }, opacity: { duration: 0 } }}
             >
-              <MobileMenu components={components} />
+              <MobileMenu components={componentGroups} />
             </motion.div>
           )}
         </AnimatePresence>

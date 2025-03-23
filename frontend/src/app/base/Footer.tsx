@@ -1,6 +1,7 @@
 import React from 'react'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import { faFacebook, faXTwitter, faLinkedin, faDiscord, faYoutube, faTiktok, faInstagram }  from '@fortawesome/free-brands-svg-icons'
+import { Link } from 'react-router-dom';
 import LanguageDropdown from '../language-selector/LanguageDropdown';
 
 const socialIcons = [
@@ -79,7 +80,9 @@ const Footer: React.FC = () => {
       </div> */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-16">
         <div className="flex flex-col gap-8">
-          <div className="flex font-bold text-4xl">Frags</div>
+          <Link to="/">
+              <img src="../assets/frags_logo.svg" alt="Frags Logo" className=""/>
+          </Link>
           <div className="text-[#A0AABA]">Free all-in-one video editor for everyone to create anything anywhere. Contact us at: support@frags.com</div>
           <LanguageDropdown />
         </div>

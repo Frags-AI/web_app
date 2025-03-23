@@ -2,8 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { clerkClient, AuthObject } from "@clerk/express";
 import logger from "../../utils/logger";
 import { PrismaClient } from "@prisma/client";
-import { deleteVideo } from "../video/videoHelper";
-import { json } from "body-parser";
 
 interface AuthRequest extends Request {
     auth: AuthObject
@@ -36,7 +34,7 @@ async function insertUser(sessionId: string, id: string, email: string) {
     }
 }
 
-async function CreateUser(req: Request) {
+async function createUser(req: Request) {
 
     const request = req as AuthRequest;
 
@@ -68,7 +66,7 @@ async function updateUserData(req: Request) {
     }
 }
 
-async function GetUserData(userId: string) {
+async function getUserData(userId: string) {
     try {
         const user = await clerkClient.users.getUser(userId);
         if (!user) {
@@ -84,7 +82,6 @@ async function deleteUser(userId: string) {
     
     if (!userId) {
         throw new Error("User not authenticated");
-    
     }
 
     const user = await prisma.user.findUnique({
@@ -99,7 +96,7 @@ async function deleteUser(userId: string) {
     });
     await clerkClient.users.deleteUser(userId);
 
-    return { message: "User deleted" };
+    return { message: "User has been deleted" };
 }
 
-export {CreateUser, updateUserData, GetUserData, deleteUser};
+export {createUser, updateUserData, getUserData, deleteUser};

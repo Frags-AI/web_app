@@ -2,7 +2,8 @@
 import responseTime from "response-time"
 import logger from "./logger.js"
 import chalk from "chalk"
-import { Request, Response, NextFunction} from "express"
+import { Request, Response, NextFunction } from "express"
+import { CustomError } from "@/types"
 
 function getStatusColor(statusCode: number) {
   if (statusCode >= 200 && statusCode < 300) {
@@ -31,12 +32,21 @@ const unknownEndpoint = (request: Request, response: Response) => {
     response.status(404).send({ error: "unknown endpoint" })
 }
 
-const errorHandler = (err: any, req: Request, res: Response) => {
-    logger.error(err.stack)
-    res.status(err.status || 500).json({
+const errorHandler = (err: CustomError, req: Request, res: Response, next: NextFunction) => {
+    const statusCode = err.status || 500
+    const errorResponse = {
       success: false,
-      message: err.message || "Internal server error"
-    })
+      message: err.message || 'Internal Server Error',
+      ...(process.env.NODE_ENV !== 'production' && { 
+        stack: err.stack,
+        code: err.code,
+        details: err.details
+      })
+    };
+  
+    logger.error(`[${req.method}] ${req.originalUrl} -> ${statusCode} | ${err.message}`);
+  
+    res.status(statusCode).json(errorResponse);
 }
 
 export { requestLogger, unknownEndpoint, errorHandler }

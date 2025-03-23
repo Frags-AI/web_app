@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import {CreateUser, updateUserData, GetUserData, deleteUser} from './userHelper';
+import { createUser, updateUserData, getUserData, deleteUser } from './userHelper';
 import { requireAuth, AuthObject } from "@clerk/express";
 
 
@@ -10,7 +10,7 @@ userManagementRouter.get('/test', (req: Request, res: Response) => {
 });
 
 userManagementRouter.post('/create', (req: Request, res: Response) => {
-    const response = CreateUser(req);
+    const response = createUser(req);
 
     if (response) {
         res.status(200).json(response);
@@ -45,7 +45,7 @@ userManagementRouter.get('/', async (req: Request, res: Response) => {
         res.status(401).send("User is not authorized");
     }
 
-    const response = await GetUserData(request.auth.userId as string);
+    const response = await getUserData(request.auth.userId as string);
 
     if (response) {
         res.status(200).json(response);
