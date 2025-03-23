@@ -1,5 +1,3 @@
-import React, { useState, useEffect, useRef } from "react";
-
 interface representativesProps {
   src: string
   name: string
@@ -33,7 +31,7 @@ const sponsors: sponsorsProps[] = [
   { src: "assets/unban.svg", alt: "Unban Logo" },
 ]
 
-const Credentials: React.FC = () => {
+const Credentials = () => {
   
   return (
     <div className="text-xl mt-44 self-center flex flex-col justify-center items-center">

@@ -30,9 +30,9 @@ const videoCards: CarouselProps[] = [
 
 export default function Carousel() {
 
-    const SLOW_DURATION = 200
-    const NORMAL_DURATION= 125
-    const FAST_DURATION = 75
+    const SLOW_DURATION = 300
+    const NORMAL_DURATION= 200
+    const FAST_DURATION = 50
 
     const [mustFinish, setMustFinish] = useState(false)
     const [rerender, setRerender] = useState(false)
@@ -94,7 +94,7 @@ export default function Carousel() {
                     {/* You'll need to change this later to work with the assets folder or create a demo library of shorts */}
                     {[...videoCards, ...videoCards].map((card, index) => (
                     <div key={index} className="cursor-pointer w-[300px] h-full text-black shrink-0 bg-stone-700 mx-4 rounded-3xl flex flex-col items-center items-center justify-center">
-                        <iframe src={card.src}  className="w-full h-full object-cover rounded-3xl"/>
+                        <video src={card.src} controls autoPlay className="w-full h-full object-cover rounded-3xl"/>
                     </div>
                     ))}
                 </motion.div>

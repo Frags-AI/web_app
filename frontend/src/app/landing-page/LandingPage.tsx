@@ -1,4 +1,3 @@
-import React from "react";
 import Home from "./Home";
 import Features from './Features';
 import Prefooter from './Prefooter';
@@ -9,7 +8,7 @@ import Credentials from './Credentials';
 import Carousel from "./Carousel";
 import Mission from "./Mission";
 
-const LandingPage: React.FC = () => {
+const LandingPage = () => {
 
   return (
     <>

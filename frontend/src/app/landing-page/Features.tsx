@@ -1,4 +1,3 @@
-import React from 'react';
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 
@@ -63,7 +62,7 @@ const features: FeatureProps[] = [
 
 const selectedStyling = "outline-[#00D4CA] text-[#00D4CA]";
 
-const Features: React.FC = () => {
+const Features = () => {
 
   const [selectedFeature, setSelectedFeature] = useState<FeatureProps>(features[0]);
   const [featureIndex, setFeatureIndex] = useState<number>(0);

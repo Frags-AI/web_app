@@ -1,7 +1,6 @@
-import React from 'react';
 import { Button } from "@/components/ui/button";
 
-const Prefooter: React.FC = () => {
+const Prefooter = () => {
   return (
     <>
       <div className="my-40 flex flex-col gap-4 items-center justify-center text-center">

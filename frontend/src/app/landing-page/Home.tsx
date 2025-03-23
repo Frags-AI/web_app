@@ -1,7 +1,6 @@
-import React from "react";
 import Icons from "../../components/icons";
 
-const Home: React.FC = () => {
+const Home = () => {
   return (
     <>
         <div className="flex mt-40 w-full self-center flex-col items-center gap-[80px]">
