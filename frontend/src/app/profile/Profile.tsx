@@ -10,7 +10,7 @@ import { SiteHeader } from '../../components/ui/blocks/site-header';
 import { AppSidebar } from '../../components/ui/blocks/app-sidebar';
 import { User } from 'lucide-react';
 import { useNavigate, Navigate } from 'react-router-dom';
-import appearance from '@/clerkStyles';
+import appearance from '@/clerk/clerkStyles';
 
 interface Video {
   id: string,

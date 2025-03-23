@@ -5,9 +5,9 @@ import LanguageDropdown from '../language-selector/LanguageDropdown';
 
 const socialIcons = [
   { icon: faFacebook, url: 'https://www.facebook.com/' },
-  { icon: faXTwitter, url: 'https://twitter.com/' },
+  { icon: faXTwitter, url: 'https://www.x.com/' },
   { icon: faLinkedin, url: 'https://www.linkedin.com/' },
-  { icon: faDiscord, url: 'https://discord.com/' },
+  { icon: faDiscord, url: 'https://www.discord.com/' },
   { icon: faYoutube, url: 'https://www.youtube.com/' },
   { icon: faTiktok, url: 'https://www.tiktok.com/' },
   { icon: faInstagram, url: 'https://www.instagram.com/' }
