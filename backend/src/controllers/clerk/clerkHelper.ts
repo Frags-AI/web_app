@@ -99,6 +99,4 @@ async function deleteUser(clerkEvent: ClerkUserDeletedEvent) {
     return user;
 }
 
-
-
 export { createUser, updateUser, getUser, deleteUser };

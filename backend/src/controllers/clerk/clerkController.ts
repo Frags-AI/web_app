@@ -19,6 +19,8 @@ clerkRouter.post("/", async (req: Request, res: Response) => {
         await updateUser(evt as ClerkUserUpdatedEvent)
     } else if (eventType === 'user.deleted') {
         await deleteUser(evt as ClerkUserDeletedEvent)
+    } else {
+        throw new Error("Invalid event type")
     }
 
     return void res.status(200).json({
