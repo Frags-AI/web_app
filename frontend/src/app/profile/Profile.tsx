@@ -4,11 +4,7 @@ import * as ProfileService from './ProfileService'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@clerk/clerk-react'
 import ProtectedRoute from '../authentication/ProtectedRoute';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import Icons from "@/components/icons"
-import { SiteHeader } from '../../components/ui/blocks/site-header';
-import { AppSidebar } from '../../components/ui/blocks/app-sidebar';
-import { User } from 'lucide-react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import appearance from '@/clerk/clerkStyles';
 
@@ -17,7 +13,7 @@ interface Video {
   url: string
 }
 
-const Dashboard: React.FC = ({children}: {children: React.ReactNode}) => {
+const Profile: React.FC = ({children}: {children: React.ReactNode}) => {
   const { getToken } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
@@ -52,29 +48,13 @@ const Dashboard: React.FC = ({children}: {children: React.ReactNode}) => {
     setVideos(response.videos || [])
   };
 
-  // useEffect(() => {
-  //   if (isLoaded && isSignedIn && user) {
-  //     fetchUserData();
-  //     fetchVideos();
-  //   }
-  // }, [isLoaded, isSignedIn, user]);
-
   return (
     <div className="mb-4 text-white h-screen w-full flex items-center justify-center">
       <ProtectedRoute>
         <UserProfile 
           appearance={{
-            ...appearance,
             elements: {
               cardBox: "w-screen h-screen",
-              navbarButton: "text-white",
-              headerTitle: "text-3xl",
-              profileSection: "bg-[#2E2E30] px-4 py-6 border-y-1 border-[#1A1A1C]",
-              profileSectionPrimaryButton: "text-white hover:text-[#00D4CA]",
-              profileSectionTitleText: "font-bold text-base",
-              badge: "bg-[#00D4CA] text-black",
-              avatarImageActionsUpload: "text-white",
-              formButtonReset: "text-red-500",
             }
           }}
         >
@@ -123,4 +103,4 @@ const Dashboard: React.FC = ({children}: {children: React.ReactNode}) => {
     </SidebarProvider>
   </div> */}
 
-export default Dashboard;
+export default Profile;

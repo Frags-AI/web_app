@@ -5,6 +5,7 @@ import { ClerkProvider } from '@clerk/clerk-react';
 import localization from '@/clerk/localization';
 import './index.css';
 import App from './App';
+import appearance from './clerk/clerkStyles';
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ root.render(
             localization={localization}
             signInFallbackRedirectUrl='/'
             signUpFallbackRedirectUrl='/'
+            appearance={appearance}
         >
           <App />
         </ClerkProvider>

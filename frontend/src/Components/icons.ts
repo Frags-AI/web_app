@@ -7,6 +7,7 @@ import {
     Settings, 
     X, 
     ArrowLeftToLine, 
+    ArrowRightToLine,
     ChevronDown, 
     Link, 
     DotIcon, 
@@ -16,7 +17,12 @@ import {
     LogOut, 
     Loader2, 
     Lock,
-    Upload 
+    Upload,
+    FolderClosed,
+    ChartBarIncreasing,
+    Link2,
+    Bell,
+    Zap
 } from "lucide-react";
 
 const Icons = {
@@ -37,7 +43,13 @@ const Icons = {
     LogOut,
     Loader2,
     Lock,
-    Upload
+    Upload,
+    ArrowRightToLine,
+    FolderClosed,
+    Link2,
+    ChartBarIncreasing,
+    Bell,
+    Zap
 }
 
 export default Icons

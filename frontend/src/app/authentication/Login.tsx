@@ -3,7 +3,6 @@ import { SignIn } from '@clerk/clerk-react';
 import { useLocation } from 'react-router-dom'
 import Header from "../base/Header";
 import Footer from "../base/Footer"
-import appearance from '@/clerk/clerkStyles';
 
 const SignInPage: React.FC = () => {
   const location = useLocation()
@@ -19,7 +18,6 @@ const SignInPage: React.FC = () => {
       <Header />
       <div className="flex justify-center items-center h-screen">
           <SignIn 
-            appearance={appearance}
             path="/login"
             forceRedirectUrl={from}
           />

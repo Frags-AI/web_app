@@ -3,7 +3,6 @@ import { SignUp } from '@clerk/clerk-react';
 import { useLocation } from 'react-router-dom'
 import Header from "../base/Header";
 import Footer from "../base/Footer";
-import appearance from '@/clerk/clerkStyles';
 
 const SignUpPage: React.FC = () => {
   const location = useLocation()
@@ -15,7 +14,6 @@ const SignUpPage: React.FC = () => {
       <Header />
       <div className="flex justify-center items-center h-screen mt-32 mb-16">
       <SignUp 
-        appearance={appearance}
         path="/signup"
         forceRedirectUrl={from}
       />
