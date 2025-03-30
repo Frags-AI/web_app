@@ -13,6 +13,7 @@ import Checkout from './app/checkout/Checkout';
 import CheckoutSuccess from './app/checkout/CheckoutSuccess';
 import DashboardLayout from "@/app/dashboard/Dashboard";
 import DashboardHome from "@/app/dashboard/home";
+import CreatorStudio from "@/app/dashboard/creator-studio/creator-studio";
 
 const App = () => {
 
@@ -27,6 +28,7 @@ const App = () => {
                 <Route path="/checkout/success" element={<CheckoutSuccess />} />
                 <Route path="/dashboard" element={<DashboardLayout />}>
                   <Route index element={<DashboardHome />}/>
+                  <Route path="studio" element={<CreatorStudio />} />
                 </Route>
                 <Route path="/login/*" element={<Login />} />
                 <Route path="/signup/*" element={<SignUp />} />
