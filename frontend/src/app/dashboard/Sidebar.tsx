@@ -3,16 +3,11 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { UserButton } from "@clerk/clerk-react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faBookOpen, faHouse, faFolderClosed, faCrown, faCalendar, faChartSimple, faLink, faBars, faCircleQuestion, IconDefinition } from "@fortawesome/free-solid-svg-icons"
+import { faBookOpen, faHouse, faFolderClosed, faCrown, faCalendar, faChartSimple, faLink, faBars, faCircleQuestion } from "@fortawesome/free-solid-svg-icons"
 import { motion, AnimatePresence } from "framer-motion"
 import { useLocation } from "react-router-dom"
-
-interface IconProps {
-  icon: IconDefinition
-  label: string
-  id: string,
-  tab: string
-}
+import { IconProps, IconPropsGroup } from "@/types"
+import { Icon } from "lucide-react"
 
 interface SidebarProps {
     className?: string
@@ -57,6 +52,12 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
     { icon: faCircleQuestion, label: "Help Center", id: "sidebar-help-center", tab: "help-center" },
   ]
 
+  const IconGroups : IconPropsGroup[] = [
+    { title: "Create", items: Group1 },
+    { title: "Manage", items: Group2 },
+    { title: "Explore", items: Group3 },
+  ]
+
   const location = useLocation()
   const currentPath = location.pathname
   const currentTab = currentPath.split("/dashboard").pop() 
@@ -97,177 +98,67 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
               <UserButton />
           </Button>
         </div>
-        <div className="flex flex-col mt-16 w-full">
-            <AnimatePresence>
-                <motion.div
-                    className="text-zinc-400"
-                    initial={{opacity: 0, x: -10}}
-                    animate={{opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -10}}
-                    transition={{ duration: 0.3 }}
-                >
-                    Create
-                </motion.div>
-            </AnimatePresence>
-            {Group1.map((item, index) => (
-            <div 
-                className="flex items-center justify-between gap-2" 
-                key={item.id}
-                onMouseEnter={() => handeHoverEnter(item.id)}
-                onMouseLeave={handleHoverLeave}
-
-            >
-              <Button 
-                className={`flex justify-start gap-2 bg-transparent text-white ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2 w-full`}     
-              >
-                  <FontAwesomeIcon 
-                      icon={item.icon} 
-                      size="xl" 
-                      className="text-white" 
-                  />
-                  <AnimatePresence>
-                      {isExpanded && (
-                      <motion.div 
-                          className="text-zinc-300 font-bold"
-                          initial={{opacity: 0, x: -10}}
-                          animate={{opacity: 1, x: 0}}
-                          transition={{ duration: 0.3 }}
-                          exit={{opacity: 0, x: -10}}
-                      >
-                          {item.label}
-                      </motion.div>
-                      )}
-                  </AnimatePresence>
-              </Button>
+        {IconGroups.map((group, idx) => (
+          <>
+          {idx === IconGroups.length - 1 && <div className="grow"/>}
+          <div className="flex flex-col mt-16 w-full">
               <AnimatePresence>
-                {hoveredId === item.id && !isExpanded && (
                   <motion.div
-                    className="text-xs font-semibold ml-2 z-50 text-nowrap bg-white text-secondary py-1 px-2 rounded-lg"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
+                      className="text-zinc-400"
+                      initial={{opacity: 0, x: -10}}
+                      animate={{opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -10}}
+                      transition={{ duration: 0.3 }}
                   >
-                    {item.label}
+                      {group.title}
                   </motion.div>
-                )}
               </AnimatePresence>
-            </div>
-          ))}
-        </div>
-        <div className="flex flex-col mt-16 w-full">
-            <AnimatePresence>
-                <motion.div
-                    className="text-zinc-400"
-                    initial={{opacity: 0, x: -10}}
-                    animate={{opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -10}}
-                    transition={{ duration: 0.3 }}
-                >
-                    Information
-                </motion.div>
-            </AnimatePresence>
-            {Group2.map((item, index) => (
-            <div 
-                className="flex items-center justify-between gap-2" 
-                key={item.id}
-                onMouseEnter={() => handeHoverEnter(item.id)}
-                onMouseLeave={handleHoverLeave}
-
-            >
-            <Button 
-                className={`flex justify-start w-full gap-2 bg-transparent text-white ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2`}
-                
+              {group.items.map((item, index) => (
+              <div 
+                  className="flex items-center justify-between gap-2" 
+                  key={item.id}
+                  onMouseEnter={() => handeHoverEnter(item.id)}
+                  onMouseLeave={handleHoverLeave}
+  
               >
-                  <FontAwesomeIcon 
-                      icon={item.icon} 
-                      size="xl" 
-                      className="text-white" 
-                  />
-                  <AnimatePresence>
-                      {isExpanded && (
-                      <motion.div 
-                          className="text-zinc-300 font-bold"
-                          initial={{opacity: 0, x: -10}}
-                          animate={{opacity: 1, x: 0}}
-                          transition={{ duration: 0.3 }}
-                          exit={{opacity: 0, x: -10}}
-                      >
-                          {item.label}
-                      </motion.div>
-                      )}
-                  </AnimatePresence>
-              </Button>
-              <AnimatePresence>
-                {hoveredId === item.id && !isExpanded && (
-                  <motion.div
-                    className="text-xs font-semibold ml-2 z-50 text-nowrap bg-white text-secondary py-1 px-2 rounded-lg"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                  >
-                    {item.label}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
-        </div>
-        <div className ="grow" />
-        <div className="flex flex-col mt-16 w-full">
-            <AnimatePresence>
-                <motion.div
-                    className="text-zinc-400"
-                    initial={{opacity: 0, x: -10}}
-                    animate={{opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -10}}
-                    transition={{ duration: 0.3 }}
+                <Button 
+                  className={`flex justify-start gap-2 bg-transparent text-white ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2 w-full`}     
                 >
-                    Resources
-                </motion.div>
-            </AnimatePresence>
-            {Group3.map((item, index) => (
-            <div 
-                className="flex items-center justify-between gap-2" 
-                key={item.id}
-                onMouseEnter={() => handeHoverEnter(item.id)}
-                onMouseLeave={handleHoverLeave}
-
-            >
-            <Button 
-                className={`flex justify-start w-full gap-2 bg-transparent text-white ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2`}
-                
-              >
-                  <FontAwesomeIcon 
-                      icon={item.icon} 
-                      size="xl" 
-                      className="text-white" 
-                  />
-                  <AnimatePresence>
-                      {isExpanded && (
-                      <motion.div 
-                          className="text-zinc-300 font-bold"
-                          initial={{opacity: 0, x: -10}}
-                          animate={{opacity: 1, x: 0}}
-                          transition={{ duration: 0.3 }}
-                          exit={{opacity: 0, x: -10}}
-                      >
-                          {item.label}
-                      </motion.div>
-                      )}
-                  </AnimatePresence>
-              </Button>
-              <AnimatePresence>
-                {hoveredId === item.id && !isExpanded && (
-                  <motion.div
-                    className="text-xs font-semibold ml-2 z-50 text-nowrap bg-white text-secondary py-1 px-2 rounded-lg"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                  >
-                    {item.label}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
-        </div>
+                    <FontAwesomeIcon 
+                        icon={item.icon} 
+                        size="xl" 
+                        className="text-white" 
+                    />
+                    <AnimatePresence>
+                        {isExpanded && (
+                        <motion.div 
+                            className="text-zinc-300 font-bold"
+                            initial={{opacity: 0, x: -10}}
+                            animate={{opacity: 1, x: 0}}
+                            transition={{ duration: 0.3 }}
+                            exit={{opacity: 0, x: -10}}
+                        >
+                            {item.label}
+                        </motion.div>
+                        )}
+                    </AnimatePresence>
+                </Button>
+                <AnimatePresence>
+                  {hoveredId === item.id && !isExpanded && (
+                    <motion.div
+                      className="text-xs font-semibold ml-2 z-50 text-nowrap bg-white text-secondary py-1 px-2 rounded-lg"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                    >
+                      {item.label}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
+          </>
+        ))}
       </div>
     </motion.div>
   )
