@@ -14,7 +14,6 @@ import CheckoutSuccess from './app/checkout/CheckoutSuccess';
 import DashboardLayout from "@/app/dashboard/Dashboard";
 import DashboardHome from "@/app/dashboard/home";
 import CreatorStudio from "@/app/dashboard/creator-studio/creator-studio";
-import ClipAnythingPage from "@/app/dashboard/creator-studio/clipanything";
 
 const App = () => {
 
@@ -29,6 +28,7 @@ const App = () => {
                 <Route path="/checkout/success" element={<CheckoutSuccess />} />
                 <Route path="/dashboard" element={<DashboardLayout />}>
                   <Route index element={<DashboardHome />}/>
+                  <Route path="studio" element={<CreatorStudio />} />
                 </Route>
                 <Route path="/login/*" element={<Login />} />
                 <Route path="/signup/*" element={<SignUp />} />
@@ -36,8 +36,6 @@ const App = () => {
                 <Route index element={<LandingPage />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/product" element={<Product />} />
-                <Route path="/dashboard/studio" element={<CreatorStudio />} />
-                <Route path="/dashboard/clipanything" element={<ClipAnythingPage />} />
             </Routes>
           </ScrollToTop>
       </Router>

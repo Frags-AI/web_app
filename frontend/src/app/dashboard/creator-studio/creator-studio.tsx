@@ -10,6 +10,8 @@ export default function ClipBasic() {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [uploadName, setUploadName] = useState(""); // Zoom link or filename
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [plan, setPlan] = useState< "creator"  |  "clipper"  |  "business"  >("creator");
+
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -38,16 +40,9 @@ export default function ClipBasic() {
 
   return (
     <div className="flex h-screen bg-[#050406] text-white">
-      {/* Sidebar */}
-      <Sidebar
-        sidebarExpanded={sidebarExpanded}
-        setSidebarExpanded={setSidebarExpanded}
-        className="h-full"
-      />
 
       {/* Main Area */}
       <div className="flex-1 flex flex-col">
-        <Header />
 
         {/* Page header */}
         <div className="p-4">
@@ -73,6 +68,7 @@ export default function ClipBasic() {
                 ✨ ClipAnything
                 <span className="text-zinc-400">ⓘ</span>
             </Link>
+            
 
             </div>
 
@@ -164,7 +160,7 @@ export default function ClipBasic() {
             ))}
           </div>
         </div>
-        <AIButton />
+       
 
         {/* Hidden file input for Upload */}
         <input
