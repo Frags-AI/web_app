@@ -5,11 +5,13 @@ import { UserButton } from "@clerk/clerk-react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faBookOpen, faHouse, faFolderClosed, faCrown, faCalendar, faChartSimple, faLink, faBars, faCircleQuestion, IconDefinition } from "@fortawesome/free-solid-svg-icons"
 import { motion, AnimatePresence } from "framer-motion"
+import { useLocation } from "react-router-dom"
 
 interface IconProps {
   icon: IconDefinition
   label: string
-  id: string
+  id: string,
+  tab: string
 }
 
 interface SidebarProps {
@@ -38,22 +40,29 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
   }
 
   const Group1: IconProps[] = [
-    { icon: faHouse, label: "Home", id: "sidebar-home" },
-    { icon: faBars, label: "Creator Studio", id: "sidebar-dashboard" },
-    { icon: faFolderClosed, label: "Asset Library", id: "sidebar-files" },
+    { icon: faHouse, label: "Home", id: "sidebar-home", tab: "" },
+    { icon: faBars, label: "Creator Studio", id: "sidebar-studio", tab: "studio" },
+    { icon: faFolderClosed, label: "Asset Library", id: "sidebar-files", tab: "library" },
   ]
 
   const Group2: IconProps[] = [
-    { icon: faCalendar, label: "Calendar", id: "sidebar-calendar" },
-    { icon: faChartSimple, label: "Analytics", id: "sidebar-analytics",  },
-    { icon: faLink, label: "Links", id: "sidebar-links" },
+    { icon: faCalendar, label: "Calendar", id: "sidebar-calendar", tab: "calendar" },
+    { icon: faChartSimple, label: "Analytics", id: "sidebar-analytics", tab: "analytics" },
+    { icon: faLink, label: "Links", id: "sidebar-links", tab: "links" },
   ]
 
   const Group3: IconProps[] = [
-    { icon: faCrown, label: "Subscriptions", id: "sidebar-subscriptions" },
-    { icon: faBookOpen, label: "Learning Center", id: "sidebar-learning-center" },
-    { icon: faCircleQuestion, label: "Help Center", id: "sidebar-help-center" },
+    { icon: faCrown, label: "Subscriptions", id: "sidebar-subscriptions", tab: "subscriptions" },
+    { icon: faBookOpen, label: "Learning Center", id: "sidebar-learning-center", tab: "learning-center" },
+    { icon: faCircleQuestion, label: "Help Center", id: "sidebar-help-center", tab: "help-center" },
   ]
+
+  const location = useLocation()
+  const currentPath = location.pathname
+  const currentTab = currentPath.split("/dashboard").pop() 
+
+  const selectedTabStyle = "bg-zinc-800 border border-zinc-700 hover:bg-zinc-800"
+  const unselectedTabStyle = "hover:bg-zinc-800 border border-transparent hover:border hover:border-zinc-700"
 
   return (
     // Sidebar
@@ -107,9 +116,8 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
                 onMouseLeave={handleHoverLeave}
 
             >
-            <Button 
-                className={`bg-transparent hover:bg-zinc-800 text-white border border-transparent hover:border hover:border-zinc-700 flex justify-between gap-4`}
-                
+              <Button 
+                className={`flex justify-start gap-2 bg-transparent text-white ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2 w-full`}     
               >
                   <FontAwesomeIcon 
                       icon={item.icon} 
@@ -165,7 +173,8 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
 
             >
             <Button 
-                className={`bg-transparent hover:bg-zinc-800 text-white border border-transparent hover:border hover:border-zinc-700 flex justify-between gap-4`}
+                className={`flex justify-start w-full gap-2 bg-transparent text-white ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2`}
+                
               >
                   <FontAwesomeIcon 
                       icon={item.icon} 
@@ -222,7 +231,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
 
             >
             <Button 
-                className={`bg-transparent hover:bg-zinc-800 text-white border border-transparent hover:border hover:border-zinc-700 flex justify-between gap-4`}
+                className={`flex justify-start w-full gap-2 bg-transparent text-white ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2`}
                 
               >
                   <FontAwesomeIcon 
