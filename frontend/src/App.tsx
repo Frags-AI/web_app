@@ -1,4 +1,3 @@
-import React from 'react';
 import BlogPage from './app/blog/BlogPage';
 import LandingPage from './app/landing-page/LandingPage';
 import Subscription from './app/subscription/Subscription';
@@ -12,7 +11,8 @@ import ScrollToTop from './app/accessories/ScrollToLocation';
 import SignOut from './app/authentication/SignOut';
 import Checkout from './app/checkout/Checkout';
 import CheckoutSuccess from './app/checkout/CheckoutSuccess';
-import Dashboard from "@/app/dashboard/Dashboard";
+import DashboardLayout from "@/app/dashboard/Dashboard";
+import DashboardHome from "@/app/dashboard/home";
 
 const App = () => {
 
@@ -25,11 +25,13 @@ const App = () => {
                 <Route path="/subscription" element={<Subscription />}/>
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/checkout/success" element={<CheckoutSuccess />} />
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<DashboardLayout />}>
+                  <Route index element={<DashboardHome />}/>
+                </Route>
                 <Route path="/login/*" element={<Login />} />
                 <Route path="/signup/*" element={<SignUp />} />
                 <Route path="/signout/*" element={<SignOut />} />
-                <Route path="/" element={<LandingPage />} />
+                <Route index element={<LandingPage />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/product" element={<Product />} />
             </Routes>

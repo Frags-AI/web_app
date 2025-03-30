@@ -3,7 +3,7 @@ import NavBar from "./NavBar"
 import {motion, AnimatePresence} from "framer-motion"
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { useClerk, useUser } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, useClerk, useUser } from "@clerk/clerk-react";
 import MobileMenu from "./MobileMenu";
 import { ListItemProps, ListItemGroupProps } from "@/types";
 
@@ -162,23 +162,20 @@ const Header: React.FC = () => {
           </div>
           <NavBar components={componentGroups} />
           <div className="flex items-center gap-5 text-white">
-            {isSignedIn ? (
-              <>
-                <Link to="/profile" className="text-lg font-bold self-center hover:text-gray-300 transition duration-300 ease-in-out">
-                  Profile
-                </Link>
-                <button onClick={handleSignOut} className="hidden md:block text-lg font-bold self-center hover:text-gray-300 transition duration-300 ease-in-out">
-                  Signout
-                </button>
-              </>
-            ) : (
-              <>
-                <button onClick={handleSignIn} className="hidden md:block text-md font-bold self-center hover:text-gray-300 transition duration-300 ease-in-out">Login</button>
-                <Link to="/signup" className="bg-white text-md text-black rounded-3xl px-4 py-1 hover:bg-gray-300 transition duration-300 ease-in-out">
-                  Free Sign Up
-                </Link>
-              </>
-            )}
+            <SignedIn>
+              <Link to="/profile" className="text-lg font-bold self-center hover:text-gray-300 transition duration-300 ease-in-out">
+                Profile
+              </Link>
+              <Link to="/dashboard" className="hidden md:block text-lg font-bold self-center hover:text-gray-300 transition duration-300 ease-in-out">
+                Dashboard
+              </Link>
+            </SignedIn>
+            <SignedOut>
+              <button onClick={handleSignIn} className="hidden md:block text-md font-bold self-center hover:text-gray-300 transition duration-300 ease-in-out">Login</button>
+              <Link to="/signup" className="bg-white text-md text-black rounded-3xl px-4 py-1 hover:bg-gray-300 transition duration-300 ease-in-out">
+                Free Sign Up
+              </Link>
+            </SignedOut>
           </div>
         </div>
         <AnimatePresence>

@@ -2,9 +2,10 @@ import { motion } from "framer-motion"
 
 interface ContainerProps {
     sidebarExpanded: boolean
+    children?: React.ReactNode
 }
 
-export default function Container({sidebarExpanded}: ContainerProps) {
+export default function Container({sidebarExpanded, children}: ContainerProps) {
 
     return (
         <motion.div 
@@ -13,11 +14,7 @@ export default function Container({sidebarExpanded}: ContainerProps) {
             animate={{ marginLeft: sidebarExpanded ? "12em" : "4.5em" }}
             transition={{ duration: 0.3 }}
         >
-            {[...Array(25)].map((_, i) => (
-            <div key={i} className="">
-                sdfasd
-            </div>
-            ))}
+            {children}
         </motion.div> 
     )
 }

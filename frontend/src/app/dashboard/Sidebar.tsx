@@ -63,7 +63,16 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
       animate={{ width: isExpanded ? "12em" : "4.5rem" }}
     >
       <div className="flex items-center h-full w-full flex-col gap-2 flex-1">
-        <div className="flex w-full">
+        <div className={`flex gap-2 w-full items-center ${isExpanded ? "" : "justify-end"}`}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: isExpanded ? 1 : 0, scale: isExpanded ? 1 : 0}}
+            transition={{ duration: 0.3 }}
+            className={`hover:cursor-pointer`}
+            onClick={() => window.location.href = "/"}
+          >
+            <img src="../assets/frags_logo.svg" alt="Frags Logo" className="cover" />
+          </motion.div>
           <Button className="bg-[#050406] hover:bg-zinc-800 text-white border w-full" onClick={handleExpansion}>
             <motion.div
               initial={{rotate: 0}}
@@ -144,7 +153,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
                     animate={{opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -10}}
                     transition={{ duration: 0.3 }}
                 >
-                    Create
+                    Information
                 </motion.div>
             </AnimatePresence>
             {Group2.map((item, index) => (
@@ -157,7 +166,6 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
             >
             <Button 
                 className={`bg-transparent hover:bg-zinc-800 text-white border border-transparent hover:border hover:border-zinc-700 flex justify-between gap-4`}
-                
               >
                   <FontAwesomeIcon 
                       icon={item.icon} 
@@ -202,7 +210,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
                     animate={{opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -10}}
                     transition={{ duration: 0.3 }}
                 >
-                    Create
+                    Resources
                 </motion.div>
             </AnimatePresence>
             {Group3.map((item, index) => (
