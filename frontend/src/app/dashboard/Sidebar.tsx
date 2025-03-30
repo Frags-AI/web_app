@@ -7,6 +7,8 @@ import { faBookOpen, faHouse, faFolderClosed, faCrown, faCalendar, faChartSimple
 import { motion, AnimatePresence } from "framer-motion"
 import { useLocation } from "react-router-dom"
 import { IconProps, IconPropsGroup } from "@/types"
+import { useNavigate } from "react-router-dom";
+
 
 interface SidebarProps {
     className?: string
@@ -15,6 +17,8 @@ interface SidebarProps {
 }
 
 export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}: SidebarProps) {
+  const navigate = useNavigate();
+  
   const [isExpanded, setIsExpanded] = useState(false)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
 
@@ -120,6 +124,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
     
                 >
                   <Button 
+                    onClick={() => navigate(`/dashboard/${item.tab}`)}
                     className={`flex justify-start gap-2 bg-transparent text-white ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2 w-full`}     
                   >
                       <FontAwesomeIcon 
