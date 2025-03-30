@@ -7,7 +7,6 @@ import { faBookOpen, faHouse, faFolderClosed, faCrown, faCalendar, faChartSimple
 import { motion, AnimatePresence } from "framer-motion"
 import { useLocation } from "react-router-dom"
 import { IconProps, IconPropsGroup } from "@/types"
-import { Icon } from "lucide-react"
 
 interface SidebarProps {
     className?: string
@@ -100,63 +99,63 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
         </div>
         {IconGroups.map((group, idx) => (
           <>
-          {idx === IconGroups.length - 1 && <div className="grow"/>}
-          <div className="flex flex-col mt-16 w-full">
-              <AnimatePresence>
-                  <motion.div
-                      className="text-zinc-400"
-                      initial={{opacity: 0, x: -10}}
-                      animate={{opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -10}}
-                      transition={{ duration: 0.3 }}
-                  >
-                      {group.title}
-                  </motion.div>
-              </AnimatePresence>
-              {group.items.map((item, index) => (
-              <div 
-                  className="flex items-center justify-between gap-2" 
-                  key={item.id}
-                  onMouseEnter={() => handeHoverEnter(item.id)}
-                  onMouseLeave={handleHoverLeave}
-  
-              >
-                <Button 
-                  className={`flex justify-start gap-2 bg-transparent text-white ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2 w-full`}     
-                >
-                    <FontAwesomeIcon 
-                        icon={item.icon} 
-                        size="xl" 
-                        className="text-white" 
-                    />
-                    <AnimatePresence>
-                        {isExpanded && (
-                        <motion.div 
-                            className="text-zinc-300 font-bold"
-                            initial={{opacity: 0, x: -10}}
-                            animate={{opacity: 1, x: 0}}
-                            transition={{ duration: 0.3 }}
-                            exit={{opacity: 0, x: -10}}
-                        >
-                            {item.label}
-                        </motion.div>
-                        )}
-                    </AnimatePresence>
-                </Button>
+            {idx === IconGroups.length - 1 && <div className="grow"/>}
+            <div className="flex flex-col mt-16 w-full">
                 <AnimatePresence>
-                  {hoveredId === item.id && !isExpanded && (
                     <motion.div
-                      className="text-xs font-semibold ml-2 z-50 text-nowrap bg-white text-secondary py-1 px-2 rounded-lg"
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
+                        className="text-zinc-400"
+                        initial={{opacity: 0, x: -10}}
+                        animate={{opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -10}}
+                        transition={{ duration: 0.3 }}
                     >
-                      {item.label}
+                        {group.title}
                     </motion.div>
-                  )}
                 </AnimatePresence>
-              </div>
-            ))}
-          </div>
+                {group.items.map((item, index) => (
+                <div 
+                    className="flex items-center justify-between gap-2" 
+                    key={item.id}
+                    onMouseEnter={() => handeHoverEnter(item.id)}
+                    onMouseLeave={handleHoverLeave}
+    
+                >
+                  <Button 
+                    className={`flex justify-start gap-2 bg-transparent text-white ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2 w-full`}     
+                  >
+                      <FontAwesomeIcon 
+                          icon={item.icon} 
+                          size="xl" 
+                          className="text-white" 
+                      />
+                      <AnimatePresence>
+                          {isExpanded && (
+                          <motion.div 
+                              className="text-zinc-300 font-bold"
+                              initial={{opacity: 0, x: -10}}
+                              animate={{opacity: 1, x: 0}}
+                              transition={{ duration: 0.3 }}
+                              exit={{opacity: 0, x: -10}}
+                          >
+                              {item.label}
+                          </motion.div>
+                          )}
+                      </AnimatePresence>
+                  </Button>
+                  <AnimatePresence>
+                    {hoveredId === item.id && !isExpanded && (
+                      <motion.div
+                        className="text-xs font-semibold ml-2 z-50 text-nowrap bg-white text-secondary py-1 px-2 rounded-lg"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                      >
+                        {item.label}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </div>
           </>
         ))}
       </div>
