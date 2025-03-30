@@ -35,10 +35,67 @@ const resourceComponents: ListItemProps[] = [
   }
 ]
 
+const featuresComponent: ListItemProps[] = [
+  {
+    title: "Virality Ranking",
+    href: "/features/virality-ranking",
+    description: "Get detailed insights on video performance and its potential for virality."
+  },
+  {
+    title: "Stream Clipping",
+    href: "/features/stream-clipping",
+    description: "Easily extract and save the most exciting moments from your streams."
+  },
+  {
+    title: "Aspect Ratio",
+    href: "/features/aspect-ratio",
+    description: "Optimize video dimensions to perfectly fit various social media platforms."
+  },
+  {
+    title: "AI Subtitles",
+    href: "/features/ai-subtitles",
+    description: "Automatically generate accurate and professional AI-powered subtitles."
+  },
+  {
+    title: "Video Assets",
+    href: "/features/video-assets",
+    description: "Access a comprehensive library of high-quality video assets for your projects."
+  },
+  {
+    title: "Content Analysis",
+    href: "/features/content-analysis",
+    description: "Leverage AI insights to analyze and improve your video content's engagement."
+  },
+  {
+    title: "In-Built Editor",
+    href: "/features/in-built-editor",
+    description: "Edit your videos seamlessly with our intuitive and powerful editor."
+  },
+  {
+    title: "AI Backgrounds",
+    href: "/features/ai-backgrounds",
+    description: "Create stunning visuals with AI-generated backgrounds for your videos."
+  },
+  {
+    title: "AI Voiceover",
+    href: "/features/ai-voiceover",
+    description: "Produce high-quality voiceovers using advanced AI technology."
+  },
+  {
+    title: "Script Generator",
+    href: "/features/script-generator",
+    description: "Generate compelling and creative scripts for storytelling with AI assistance."
+  }
+];
+
 const componentGroups: ListItemGroupProps[] = [
   {
     title: "Resources",
     items: resourceComponents,
+  },
+  {
+    title: "Features",
+    items: featuresComponent
   }
 ]
 
