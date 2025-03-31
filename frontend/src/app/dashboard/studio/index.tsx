@@ -25,9 +25,8 @@ export default function CreatorStudio() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedModel, setSelectedModel] = useState< "Basic" | "Advanced" | "Pro" >("Basic");
   const [hoveredModel, setHoveredModel] = useState<"Basic" | "Advanced" | "Pro" | null>(null);
-  const [hoveredButton, setHoveredButton] = useState<"upload" | "drive" | null>(null);
   const [hoveredAsset, setHoveredAsset] = useState<string | null>(null);
-
+  const [hoveredButton, setHoveredButton] = useState<SourceName | null>(null);
   const placeholders = ["YouTube", "Twitch", "Rumble", "Zoom"];
 
   const assetLibrary: AssetLibraryProps[] = [
@@ -54,6 +53,8 @@ export default function CreatorStudio() {
 
     }
   ]
+  type SourceName = (typeof sources)[number]["name"];
+
   const models: ModelProps[] = [
       { name: "Basic", icon: null, color: null, description: "Basic model for quick tasks" },
       { name: "Advanced", icon: Sparkles, color: "#bdc936", description: "Advanced model for detailed tasks" },
