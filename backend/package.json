@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.ts",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -30,11 +30,14 @@
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "express-async-errors": "^3.1.1",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "package.json": "^2.0.1",
+    "path": "^0.12.7",
     "punycode": "^2.3.1",
     "response-time": "^2.3.3",
+    "serverless-http": "^3.2.0",
     "specifier-resolution-node": "^1.1.4",
     "stripe": "^17.5.0",
     "svix": "^1.62.0",

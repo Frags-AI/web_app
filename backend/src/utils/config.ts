@@ -17,6 +17,8 @@ interface ConfigProps {
     NGROK_DOMAIN?: string;
 }
 
+
+
 const PORT = process.env.PORT || '3000'
 const ENVIRONMENT = process.env.NODE_ENV || 'development'
 const DB_URI = (ENVIRONMENT === 'production') ? process.env.SUPABASE_URL ?? '' : process.env.TEST_SUPABASE_URL ?? ''
