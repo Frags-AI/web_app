@@ -58,7 +58,7 @@ const Profile: React.FC = ({children}: {children: React.ReactNode}) => {
             }
           }}
         >
-          <UserProfile.Page label="Settings" url="/settings" labelIcon={<Icons.Settings size={16}/>} >
+          {/* <UserProfile.Page label="Settings" url="/settings" labelIcon={<Icons.Settings size={16}/>} >
             <div>
               <input type="file" onChange={handleFileChange} />
               <button onClick={handleUpload}>Upload Video</button>
@@ -72,7 +72,7 @@ const Profile: React.FC = ({children}: {children: React.ReactNode}) => {
                 ))}
               </ul>
             </div>
-          </UserProfile.Page>
+          </UserProfile.Page> */}
           <UserProfile.Link label="Home" url="/" labelIcon={<Icons.Home size={16}/>} />
           <UserProfile.Link label="Dashboard" url="/dashboard" labelIcon={<Icons.LayoutDashboard size={16}/>} /> 
           <UserProfile.Link label="Logout" url="/signout" labelIcon={<Icons.LogOut size={16}/>} />

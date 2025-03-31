@@ -13,9 +13,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(clerkMiddleware());
-if (config.ENVIRONMENT !== "production") {
-    app.use(middleware.requestLogger);
-}
+if (config.ENVIRONMENT !== "production") app.use(middleware.requestLogger);
 
 app.use('/api/webhooks', clerkRouter);
 app.use('/api/subscription', subscriptionRouter);

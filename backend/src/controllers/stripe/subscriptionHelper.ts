@@ -50,8 +50,6 @@ export const createStripeUser = async (userId: string) => {
         }
     })
 
-    console.log("heere 4")
-
     return res
 }
 

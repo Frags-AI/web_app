@@ -9,6 +9,7 @@ import { loadStripe, StripeElementsOptions, StripePaymentElementOptions } from "
 import { Button } from "@/components/ui/button";
 import Icons from "../../components/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStripeS } from "@fortawesome/free-brands-svg-icons";
 import ProtectedRoute from "../authentication/ProtectedRoute";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY! as string)
@@ -75,10 +76,11 @@ export function CheckoutForm () {
             return
         }
 
+
         const result = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                return_url: "http://localhost:5173/checkout/success",
+                return_url: `${import.meta.env.VITE_BASE_URL}/order-details`,
             }
         })
 
@@ -93,8 +95,6 @@ export function CheckoutForm () {
 
     const paymentOptions: StripePaymentElementOptions = {
         layout: "tabs",
-
-
     }
 
     return (
@@ -134,7 +134,7 @@ export function CheckoutForm () {
                         </form>
                 </div>
                 <div className="font-bold flex items-center gap-4">
-                    <FontAwesomeIcon icon={["fab", "stripe"]} className="w-20 h-20 font-bold"/>
+                    <FontAwesomeIcon icon={faStripeS} />
                     <h1 className="text-4xl font-bold">Powered by Stripe</h1>
                 </div>
             </div>  

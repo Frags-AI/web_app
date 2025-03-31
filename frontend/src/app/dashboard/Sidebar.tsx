@@ -39,20 +39,20 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
 
   const Group1: IconProps[] = [
     { icon: faHouse, label: "Home", id: "sidebar-home", tab: "" },
-    { icon: faBars, label: "Creator Studio", id: "sidebar-studio", tab: "studio" },
-    { icon: faFolderClosed, label: "Asset Library", id: "sidebar-files", tab: "library" },
+    { icon: faBars, label: "Creator Studio", id: "sidebar-studio", tab: "/studio" },
+    { icon: faFolderClosed, label: "Asset Library", id: "sidebar-files", tab: "/library" },
   ]
 
   const Group2: IconProps[] = [
-    { icon: faCalendar, label: "Calendar", id: "sidebar-calendar", tab: "calendar" },
-    { icon: faChartSimple, label: "Analytics", id: "sidebar-analytics", tab: "analytics" },
-    { icon: faLink, label: "Links", id: "sidebar-links", tab: "links" },
+    { icon: faCalendar, label: "Calendar", id: "sidebar-calendar", tab: "/calendar" },
+    { icon: faChartSimple, label: "Analytics", id: "sidebar-analytics", tab: "/analytics" },
+    { icon: faLink, label: "Social", id: "sidebar-social", tab: "/social" },
   ]
 
   const Group3: IconProps[] = [
-    { icon: faCrown, label: "Subscriptions", id: "sidebar-subscriptions", tab: "subscriptions" },
-    { icon: faBookOpen, label: "Learning Center", id: "sidebar-learning-center", tab: "learning-center" },
-    { icon: faCircleQuestion, label: "Help Center", id: "sidebar-help-center", tab: "help-center" },
+    { icon: faCrown, label: "Subscriptions", id: "sidebar-subscriptions", tab: "/subscriptions" },
+    { icon: faBookOpen, label: "Learning Center", id: "sidebar-learning-center", tab: "/learning-center" },
+    { icon: faCircleQuestion, label: "Help Center", id: "sidebar-help-center", tab: "/help-center" },
   ]
 
   const IconGroups : IconPropsGroup[] = [
@@ -124,7 +124,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
     
                 >
                   <Button 
-                    onClick={() => navigate(`/dashboard/${item.tab}`)}
+                    onClick={() => navigate(`/dashboard${item.tab}`)}
                     className={`flex justify-start gap-2 bg-transparent text-white ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2 w-full`}     
                   >
                       <FontAwesomeIcon 

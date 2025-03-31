@@ -12,25 +12,19 @@ interface AuthRequest extends Request {
 }
 
 subscriptionRouter.post('/', async (req: Request, res: Response, next: NextFunction)  => {
-
     const request = req as AuthRequest;
 
-    try {
-        const userId = request.auth.userId;
-        const lookupKey: string = req.body.lookupKey || null;
+    const userId = request.auth.userId;
+    const lookupKey: string = req.body.lookupKey || null;
 
-        if (!userId) {
-            res.status(401).json({message: "User is not authorized"});
-        } else if (lookupKey === null) { 
-            res.status(400).send({message: "Lookup key is required"});
-        } else {
-            const customer = await getStripeUser(request.auth.userId);
-            const subscription = await createSubscription(customer, lookupKey);
-            res.status(200).send(subscription);
-        }
-
-    } catch (error) {
-        next(error);
+    if (!userId) {
+        res.status(401).json({message: "User is not authorized"});
+    } else if (lookupKey === null) { 
+        res.status(400).send({message: "Lookup key is required"});
+    } else {
+        const customer = await getStripeUser(request.auth.userId);
+        const subscription = await createSubscription(customer, lookupKey);
+        res.status(200).send(subscription);
     }
 });
 

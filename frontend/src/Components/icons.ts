@@ -22,7 +22,9 @@ import {
     ChartBarIncreasing,
     Link2,
     Bell,
-    Zap
+    Zap,
+    Info,
+    Gem
 } from "lucide-react";
 
 const Icons = {
@@ -38,6 +40,7 @@ const Icons = {
     ChevronDown,
     Link,
     DotIcon,
+    Info,
     LayoutDashboard,
     House,
     LogOut,
@@ -49,7 +52,8 @@ const Icons = {
     Link2,
     ChartBarIncreasing,
     Bell,
-    Zap
+    Zap,
+    Gem
 }
 
 export default Icons
