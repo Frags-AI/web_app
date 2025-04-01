@@ -83,7 +83,7 @@ export default function Carousel() {
                 <div className="font-bold text-4xl lg:text-6xl">Better. Faster. Smarter.</div>
                 <div className="text-stone-300 lg:text-lg">Frag's AI tools help you create content more effectively and efficiently</div>
             </div>
-            <div className="relative w-full h-full overflow-x-hidden">
+            <div className="relative w-full h-full overflow-x-hidden justify-center">
                 <motion.div 
                     className="relative h-[500px] mx-12 my-10 flex no-scrollbar translate" 
                     ref={container}
@@ -93,13 +93,13 @@ export default function Carousel() {
                 >
                     {/* You'll need to change this later to work with the assets folder or create a demo library of shorts */}
                     {[...videoCards, ...videoCards].map((card, index) => (
-                    <div key={index} className="cursor-pointer w-[300px] h-full text-black shrink-0 bg-stone-700 mx-4 rounded-3xl flex flex-col items-center items-center justify-center">
+                    <div key={index} className="cursor-pointer w-[300px] h-full text-black shrink-0 bg-transparent mx-4 rounded-3xl flex flex-col items-center items-center justify-center">
                         <video src={card.src} controls autoPlay className="w-full h-full object-cover rounded-3xl"/>
                     </div>
                     ))}
                 </motion.div>
-                <div className="pointer-events-none left-0 top-0 absolute w-16 h-full bg-gradient-to-r from-[#050406] to-transparent backdrop-blur z-10"/>
-                <div className="pointer-events-none right-0 top-0 absolute w-16 h-full bg-gradient-to-l from-[#050406] to-transparent backdrop-blur z-10"/>
+                <div className="pointer-events-none left-0 top-0 absolute w-8 h-full bg-gradient-to-r from-[rgba(5,4,6,1)] via-[rgba(5,4,6,.7)] to-[rgba(5,4,6,0.3)] z-10"/>
+                <div className="pointer-events-none right-0 top-0 absolute w-8 h-full bg-gradient-to-l from-[rgba(5,4,6,1)] via-[rgba(5,4,6,.7)] to-[rgba(5,4,6,0.3)] z-10"/>
             </div>
         </div>
     );

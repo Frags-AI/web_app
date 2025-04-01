@@ -43,7 +43,7 @@ export default function CreatorStudio() {
       name: "upload",
       lable: "upload",
       icon: "/assets/cloud-computing.png", 
-      description: "Video to 10GB, maximum duration of 10 hours(mp4, mov, webm)"
+      description: "Video to 10GB, maximum duration of 10 hours (mp4, mov, webm)"
     }, 
     {
       name: "drive", 

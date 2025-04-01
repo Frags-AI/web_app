@@ -15,6 +15,8 @@ interface ConfigProps {
     S3_BUCKET: string;
     S3_REGION: string;
     NGROK_DOMAIN?: string;
+    CLERK_SIGNING_SECRET: string;
+    STRIPE_SIGNING_SECRET: string;
 }
 
 
@@ -32,6 +34,8 @@ const S3_SECRET = process.env.S3_SECRET_ACCESS_KEY || ''
 const S3_BUCKET = process.env.S3_BUCKET_NAME || ''
 const S3_REGION = process.env.S3_BUCKET_REGION || ''
 const NGROK_DOMAIN = process.env.NGROK_DOMAIN || ''
+const CLERK_SIGNING_SECRET = process.env.CLERK_SIGNING_SECRET || ''
+const STRIPE_SIGNING_SECRET = process.env.STRIPE_SIGNING_SECRET || ''
 
 
 const config: ConfigProps = {
@@ -47,7 +51,9 @@ const config: ConfigProps = {
     S3_ACCESS,
     S3_SECRET,
     ENVIRONMENT,
-    NGROK_DOMAIN
+    NGROK_DOMAIN,
+    CLERK_SIGNING_SECRET,
+    STRIPE_SIGNING_SECRET
 }
 
 export default config

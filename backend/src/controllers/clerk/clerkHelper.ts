@@ -3,17 +3,18 @@ import { PrismaClient } from "@prisma/client";
 import { ClerkUserCreatedEvent, ClerkUserUpdatedEvent, ClerkUserDeletedEvent } from "@/types";
 import { Webhook } from "svix";
 import { Request } from "express";
+import config from "@/utils/config";
 
 const prisma = new PrismaClient();
 
 export const authenticateRequest = (req: Request) => {
-        const SIGNING_SECRET = process.env.SIGNING_SECRET
+        const signing_secret = config.CLERK_SIGNING_SECRET
     
-        if (!SIGNING_SECRET) {
+        if (!signing_secret) {
           throw new Error('Error: Please add SIGNING_SECRET from Clerk Dashboard to .env')
         }
     
-        const wh = new Webhook(SIGNING_SECRET)
+        const wh = new Webhook(signing_secret)
     
         const headers = req.headers
         const payload = req.body

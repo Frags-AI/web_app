@@ -7,7 +7,7 @@ import clerkRouter from '@/controllers/clerk/clerkController';
 import { clerkMiddleware } from '@clerk/express';
 import videoRouter from '@/controllers/video/videoController';
 import serverRouter from '@/controllers/server-status/serverController';
-import subscriptionRouter from '@/controllers/stripe/subscriptionController';
+import stripeRouter from '@/controllers/stripe/stripeController';
 import path from 'path'
 import { fileURLToPath } from 'url';
 
@@ -22,9 +22,9 @@ app.use(helmet())
 
 if (config.ENVIRONMENT !== "production") app.use(middleware.requestLogger);
 
-app.use('/api/webhooks', clerkRouter);
+app.use('/api/clerk/webhooks', clerkRouter);
 app.use('/public', express.static(absolutePath));
-app.use('/api/subscription', subscriptionRouter);
+app.use('/api/stripe', stripeRouter);
 app.use('/api/video', videoRouter)
 app.use("/", serverRouter);
 

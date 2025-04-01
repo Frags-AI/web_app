@@ -5,7 +5,7 @@ import {
   DeleteObjectCommand 
 } from "@aws-sdk/client-s3";
 import { PrismaClient } from '@prisma/client';
-import { clerkClient, AuthObject } from '@clerk/express';
+import { AuthObject } from '@clerk/express';
 import config from '../../utils/config.js';
 
 const prisma = new PrismaClient();
@@ -40,7 +40,7 @@ export const uploadVideo = async (auth: AuthObject, videoFile: Express.Multer.Fi
   const localUser = await getLocalUser(auth.userId);
 
   const fileName = videoFile.originalname.replace(/ /g, "_");
-  const s3Key = `${localUser.id}/uploads/${fileName}`;
+  const s3Key = `${localUser.clerk_user_id}/uploads/${fileName}`;
 
   const params = {
     Bucket: config.S3_BUCKET,
@@ -85,13 +85,13 @@ export const getVideo = async (auth: AuthObject, videoName: string) => {
 
   const localUser = await getLocalUser(auth.userId);
 
-  const videoRecord = await prisma.video.findFirst({
+  const video = await prisma.video.findFirst({
     where: {
       userId: localUser.id,
       name: videoName
     }
   });
-  if (!videoRecord) {
+  if (!video) {
     throw new Error("Video not found in database");
   }
 
@@ -112,13 +112,13 @@ export const deleteVideo = async (auth: AuthObject, videoName: string) => {
   
   const localUser = await getLocalUser(auth.userId);
 
-  const videoRecord = await prisma.video.findFirst({
+  const video = await prisma.video.findFirst({
     where: {
       userId: localUser.id,
       name: videoName
     }
   });
-  if (!videoRecord) {
+  if (!video) {
     throw new Error("Video not found in database");
   }
 
@@ -131,7 +131,7 @@ export const deleteVideo = async (auth: AuthObject, videoName: string) => {
   await s3.send(command);
 
   await prisma.video.delete({
-    where: { id: videoRecord.id }
+    where: { id: video.id }
   });
   return { message: "Video deleted successfully" };
 };

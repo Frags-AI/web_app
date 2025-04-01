@@ -11,6 +11,7 @@ import Icons from "../../components/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStripeS } from "@fortawesome/free-brands-svg-icons";
 import ProtectedRoute from "../authentication/ProtectedRoute";
+import { setUserSubscription } from "./checkoutHelper";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY! as string)
 
@@ -75,7 +76,6 @@ export function CheckoutForm () {
         if (!stripe || !elements) {
             return
         }
-
 
         const result = await stripe.confirmPayment({
             elements,

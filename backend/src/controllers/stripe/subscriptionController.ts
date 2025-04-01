@@ -14,7 +14,7 @@ interface AuthRequest extends Request {
 subscriptionRouter.post('/', async (req: Request, res: Response, next: NextFunction)  => {
     const request = req as AuthRequest;
 
-    const userId = request.auth.userId;
+    const userId = request?.auth?.userId;
     const lookupKey: string = req.body.lookupKey || null;
 
     if (!userId) {

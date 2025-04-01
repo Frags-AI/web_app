@@ -1,6 +1,5 @@
 import BlogPage from './app/blog/BlogPage';
 import LandingPage from './app/landing-page/LandingPage';
-import Subscription from './app/subscription/Subscription';
 import Profile from './app/profile/Profile';
 import Pricing from './app/pricing-page/Pricing';
 import Product from './app/product-page/Product';
@@ -24,7 +23,6 @@ const App = () => {
             <Routes>
                 <Route path="blog" element={<BlogPage/>}/>
                 <Route path="profile" element={<Profile/>}/>
-                <Route path="subscription" element={<Subscription />}/>
                 <Route path="checkout" element={<Checkout />} />
                 <Route path="order-details" element={<CheckoutSuccess />} />
                 <Route path="dashboard" element={<DashboardLayout />}>
