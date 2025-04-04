@@ -23,7 +23,5 @@ serverRouter.patch("/", (req: Request, res: Response) => {
     res.status(200).json({ message: "Server is running and can execute patch requests" });
 })
 
-
-
 export default serverRouter
 

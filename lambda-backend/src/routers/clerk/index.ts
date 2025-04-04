@@ -1,13 +1,16 @@
-import express, { Request, Response } from 'express';
+import { Hono, HonoRequest } from "hono";
 import { createUser, updateUser, getUser, deleteUser, authenticateRequest } from './clerkHelper';
 import { ClerkUserCreatedEvent, ClerkUserUpdatedEvent, ClerkUserDeletedEvent } from '@/types';
-import { createStripeUser } from '../stripe/subscriptionHelper';
-import { requireAuth, AuthObject } from '@clerk/express';
+import { createStripeUser } from '@/routers/stripe/stripeHelper';
+import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
+import { AuthObject } from "@clerk/backend";
 
-const clerkRouter = express.Router();
+const clerkRouter = new Hono();
+clerkRouter.use(clerkMiddleware())
 
-clerkRouter.post("/webhook", async (req: Request, res: Response) => {
-    const evt = authenticateRequest(req)
+
+clerkRouter.post("/", async (c) => {
+    const evt = authenticateRequest(c.req)
 
     const { id } = evt.data
     const eventType = evt.type
@@ -23,22 +26,20 @@ clerkRouter.post("/webhook", async (req: Request, res: Response) => {
         throw new Error("Invalid event type")
     }
 
-    return void res.status(200).json({
+    return c.json({
       success: true,
       message: 'Webhook received',
-    })
-})
+    }, 200)
+});
 
-clerkRouter.use(requireAuth())
-
-interface ClerkRequest extends Request {
+interface ClerkRequest extends HonoRequest {
     auth: AuthObject
 }
 
-clerkRouter.get("/", async (req: Request, res: Response) => {
-    const request = req as ClerkRequest
-    const user = await getUser(request.auth.userId as string)
-    res.status(200).json(user)
+clerkRouter.get("/", async (c) => {
+    const auth = getAuth(c)
+    const user = await getUser(auth?.userId as string)
+    return c.json(user, 200)
 })
 
 export default clerkRouter

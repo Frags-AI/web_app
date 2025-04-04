@@ -19,10 +19,7 @@ if (config.ENVIRONMENT !== "production") {
         logger.info(`Server running on ${listener.url()}`);
     })();
 } else {
-    module.exports.handler = serverless(app)
     logger.info("Server reconfigured into API Gateway")
     logger.info("Server running on AWS Lambda")
+    module.exports.handler = serverless(app)
 }
-
-
-

@@ -1,5 +1,5 @@
-import express, {Request, Response, NextFunction } from 'express';
-import {requireAuth, AuthObject } from "@clerk/express";
+import express, { Request, Response, NextFunction } from 'express';
+import { requireAuth, AuthObject } from "@clerk/express";
 import { getStripeUser, createSubscription } from "./subscriptionHelper";
 
 

@@ -1,11 +1,6 @@
-import Stripe from 'stripe';
-import config from '@/utils/config';
-import { clerkClient } from '@clerk/express';
-import { PrismaClient } from '@prisma/client';
-
-const stripe = new Stripe(config.STRIPE_SECRET, {
-    typescript: true,
-});
+import stripe from "@/clients/stripe";
+import clerkClient from "@/clients/clerk";
+import {PrismaClient} from "@prisma/client";
 
 export const getStripeUser = async (userId: string) => {
     if (!userId)  {
@@ -77,19 +72,22 @@ export const createSubscription = async (customer: {id?: string}, lookupKey: str
         }],
         payment_behavior: 'default_incomplete',
         payment_settings: { save_default_payment_method: 'on_subscription' },
-        expand: ['latest_invoice.payment_intent']
+        expand: ["latest_invoice.payment_intent"]
     })
 
-    let clientSecret
-    if (typeof subscription.latest_invoice !== "string" && subscription.latest_invoice?.payment_intent) {
-        const paymentIntent = subscription.latest_invoice.payment_intent
+    let clientSecret: string | undefined
 
-        if (typeof paymentIntent !== "string") {
-            clientSecret = paymentIntent?.client_secret
-        } else {
-            clientSecret = ""
-        }
+    const invoice = subscription.latest_invoice
+
+    if (!invoice?.payment_intent) {
+        throw new Error('Invoice not found')
     }
+
+    const paymentIntent = invoice.payment_intent
+
+    if (paymentIntent?.client_secret) {
+        clientSecret = paymentIntent.client_secret
+    } else throw new Error('Payment intent not found')
 
     return {
         subscriptionId: subscription.id, 

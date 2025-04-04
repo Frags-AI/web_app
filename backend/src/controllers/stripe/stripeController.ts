@@ -3,10 +3,12 @@ import { requireAuth, AuthObject } from '@clerk/express';
 import subscriptionRouter from './subscriptionController';
 import { Request, Response } from 'express';
 import config from '@/utils/config';
-import  { Stripe } from 'stripe';
-import stripe from "@/config/stripe";
+import Stripe from 'stripe';
 
 const stripeRouter = express.Router();
+const stripe = new Stripe(config.STRIPE_SECRET, {
+    typescript: true,
+});
 
 stripeRouter.use(requireAuth());
 

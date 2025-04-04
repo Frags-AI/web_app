@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prod:server": "cd backend && npm run start",
+    "start:server": "cd backend && npm run start",
     "dev:server": "cd backend && npm run dev",
-    "prod:client": "cd frontend && npm run start",
+    "start:client": "cd frontend && npm run start",
     "dev:client": "cd frontend && npm run dev",
-    "dev": "concurrently \"cd frontend && npm start\" \"cd backend && npm run dev\"",
-    "prod": "concurrently \"cd frontend && npm start\" \"cd backend && npm run start\"",
+    "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && npm run dev\"",
+    "start": "concurrently \"cd frontend && npm run start\" \"cd backend && npm run start\"",
     "install:app": "concurrently \"cd frontend && npm install\" \"cd backend && npm install\""
   },
   "repository": {

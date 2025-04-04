@@ -1,5 +1,3 @@
-import dotenv from 'dotenv'
-dotenv.config()
 
 interface ConfigProps {
     PORT: string;
@@ -13,6 +11,7 @@ interface ConfigProps {
     S3_BUCKET: string;
     S3_REGION: string;
     NGROK_DOMAIN?: string;
+    NGROK_AUTHTOKEN?: string;
     CLERK_SIGNING_SECRET: string;
     STRIPE_SIGNING_SECRET: string;
 }
@@ -29,6 +28,7 @@ const S3_SECRET = process.env.S3_SECRET_ACCESS_KEY || ''
 const S3_BUCKET = process.env.S3_BUCKET_NAME || ''
 const S3_REGION = process.env.S3_BUCKET_REGION || ''
 const NGROK_DOMAIN = process.env.NGROK_DOMAIN || ''
+const NGROK_AUTHTOKEN = process.env.NGROK_AUTHTOKEN || ''
 const CLERK_SIGNING_SECRET = process.env.CLERK_SIGNING_SECRET || ''
 const STRIPE_SIGNING_SECRET = process.env.STRIPE_SIGNING_SECRET || ''
 
@@ -45,6 +45,7 @@ const config: ConfigProps = {
     S3_SECRET,
     ENVIRONMENT,
     NGROK_DOMAIN,
+    NGROK_AUTHTOKEN,
     CLERK_SIGNING_SECRET,
     STRIPE_SIGNING_SECRET
 }
