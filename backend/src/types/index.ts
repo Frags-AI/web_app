@@ -119,4 +119,3 @@ export interface ClerkUserUpdatedEvent {
     object: 'event';
     timestamp: number;
 }
-  

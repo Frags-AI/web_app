@@ -1,25 +1,21 @@
-import "express-async-errors"
-import app from "./app.js";
-import logger from "./utils/logger.js";
-import config from "./utils/config.js";
-import ngrok from "@ngrok/ngrok";
-import serverless from "serverless-http";
+import app from "@/app";
+import * as ngrok from "@ngrok/ngrok";
+import config from "@/utils/config"
+import { serve } from "@hono/node-server"
 
-if (config.ENVIRONMENT !== "production") {
-    app.listen(config.PORT, () => {
-        logger.info(`Server running on port ${config.PORT}`);
-    });
-    
-    (async () => {
+serve({
+    fetch: app.fetch,
+    port: parseInt(config.PORT),
+})
+
+if (config.ENVIRONMENT === "development") {
+    (async function() {
         const listener = await ngrok.forward({
             addr: config.PORT,
-            authtoken_from_env: true,
+            authtoken: config.NGROK_AUTHTOKEN,
             hostname: config.NGROK_DOMAIN,
-        });
-        logger.info(`Server running on ${listener.url()}`);
-    })();
-} else {
-    logger.info("Server reconfigured into API Gateway")
-    logger.info("Server running on AWS Lambda")
-    module.exports.handler = serverless(app)
+        })
+        
+        console.log(`Development server on port ${config.PORT} is now forwarded to ${listener.url()}`)    
+    })()
 }

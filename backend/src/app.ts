@@ -1,29 +1,31 @@
-import express from 'express';
-import cors from 'cors';
-import * as middleware from '@/utils/middleware';
-import config from './utils/config';
-import helmet from "helmet"
-import clerkRouter from '@/controllers/clerk/clerkController';
-import { clerkMiddleware } from '@clerk/express';
-import videoRouter from '@/controllers/video/videoController';
-import serverRouter from '@/controllers/server-status/serverController';
-import stripeRouter from '@/controllers/stripe/stripeController';
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { clerkMiddleware } from "@hono/clerk-auth";
+import { logger } from "hono/logger";
+import serverRouter from "@/routers/server-status";
+import videoRouter from "@/routers/video";
+import stripeRouter from "@/routers/stripe";
+import clerkRouter from "@/routers/clerk";
 
-const app = express();
+const app = new Hono()
 
-app.use(cors());
-app.use(express.json());
-app.use(clerkMiddleware());
-app.use(helmet())
+app.use("/api/*", cors())
+app.use(clerkMiddleware())
+app.use(logger())
 
-if (config.ENVIRONMENT !== "production") app.use(middleware.requestLogger);
+app.route("/api/clerk", clerkRouter)
+app.route("/api/video", videoRouter)
+app.route("/api/stripe", stripeRouter)
+app.route("/api", serverRouter)
 
-app.use('/api/clerk', clerkRouter);
-app.use('/api/stripe', stripeRouter);
-app.use('/api/video', videoRouter)
-app.use("/", serverRouter);
+app.notFound((c) => {
+    console.error("Unknown endpoint, please check your URL and try again.")
+    return c.json({ error: "Unknown endpoint, please enter a valid URL" }, 404)
+})
 
-app.use(middleware.unknownEndpoint);
-app.use(middleware.errorHandler)
+app.onError((err, c) => {
+    console.error(err)
+    return c.json({ error: "Internal Server Error", message: err }, 500)
+})
 
-export default app;
+export default app
