@@ -3,15 +3,15 @@ import { createUser, updateUser, getUser, deleteUser, authenticateRequest } from
 import { ClerkUserCreatedEvent, ClerkUserUpdatedEvent, ClerkUserDeletedEvent } from '@/types';
 import { createStripeUser } from '@/routers/stripe/stripeHelper';
 import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
-import { AuthObject } from "@clerk/backend";
+
 
 const clerkRouter = new Hono();
 clerkRouter.use(clerkMiddleware())
 
 
-clerkRouter.post("/", async (c) => {
-    const evt = authenticateRequest(c.req)
-
+clerkRouter.post("/webhooks", async (c) => {
+    const evt = await authenticateRequest(c.req as HonoRequest)
+    
     const { id } = evt.data
     const eventType = evt.type
 
@@ -31,10 +31,6 @@ clerkRouter.post("/", async (c) => {
       message: 'Webhook received',
     }, 200)
 });
-
-interface ClerkRequest extends HonoRequest {
-    auth: AuthObject
-}
 
 clerkRouter.get("/", async (c) => {
     const auth = getAuth(c)

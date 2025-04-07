@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@clerk/clerk-react";
+import { uploadVideo } from "./studioHelper";
 
 
 interface AssetLibraryProps {
@@ -26,8 +28,10 @@ export default function CreatorStudio() {
   const [selectedModel, setSelectedModel] = useState< "Basic" | "Advanced" | "Pro" >("Basic");
   const [hoveredModel, setHoveredModel] = useState<"Basic" | "Advanced" | "Pro" | null>(null);
   const [hoveredAsset, setHoveredAsset] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File>(null);
   const [hoveredButton, setHoveredButton] = useState<SourceName | null>(null);
   const placeholders = ["YouTube", "Twitch", "Rumble", "Zoom"];
+  const { getToken } = useAuth();
 
   const assetLibrary: AssetLibraryProps[] = [
       { icon: "/assets/star.png", label: "Long to shorts", description:"AI find hooks, highlights, and turns your video into viral shorts." },
@@ -65,19 +69,20 @@ export default function CreatorStudio() {
     const file = e.target.files?.[0];
     if (file) {
       setUploadName(file.name);
+      setUploadedFile(file);
     }
   };
   
   const handleModelSelect = (name: string) => {
     setSelectedModel(name as "Basic" | "Advanced" | "Pro");
   }
+
   const handleModelHover = (name: string | null) => {
     if (name) {
       setHoveredModel(name as "Basic" | "Advanced" | "Pro");
     } else setHoveredModel(null);
   }
   
-
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const text = e.dataTransfer.getData("text/plain");
@@ -86,8 +91,15 @@ export default function CreatorStudio() {
     }
   };
 
+  const handleUploadClick = async () => {
+    if (uploadedFile) {
+      const token = await getToken()
+      const response = await uploadVideo(uploadedFile, token);
+      console.log("Upload response: ", response);
+    }
+  }
+
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -210,7 +222,10 @@ export default function CreatorStudio() {
               </div>
 
 
-                <Button className="bg-white text-black font-bold py-3 rounded-md text-center">
+                <Button 
+                  className="bg-white text-black font-bold py-3 rounded-md text-center"
+                  onClick={handleUploadClick}
+                >
                   Get clips in 1 click
                 </Button>
                 <Link

@@ -1,7 +1,5 @@
 # syntax=docker/dockerfile:1
 
-
-
 FROM node:latest AS base
 
 # Set working directory for all build stages.

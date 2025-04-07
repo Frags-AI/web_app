@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    env_file: ./backend/.env.docker  
+    env_file: ./backend/.env.prod  
     build:
       context: ./backend
     ports:
@@ -12,10 +12,9 @@ services:
       NODE_ENV: production
 
   frontend:
-    env_file: ./frontend/.env.docker
+    env_file: ./frontend/.env.prod
     build:
       context: ./frontend
     ports:
       - "5173:80"
-    container_name: "frontend-container-image"
-    
+    container_name: "frontend-container-image"    

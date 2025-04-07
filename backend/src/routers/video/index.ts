@@ -14,8 +14,6 @@ videoRouter.post("/", async (c) => {
     const body = await c.req.parseBody();
     const file = body["file"] as File;
 
-    console.log("File: ", file);
-
     if (!file) {
         return c.json({ error: "No video file provided." }, 400);
     }
