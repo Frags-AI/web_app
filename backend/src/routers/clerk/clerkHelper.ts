@@ -4,6 +4,7 @@ import { ClerkUserCreatedEvent, ClerkUserUpdatedEvent, ClerkUserDeletedEvent } f
 import { Webhook } from "svix";
 import { PrismaClient } from "@prisma/client";
 import clerkClient from "@/clients/clerk";
+import { EmailAddress } from "@clerk/backend";
 
 const prisma = new PrismaClient();
 
@@ -66,11 +67,55 @@ async function updateUser(clerkEvent: ClerkUserUpdatedEvent) {
 
 async function getUser(userId: string) {
 
-const user = await clerkClient.users.getUser(userId);
-    if (!user) {
-        return;
+    const clerkUser = await clerkClient.users.getUser(userId);
+
+    const dbUser = await prisma.user.findUnique({
+    where: { clerk_user_id: clerkUser.id },
+    include: {
+        subscriptions: true,
+        videos: true,
+    },
+    });
+
+    if (!dbUser) {
+    throw new Error("User not found in the database");
     }
-    return user;
+
+    const combinedUser = {
+        id: dbUser.id,
+        fullName: dbUser.full_name,
+        firstName: clerkUser.firstName,
+        lastName: clerkUser.lastName,
+        imageUrl: clerkUser.imageUrl,
+        username: clerkUser.username,
+        stripeId: dbUser.stripe_id,
+        externalId: clerkUser.externalId,
+        primaryEmailAddressId: clerkUser.primaryEmailAddressId,
+        emailAddresses: clerkUser.emailAddresses,
+        primaryWeb3WalletId: clerkUser.primaryWeb3WalletId,
+        web3Wallets: clerkUser.web3Wallets,
+        primaryPhoneNumberId: clerkUser.primaryPhoneNumberId,
+        phoneNumbers: clerkUser.phoneNumbers,
+        createdAt: clerkUser.createdAt,
+        updatedAt: clerkUser.updatedAt,
+        lastSignInAt: clerkUser.lastSignInAt,
+        lastActiveAt: clerkUser.lastActiveAt,
+        subscriptions: dbUser.subscriptions,
+        videos: dbUser.videos,
+        passwordEnabled: clerkUser.passwordEnabled,
+        totpEnabled: clerkUser.totpEnabled,
+        backupCodeEnabled: clerkUser.backupCodeEnabled,
+        twoFactorEnabled: clerkUser.twoFactorEnabled,
+        banned: clerkUser.banned,
+        hasImage: clerkUser.hasImage,
+        createOrganizationEnabled: clerkUser.createOrganizationEnabled,
+        deleteSelfEnabled: clerkUser.deleteSelfEnabled,
+        legalAcceptedAt: clerkUser.legalAcceptedAt,
+        publicMetadata: clerkUser.publicMetadata,
+        privateMetadata: clerkUser.privateMetadata,
+        unsafeMetadata: clerkUser.unsafeMetadata,
+    };
+    return combinedUser;
 }
 
 async function deleteUser(clerkEvent: ClerkUserDeletedEvent) {
