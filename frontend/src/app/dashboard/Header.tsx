@@ -16,7 +16,7 @@ export default function Header({className}: HeaderProps) {
                     <Icons.Zap size={20} fill="#d4b455" color="#d4b455"/>
                     <div>60</div>
                 </div>
-                <Button className="bg-zinc-700 hover:bg-zinc-600 transition duration-300 text-white px-3 py-1 rounded-lg">
+                <Button className="bg-zinc-700 hover:bg-zinc-600 transition duration-300  px-3 py-1 rounded-lg">
                     Add more credits
                 </Button>
             </div>

@@ -31,13 +31,13 @@ const BlogPage: React.FC = () => {
   });
 
   return (
-    <div className="bg-[#050406] pt-[100px] text-white min-h-screen">
+    <div className="bg-[#050406] pt-[100px]  min-h-screen">
       <Header />
 
       {/* Blog Header */}
       <section className="text-center mt-16 px-4 md:px-16 lg:px-32">
         <h1 className="text-4xl font-bold">Blog</h1>
-        <p className="text-white mt-2">
+        <p className="mt-2">
           Explore pro tips, gaming insights, and creator hacks that will level up your content creation.
         </p>
       </section>
@@ -50,7 +50,7 @@ const BlogPage: React.FC = () => {
           <h2 className="text-2xl font-semibold mt-2">
             Crafting Consistency: a thoughtful approach for naming video
           </h2>
-          <p className="text-white mt-2">Sep 23, 2024</p>
+          <p className="mt-2">Sep 23, 2024</p>
         </div>
       </section>
 
@@ -70,13 +70,13 @@ const BlogPage: React.FC = () => {
           ))}
         </div>
         <div className="flex items-center space-x-2 mt-4 md:mt-0">
-  <span className="text-white">Sort by:</span>
+  <span className="">Sort by:</span>
 
   <Button
     className={`px-3 py-2 rounded-[7px] border ${
       sortOrder === "Newest"
-        ? " bg-transparent text-white border-white"
-        : "bg-transparent text-gray-400  hover:border-white hover:text-white"
+        ? " bg-transparent  border-white"
+        : "bg-transparent text-gray-400  hover:border-white hover:"
     }`}
     onClick={() => setSortOrder("Newest")}
   >
@@ -86,8 +86,8 @@ const BlogPage: React.FC = () => {
   <Button
     className={`px-3 py-2 rounded-[7px] border ${
       sortOrder === "Oldest"
-        ? "bg-transparent text-white border-white "
-        : "bg-transparent text-gray-400  hover:border-white hover:text-white"
+        ? "bg-transparent  border-white "
+        : "bg-transparent text-gray-400  hover:border-white hover:"
     }`}
     onClick={() => setSortOrder("Oldest")}
   >
@@ -105,7 +105,7 @@ const BlogPage: React.FC = () => {
             <CardContent>
               <span className="text-[#52FFF3] uppercase text-sm mt-3 block pb-[10px]">{post.category}</span>
               <h3 className="text-lg font-semibold mt-2 pb-[15px]">{post.title}</h3>
-              <p className="text-white mt-1">{post.date}</p>
+              <p className=" mt-1">{post.date}</p>
             </CardContent>
           </Card>
         ))}
@@ -120,7 +120,7 @@ const BlogPage: React.FC = () => {
             <PaginationPrevious
               href="#"
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              className={`w-10 h-10 flex items-center justify-center rounded-full border border-white text-white ${
+              className={`w-10 h-10 flex items-center justify-center rounded-full border border-white  ${
                 currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:border-[#52FFF3]"
               }`}
             />
@@ -180,7 +180,7 @@ const BlogPage: React.FC = () => {
             <PaginationNext
               href="#"
               onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              className={`w-10 h-10 flex items-center justify-center rounded-full border border-white text-white ${
+              className={`w-10 h-10 flex items-center justify-center rounded-full border border-white  ${
                 currentPage === totalPages ? "opacity-50 cursor-not-allowed " : "hover:border-[#52FFF3]"
               }`}
             />

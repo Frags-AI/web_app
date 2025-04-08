@@ -34,10 +34,21 @@ export default {
   				DEFAULT: 'hsl(var(--primary))',
   				foreground: 'hsl(var(--primary-foreground))'
   			},
+			primaryInvert: {
+				DEFAULT: 'hsl(var(--primary-invert))',
+				foreground: 'hsl(var(--primary-invert-foreground))'
+			},
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
   				foreground: 'hsl(var(--secondary-foreground))'
   			},
+			secondaryInvert: {
+				DEFAULT: 'hsl(var(--secondary-invert))',
+				foreground: 'hsl(var(--secondary-invert-foreground))'
+			},
+			highlight: {
+				DEFAULT: 'hsl(var(--highlight))',
+			},
   			muted: {
   				DEFAULT: 'hsl(var(--muted))',
   				foreground: 'hsl(var(--muted-foreground))'

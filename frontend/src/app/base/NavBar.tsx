@@ -18,7 +18,7 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({components}) => {
 
-  const selected = "text-[#52FFF3] font-bold hover:text-[#2CDCD0] transition duration-150"
+  const selected = "text-highlight font-bold hover:text-highlight transition duration-150"
   const windowName = window.location.pathname
 
   return (

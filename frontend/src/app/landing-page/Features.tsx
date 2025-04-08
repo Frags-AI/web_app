@@ -60,7 +60,7 @@ const features: FeatureProps[] = [
   }
 ]
 
-const selectedStyling = "outline-[#00D4CA] text-[#00D4CA]";
+const selectedStyling = "outline-highlight text-highlight";
 
 const Features = () => {
 

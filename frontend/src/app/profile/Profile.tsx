@@ -49,7 +49,7 @@ const Profile: React.FC = ({children}: {children: React.ReactNode}) => {
   };
 
   return (
-    <div className="mb-4 text-white h-screen w-full flex items-center justify-center">
+    <div className="mb-4  h-screen w-full flex items-center justify-center">
       <ProtectedRoute>
         <UserProfile 
           appearance={{

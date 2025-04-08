@@ -124,7 +124,7 @@ export default function CreatorStudio() {
         <div className="flex justify-center mt-15">
           <div className="flex flex-col items-center">
             {/* Model header */}
-            <div className="flex items-center justify-around gap-2 text-sm text-white mb-4">
+            <div className="flex items-center justify-around gap-2 text-sm  mb-4">
               {models.map((model, index) => (
                 <div key={`model-${index}`} className="flex flex-col items-center gap-2 relative">
                 <AnimatePresence>
@@ -174,7 +174,7 @@ export default function CreatorStudio() {
                     placeholder={`Paste a ${placeholders[placeholderIndex]} URL`}
                     value={uploadName}
                     onChange={(e) => setUploadName(e.target.value)}
-                    className="bg-zinc-800 text-white p-3 pl-8 rounded-md outline-none placeholder:text-zinc-400 w-full"
+                    className="bg-zinc-800  p-3 pl-8 rounded-md outline-none placeholder:text-zinc-400 w-full"
                   />
                 </div>
 
@@ -198,7 +198,7 @@ export default function CreatorStudio() {
                       )}
                     </AnimatePresence>
                     <Button
-                      className="flex items-center gap-2 px-3 py-2 rounded-md bg-transparent text-white hover:bg-zinc-900"
+                      className="flex items-center gap-2 px-3 py-2 rounded-md bg-transparent  hover:bg-zinc-900"
                       onClick={() => {
                         if (source.name === "upload") {
                           fileInputRef.current?.click();
@@ -230,7 +230,7 @@ export default function CreatorStudio() {
                 </Button>
                 <Link
                   to="#"
-                  className="text-sm text-white underline text-center"
+                  className="text-sm  underline text-center"
                 >
                   Click here to try a sample project
                 </Link>
@@ -245,7 +245,7 @@ export default function CreatorStudio() {
             {assetLibrary.map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center text-sm text-white gap-2 relative"
+                className="flex flex-col items-center text-sm  gap-2 relative"
                 onMouseEnter={() => setHoveredAsset(item.label)}
                 onMouseLeave={() => setHoveredAsset(null)}
               >

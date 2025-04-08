@@ -1,11 +1,12 @@
 import Icons from "@/components/icons"
 import NavBar from "./NavBar"
 import {motion, AnimatePresence} from "framer-motion"
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { SignedIn, SignedOut, useClerk, useUser } from "@clerk/clerk-react";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import MobileMenu from "./MobileMenu";
 import { ListItemProps, ListItemGroupProps } from "@/types";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const resourceComponents: ListItemProps[] = [
   {
@@ -102,8 +103,6 @@ const componentGroups: ListItemGroupProps[] = [
 const Header: React.FC = () => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const headerRef = useRef<HTMLDivElement>(null);
-  const { signOut } = useClerk();
-  const { isSignedIn } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false)
@@ -126,10 +125,6 @@ const Header: React.FC = () => {
     navigate("/login");
   };
 
-  const handleSignOut = () => {
-    signOut(() => navigate("/"));
-  };
-
   window.addEventListener("click", (e: MouseEvent) => {
     console.log(e.clientY, headerRef.current?.clientHeight)
     if (isMobileOpen && e.clientY > headerRef.current?.clientHeight!) {
@@ -146,33 +141,34 @@ const Header: React.FC = () => {
   return (
     <>
       {isMobileOpen && (
-        <div className="fixed inset-0 backdrop-blur-lg bg-black bg-opacity-20 z-40"></div>
+        <div className="fixed inset-0 backdrop-blur-lg bg-opacity-20 z-40"></div>
       )}
   
-      <header className={`fixed top-0 w-full z-50 mx-auto px-4 flex flex-col py-4 bg-[#0f0f0f] text-white font-inter shadow-lg ${isMobileOpen ? 'backdrop-blur bg-opacity-90' : ''}`} ref={headerRef}>
+      <header className={`fixed top-0 w-full z-50 mx-auto px-4 bg-background flex flex-col py-4 shadow-lg ${isMobileOpen ? 'backdrop-blur bg-opacity-90' : ''}`} ref={headerRef}>
         <div className="flex flex-1 justify-between">
           <div className="flex items-center gap-4">
-            <button id="sidebarToggle" className="lg:hidden transition duration-250 hover:scale-125 hover:text-gray-300" onClick={handleToggles}>
+            <button id="sidebarToggle" className="lg:hidden transition duration-250 hover:scale-125 hover:text-muted-foreground" onClick={handleToggles}>
               {isMobileOpen ? <Icons.X size="30" /> : <Icons.AlignJustify size="30" />}
             </button>
   
             <Link to="/">
-              <img src="../assets/frags_logo.svg" alt="Frags Logo" className=""/>
+              <img src="../assets/frags_logo.svg" alt="Frags Logo" className="invert dark:invert-100"/>
             </Link>
           </div>
           <NavBar components={componentGroups} />
-          <div className="flex items-center gap-5 text-white">
+          <div className="flex items-center gap-5">
+            <ModeToggle />
             <SignedIn>
-              <Link to="/profile" className="text-lg font-bold self-center hover:text-gray-300 transition duration-300 ease-in-out">
+              <Link to="/profile" className="text-lg font-bold self-center hover:text-muted-foreground transition duration-300 ease-in-out">
                 Profile
               </Link>
-              <Link to="/dashboard" className="hidden md:block text-lg font-bold self-center hover:text-gray-300 transition duration-300 ease-in-out">
+              <Link to="/dashboard" className="hidden md:block text-lg font-bold self-center hover:text-muted-foreground transition duration-300 ease-in-out">
                 Dashboard
               </Link>
             </SignedIn>
             <SignedOut>
-              <button onClick={handleSignIn} className="hidden md:block text-md font-bold self-center hover:text-gray-300 transition duration-300 ease-in-out">Login</button>
-              <Link to="/signup" className="bg-white text-md text-black rounded-3xl px-4 py-1 hover:bg-gray-300 transition duration-300 ease-in-out">
+              <button onClick={handleSignIn} className="hidden md:block text-md font-bold self-center hover:text-muted-foreground transition duration-300 ease-in-out">Login</button>
+              <Link to="/signup" className="bg-white text-md text-black rounded-3xl px-4 py-1 hover:bg-muted transition duration-300 ease-in-out">
                 Free Sign Up
               </Link>
             </SignedOut>
@@ -200,6 +196,3 @@ const Header: React.FC = () => {
 }
 
 export default Header;
-
-
-

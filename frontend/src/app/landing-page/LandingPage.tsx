@@ -1,6 +1,6 @@
 import Home from "./Home";
 import Features from './Features';
-import Prefooter from './Prefooter';
+import Prefooter from "../base/Prefooter";
 import Header from '../base/Header';
 import Faq from '../faq/Faq';
 import Footer from '../base/Footer';

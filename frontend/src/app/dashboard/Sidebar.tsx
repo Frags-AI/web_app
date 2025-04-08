@@ -71,7 +71,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
   return (
     // Sidebar
     <motion.div 
-      className={`p-3 bg-[#050406] text-white border-r mr-8 ${className} ${isExpanded ? "z-40": "z-30"}`}
+      className={`p-3 bg-[#050406]  border-r mr-8 ${className} ${isExpanded ? "z-40": "z-30"}`}
       initial={{ width: "4.5rem" }}
       animate={{ width: isExpanded ? "12em" : "4.5rem" }}
     >
@@ -86,7 +86,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
           >
             <img src="../assets/frags_logo.svg" alt="Frags Logo" className="cover" />
           </motion.div>
-          <Button className="bg-[#050406] hover:bg-zinc-800 text-white border w-full" onClick={handleExpansion}>
+          <Button className="bg-[#050406] hover:bg-zinc-800  border w-full" onClick={handleExpansion}>
             <motion.div
               initial={{rotate: 0}}
               animate={{rotate: isExpanded ? 180 : 0}}
@@ -97,7 +97,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
           </Button>
         </div>
         <div className="flex w-full mt-4">
-          <Button className="bg-[#050406] hover:bg-zinc-800 text-white border flex flex-col w-full">
+          <Button className="bg-[#050406] hover:bg-zinc-800  border flex flex-col w-full">
               <UserButton />
           </Button>
         </div>
@@ -125,12 +125,12 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
                 >
                   <Button 
                     onClick={() => navigate(`/dashboard${item.tab}`)}
-                    className={`flex justify-start gap-2 bg-transparent text-white ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2 w-full`}     
+                    className={`flex justify-start gap-2 bg-transparent  ${currentTab === item.tab ? selectedTabStyle : unselectedTabStyle} mb-2 w-full`}     
                   >
                       <FontAwesomeIcon 
                           icon={item.icon} 
                           size="xl" 
-                          className="text-white" 
+                          className="" 
                       />
                       <AnimatePresence>
                           {isExpanded && (
