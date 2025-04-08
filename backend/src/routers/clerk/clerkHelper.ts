@@ -4,7 +4,6 @@ import { ClerkUserCreatedEvent, ClerkUserUpdatedEvent, ClerkUserDeletedEvent } f
 import { Webhook } from "svix";
 import { PrismaClient } from "@prisma/client";
 import clerkClient from "@/clients/clerk";
-import { EmailAddress } from "@clerk/backend";
 
 const prisma = new PrismaClient();
 
