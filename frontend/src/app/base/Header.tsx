@@ -149,7 +149,7 @@ const Header: React.FC = () => {
         <div className="fixed inset-0 backdrop-blur-lg bg-black bg-opacity-20 z-40"></div>
       )}
   
-      <header className={`fixed top-0 w-full z-50 mx-auto px-4 flex flex-col py-4 bg-[#0f0f0f] text-white font-inter shadow-lg ${isMobileOpen ? 'backdrop-blur bg-opacity-90' : ''}`} ref={headerRef}>
+      <header className={`fixed top-0 w-full z-50 mx-auto px-4 flex flex-col py-4 bg-[#0f0f0f] text-white font-inter shadow-lg ${isMobileOpen ? 'backdrop-blur-sm bg-opacity-90' : ''}`} ref={headerRef}>
         <div className="flex flex-1 justify-between">
           <div className="flex items-center gap-4">
             <button id="sidebarToggle" className="lg:hidden transition duration-250 hover:scale-125 hover:text-gray-300" onClick={handleToggles}>
