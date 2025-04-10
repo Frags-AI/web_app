@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
         </div>
         <div className="flex gap-5 flex-wrap justify-center mb-3">
             {socialIcons.map((icon) => (
-              <a href={icon.url} target="_blank" rel="noopener noreferrer" className='bg-[#181818] p-3 rounded-xl w-14 h-14 flex items-center justify-center hover:bg-[#232323] transition duration-250 shadow-sm shadow-gray-700'>
+              <a href={icon.url} target="_blank" rel="noopener noreferrer" className='bg-[#181818] p-3 rounded-xl w-14 h-14 flex items-center justify-center hover:bg-[#232323] transition duration-250 shadow-xs shadow-gray-700'>
                 <FontAwesomeIcon icon={icon.icon} size="lg" className=""></FontAwesomeIcon>
               </a>
             ))}
@@ -81,14 +81,14 @@ const Footer: React.FC = () => {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-16">
         <div className="flex flex-col gap-8">
           <Link to="/">
-              <img src="../assets/frags_logo.svg" alt="Frags Logo" className=""/>
+            <img src="../assets/frags_logo_dark.svg" alt="Frags Logo" className="dark:invert"/>
           </Link>
-          <div className="text-[#A0AABA]">Free all-in-one video editor for everyone to create anything anywhere. Contact us at: support@frags.com</div>
+          <div className="text-muted-foreground">Free all-in-one video editor for everyone to create anything anywhere. Contact us at: support@frags.com</div>
           <LanguageDropdown />
         </div>
         <div className="flex flex-col gap-8">
           <div className="flex font-bold text-lg">Product</div>
-          <div className="text-[#A0AABA] flex flex-col gap-2">
+          <div className="text-muted-foreground flex flex-col gap-2">
             <div>Tools</div>
             <div>Product Changelog</div>
             <div>Feature Request</div>
@@ -98,7 +98,7 @@ const Footer: React.FC = () => {
         </div>
         <div className="flex flex-col gap-8">
           <div className="flex font-bold text-lg">Create</div>
-          <div className="text-[#A0AABA] flex flex-col gap-2">
+          <div className="text-muted-foreground flex flex-col gap-2">
             <div>Customer stories</div>
             <div>Blogs</div>
             <div>Frags media assets</div>
@@ -107,7 +107,7 @@ const Footer: React.FC = () => {
         </div>
         <div className="flex flex-col gap-8">
           <div className="flex font-bold text-lg">Resources</div>
-          <div className="text-[#A0AABA] flex flex-col gap-2">
+          <div className="text-muted-foreground flex flex-col gap-2">
             <div>Affiliate Marketing</div>
             <div>Help Center</div>
             <div>Customer Support</div>
@@ -116,7 +116,7 @@ const Footer: React.FC = () => {
         </div>
         <div className="flex flex-col gap-8">
           <div className="flex font-bold text-lg">Legal and Regulation</div>
-          <div className="text-[#A0AABA] flex flex-col gap-2">
+          <div className="text-muted-foreground flex flex-col gap-2">
             <div>Terms of Service</div>
             <div>Privacy Center</div>
             <div>Privacy Policy</div>
@@ -127,11 +127,6 @@ const Footer: React.FC = () => {
         </div>
       </div>
       <div className="flex gap-5 mt-8">
-        {/* {socialIcons.map((icon) => (
-          <a href={icon.url} target="_blank" rel="noopener noreferrer" className='bg-[#181818] p-3 rounded-xl w-14 h-14 flex items-center justify-center hover:bg-[#232323] transition duration-250 shadow-sm shadow-gray-700'>
-            <FontAwesomeIcon icon={icon.icon} size="lg" className=""></FontAwesomeIcon>
-          </a>
-        ))} */}
         <div className='flex-1 flex gap-4 justify-center lg:justify-start'>
           {socialIcons.map((icon) => (
             <a href={icon.url} target="_blank" rel="noopener noreferrer" className='flex items-center justify-center'>
@@ -140,7 +135,7 @@ const Footer: React.FC = () => {
           ))}
         </div>
       </div>
-      {/* <div className='text-[#A0AABA] mt-32 flex gap-4 flex-wrap justify-between'>
+      {/* <div className='text-muted-foreground mt-32 flex gap-4 flex-wrap justify-between'>
         <div>Terms of Service</div>
         <div>Prviacy Center</div>
         <div>Privacy Policy</div>

@@ -144,7 +144,7 @@ const Header: React.FC = () => {
         <div className="fixed inset-0 backdrop-blur-lg bg-opacity-20 z-40"></div>
       )}
   
-      <header className={`fixed top-0 w-full z-50 mx-auto px-4 bg-background flex flex-col py-4 shadow-lg ${isMobileOpen ? 'backdrop-blur bg-opacity-90' : ''}`} ref={headerRef}>
+      <header className={`fixed top-0 w-full z-50 mx-auto px-4 bg-background flex flex-col py-4 shadow-primary-invert shadow-md ${isMobileOpen ? 'backdrop-blur bg-opacity-90' : ''}`} ref={headerRef}>
         <div className="flex flex-1 justify-between">
           <div className="flex items-center gap-4">
             <button id="sidebarToggle" className="lg:hidden transition duration-250 hover:scale-125 hover:text-muted-foreground" onClick={handleToggles}>
@@ -152,7 +152,7 @@ const Header: React.FC = () => {
             </button>
   
             <Link to="/">
-              <img src="../assets/frags_logo.svg" alt="Frags Logo" className="invert dark:invert-100"/>
+              <img src="../assets/frags_logo_dark.svg" alt="Frags Logo" className="dark:invert"/>
             </Link>
           </div>
           <NavBar components={componentGroups} />
@@ -168,7 +168,7 @@ const Header: React.FC = () => {
             </SignedIn>
             <SignedOut>
               <button onClick={handleSignIn} className="hidden md:block text-md font-bold self-center hover:text-muted-foreground transition duration-300 ease-in-out">Login</button>
-              <Link to="/signup" className="bg-white text-md text-black rounded-3xl px-4 py-1 hover:bg-muted transition duration-300 ease-in-out">
+              <Link to="/signup" className="bg-primary text-primary-foreground text-md rounded-3xl px-4 py-1 hover:bg-primary/90 transition duration-300 ease-in-out font-bold">
                 Free Sign Up
               </Link>
             </SignedOut>

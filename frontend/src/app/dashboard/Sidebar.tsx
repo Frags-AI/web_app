@@ -65,13 +65,13 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
   const currentPath = location.pathname
   const currentTab = currentPath.split("/dashboard").pop() 
 
-  const selectedTabStyle = "bg-zinc-800 border border-zinc-700 hover:bg-zinc-800"
-  const unselectedTabStyle = "hover:bg-zinc-800 border border-transparent hover:border hover:border-zinc-700"
+  const selectedTabStyle = "bg-primary/20 border border-primary/30 hover:bg-primary/20"
+  const unselectedTabStyle = "border border-transparent hover:border-primary/30 hover:bg-primary/20"
 
   return (
     // Sidebar
     <motion.div 
-      className={`p-3 bg-[#050406]  border-r mr-8 ${className} ${isExpanded ? "z-40": "z-30"}`}
+      className={`p-3 border-r mr-8 bg-background ${className} ${isExpanded ? "z-40": "z-30"}`}
       initial={{ width: "4.5rem" }}
       animate={{ width: isExpanded ? "12em" : "4.5rem" }}
     >
@@ -84,20 +84,20 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
             className={`hover:cursor-pointer`}
             onClick={() => window.location.href = "/"}
           >
-            <img src="../assets/frags_logo.svg" alt="Frags Logo" className="cover" />
+            <img src="../assets/frags_logo_dark.svg" alt="Frags Logo" className="cover dark:invert" />
           </motion.div>
-          <Button className="bg-[#050406] hover:bg-zinc-800  border w-full" onClick={handleExpansion}>
+          <Button className="bg-background hover:bg-primary/20  border w-full" onClick={handleExpansion}>
             <motion.div
               initial={{rotate: 0}}
               animate={{rotate: isExpanded ? 180 : 0}}
               transition={{ duration: 0.3 }}
             >
-              <Icons.ArrowRightToLine />
+              <Icons.ArrowRightToLine className="text-primary"/>
             </motion.div>
           </Button>
         </div>
         <div className="flex w-full mt-4">
-          <Button className="bg-[#050406] hover:bg-zinc-800  border flex flex-col w-full">
+          <Button className="bg-background hover:bg-primary/20 border flex flex-col w-full">
               <UserButton />
           </Button>
         </div>
@@ -107,7 +107,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
             <div className="flex flex-col mt-16 w-full">
                 <AnimatePresence>
                     <motion.div
-                        className="text-zinc-400"
+                        className="text-muted-foreground font-bold"
                         initial={{opacity: 0, x: -10}}
                         animate={{opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -10}}
                         transition={{ duration: 0.3 }}
@@ -130,12 +130,12 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
                       <FontAwesomeIcon 
                           icon={item.icon} 
                           size="xl" 
-                          className="" 
+                          className="text-primary"
                       />
                       <AnimatePresence>
                           {isExpanded && (
                           <motion.div 
-                              className="text-zinc-300 font-bold"
+                              className="text-primary font-bold"
                               initial={{opacity: 0, x: -10}}
                               animate={{opacity: 1, x: 0}}
                               transition={{ duration: 0.3 }}
@@ -149,7 +149,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
                   <AnimatePresence>
                     {hoveredId === item.id && !isExpanded && (
                       <motion.div
-                        className="text-xs font-semibold ml-2 z-50 text-nowrap bg-white text-secondary py-1 px-2 rounded-lg"
+                        className="text-xs font-semibold ml-2 z-50 text-nowrap bg-primary text-primary-foreground py-1 px-2 rounded-lg"
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -10 }}

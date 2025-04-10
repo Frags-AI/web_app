@@ -3,6 +3,7 @@ import Header from "../base/Header";
 import Footer from "../base/Footer";
 import Faq from "../faq/Faq";
 import Prefooter from "../base/Prefooter";
+import { Button } from "@/components/ui/button";
 
 const SECTIONS = [
     {
@@ -72,16 +73,16 @@ const Product: React.FC = () => {
             <Header />
             <div className="min-h-screen flex flex-col justify-start items-center px-5 mt-[160px]">
                 {/* Main Title */}
-                <p className="text-[16px] text-highlight font-inter mb-[10px]">#1 AI Gaming Clipping Tool</p>
-                <span className="text-[50px] font-bold  font-inter mb-[10px]">Dominate. Clip. Share.</span>
-                <span className="text-[16px]  font-inter mb-[10px]">
+                <p className="text-[16px] text-highlight mb-[10px]">#1 AI Gaming Clipping Tool</p>
+                <span className="text-[50px] font-bold mb-[10px]">Dominate. Clip. Share.</span>
+                <span className="text-[16px] mb-[10px]">
                     Automatically detect and clip your most epic gaming moments with AI precision
                 </span>
 
                 {/* Start Clipping Button */}
-                <button className="rounded-[20px] bg-white text-[#050406] text-center text-[16px] w-[150px] py-[10px] mt-[70px]">
+                <Button className="mt-8 rounded-3xl transition duration-300">
                     Start Clipping
-                </button>
+                </Button>
 
                 {/* Games Section */}
                 <span className="text-[16px]  mt-[90px] mb-[10px]">Games our product currently support</span>
@@ -102,8 +103,8 @@ const Product: React.FC = () => {
                             className={`rounded-[20px] text-center text-[16px] w-[150px] py-[10px] mt-[70px] border transition duration-300 cursor-pointer
                             ${
                                 activeSection === id
-                                    ? "bg-highlight text-black border-highlight"
-                                    : "bg-[#050406] text-[#FDFDFD] border-[#717383] hover:border-highlight hover:text-highlight"
+                                    ? "bg-highlight text-primary-invert border-highlight"
+                                    : "border-[#717383] hover:border-highlight hover:text-highlight"
                             }`}
                         >
                             {label}
@@ -112,7 +113,7 @@ const Product: React.FC = () => {
                 </div>
 
                 {/* Transformation Text */}
-                <span className="text-[50px]  font-inter mt-[90px] mb-[40px]">Transform Gameplay into Viral Content</span>
+                <span className="text-[50px] mt-[90px] mb-[40px]">Transform Gameplay into Viral Content</span>
 
                 {/* Content Display (Blocks) */}
                 {SECTIONS.map(({ id, label, title, description }, index) => (
@@ -128,7 +129,7 @@ const Product: React.FC = () => {
                         </div>
 
                         {/* Image Block */}
-                        <div className="relative w-[513px] h-[400px] bg-[#1a1a1a] rounded-lg shadow-lg flex items-center justify-end pr-4">
+                        <div className="relative w-[513px] h-[400px] bg-muted rounded-lg shadow-lg flex items-center justify-end pr-4">
                             <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-[40px] h-[2px]"></div>
                         </div>
                     </div>
@@ -146,14 +147,14 @@ const Product: React.FC = () => {
                                     {text} <span className="float-right">{`0${index + 1}`}</span>
                                 </p>
                                 {index === 0 && (
-                                    <span className="text-[#929292]">
+                                    <span className="text-muted-foreground">
                                         Simply upload video file or drop your raw gaming footage video link
                                     </span>
                                 )}
                             </div>
                         ))}
                     </div>
-                    <div className="relative w-[513px] h-[400px] bg-[#1a1a1a] rounded-lg shadow-lg flex items-center justify-end pr-4">
+                    <div className="relative w-[513px] h-[400px] bg-muted rounded-lg shadow-lg flex items-center justify-end pr-4">
                         <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-[40px] h-[2px]"></div>
                     </div>
                 </div>

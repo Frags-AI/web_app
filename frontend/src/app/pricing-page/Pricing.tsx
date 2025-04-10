@@ -9,6 +9,8 @@ import Faq from "../faq/Faq";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import { faFacebook, faXTwitter, faLinkedin, faDiscord, faYoutube, faTiktok, faInstagram }  from '@fortawesome/free-brands-svg-icons'
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Circle } from "lucide-react";
 
 const Pricing: React.FC = () => {
   const [isYearly, setIsYearly] = useState(false);
@@ -40,13 +42,21 @@ const Pricing: React.FC = () => {
       <h1 className="text-4xl font-bold">Choose a plan</h1>
 
       {/* Toggle Switch */}
-      <div className="flex items-center space-x-4 mt-4">
-        <span className={`${!isYearly ? "" : "text-muted-foreground"}`}>Monthly</span>
+      <div className="flex items-center space-x-4 mt-4 font-bold">
+        <span className={`${!isYearly ? "" : "text-muted-foreground"} text`}>Monthly</span>
         <button
-          className={`relative w-12 h-6 bg-muted rounded-full transition duration-300 flex items-center ${isYearly ? "justify-end" : "justify-start"}`}
+          className={`rounded-lg bg-primary-invert w-[100px] font-bold flex`}
           onClick={toggleBilling}
         >
-          <span className="w-5 h-5 bg-white rounded-full"></span>
+          <motion.div
+            animate={{ x: isYearly ? 75 : 0 }}
+            transition={{ duration: .15}}
+          >
+            <Circle 
+              fill="currentColor"
+              
+            />
+          </motion.div>
         </button>
         <span className={`${isYearly ? "" : "text-muted-foreground"}`}>Yearly</span>
       </div>
@@ -76,7 +86,7 @@ const Pricing: React.FC = () => {
               ))}
             </ul>
             <Button 
-              className="mt-6 w-full border border-white rounded-full bg-transparent hover:bg-highlight hover:text-primaryInvert hover:border-none font-bold"
+              className="mt-6 w-full border border-white rounded-full bg-transparent hover:bg-highlight hover:text-primary-invert hover:border-none font-bold transition duration-300"
               onClick={() => handleButtonClick(`creator_${isYearly ? "yearly" : "monthly"}`)}
               variant="outline"
             >
@@ -92,8 +102,8 @@ const Pricing: React.FC = () => {
             {/* Title & Badge Together */}
             <div className="flex items-center gap-2">
               <h2 className="text-3xl font-bold">Clipper</h2>
-              <div className="flex items-center gap-1 rounded-full bg-highlight text-primaryInvert text-xs font-bold px-3 py-1">
-              <Sparkles className="w-4 h-4" /> MOST POPULAR
+              <div className="flex items-center gap-1 rounded-full bg-highlight text-xs font-bold px-3 py-1 text-black">
+                <Sparkles className="w-4 h-4" /> MOST POPULAR
               </div>
             </div>
 
@@ -124,7 +134,7 @@ const Pricing: React.FC = () => {
 
             {/* Button */}
             <Button 
-              className="mt-6 w-full rounded-full bg-white text-black hover:bg-highlight hover:text-primaryInvert hover:border-none font-bold transition duration-300"
+              className="mt-6 w-full rounded-full bg-white text-black hover:bg-highlight hover:text-primary-invert hover:border-none font-bold transition duration-300"
               onClick={() => handleButtonClick(`clipper_${isYearly ? "yearly" : "monthly"}`)}
               variant="outline"
             >
@@ -150,7 +160,7 @@ const Pricing: React.FC = () => {
               ))}
             </ul>
             <Button 
-              className="mt-6 w-full border border-white rounded-full hover:border-none bg-transparent font-bold hover:bg-highlight hover:text-primaryInvert"
+              className="mt-6 w-full border border-white rounded-full hover:border-none bg-transparent font-bold hover:bg-highlight hover:text-primary-invert transition duration-300"
               onClick={() => handleButtonClick(`business_${isYearly ? "yearly" : "monthly"}`)}
               variant="outline"
               >

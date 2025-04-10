@@ -16,7 +16,7 @@ const FreePackage: React.FC<FreePackageProps> = ({ isYearly }) => {
           <h1 className="text-4xl font-bold">
             $0<span className="text-gray-500 text-lg">{isYearly ? "/year" : "/mo"}</span>
           </h1>
-          <button className="mt-8 p-2 mx-6 my-3 w-full border border-white rounded-full bg-transparent hover:bg-highlight hover:text-primaryInvert hover:border-highlight transition duration-300 font-bold">
+          <button className="mt-8 p-2 mx-6 my-3 w-full border border-white rounded-full bg-transparent hover:bg-highlight hover:text-primary-invert hover:border-highlight transition duration-300 font-bold">
             Start Free Trial
           </button>
         </div>
