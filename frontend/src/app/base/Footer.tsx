@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
         </div>
         <div className="flex gap-5 flex-wrap justify-center mb-3">
             {socialIcons.map((icon) => (
-              <a href={icon.url} target="_blank" rel="noopener noreferrer" className='bg-[#181818] p-3 rounded-xl w-14 h-14 flex items-center justify-center hover:bg-[#232323] transition duration-250 shadow-sm shadow-gray-700'>
+              <a href={icon.url} target="_blank" rel="noopener noreferrer" className='bg-[#181818] p-3 rounded-xl w-14 h-14 flex items-center justify-center hover:bg-[#232323] transition duration-250 shadow-xs shadow-gray-700'>
                 <FontAwesomeIcon icon={icon.icon} size="lg" className=""></FontAwesomeIcon>
               </a>
             ))}
@@ -128,7 +128,7 @@ const Footer: React.FC = () => {
       </div>
       <div className="flex gap-5 mt-8">
         {/* {socialIcons.map((icon) => (
-          <a href={icon.url} target="_blank" rel="noopener noreferrer" className='bg-[#181818] p-3 rounded-xl w-14 h-14 flex items-center justify-center hover:bg-[#232323] transition duration-250 shadow-sm shadow-gray-700'>
+          <a href={icon.url} target="_blank" rel="noopener noreferrer" className='bg-[#181818] p-3 rounded-xl w-14 h-14 flex items-center justify-center hover:bg-[#232323] transition duration-250 shadow-xs shadow-gray-700'>
             <FontAwesomeIcon icon={icon.icon} size="lg" className=""></FontAwesomeIcon>
           </a>
         ))} */}

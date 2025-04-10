@@ -98,8 +98,8 @@ export default function Carousel() {
                     </div>
                     ))}
                 </motion.div>
-                <div className="pointer-events-none left-0 top-0 absolute w-8 h-full bg-gradient-to-r from-[rgba(5,4,6,1)] via-[rgba(5,4,6,.7)] to-[rgba(5,4,6,0.3)] z-10"/>
-                <div className="pointer-events-none right-0 top-0 absolute w-8 h-full bg-gradient-to-l from-[rgba(5,4,6,1)] via-[rgba(5,4,6,.7)] to-[rgba(5,4,6,0.3)] z-10"/>
+                <div className="pointer-events-none left-0 top-0 absolute w-8 h-full bg-linear-to-r from-[rgba(5,4,6,1)] via-[rgba(5,4,6,.7)] to-[rgba(5,4,6,0.3)] z-10"/>
+                <div className="pointer-events-none right-0 top-0 absolute w-8 h-full bg-linear-to-l from-[rgba(5,4,6,1)] via-[rgba(5,4,6,.7)] to-[rgba(5,4,6,0.3)] z-10"/>
             </div>
         </div>
     );

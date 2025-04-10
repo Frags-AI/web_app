@@ -168,7 +168,7 @@ const Product: React.FC = () => {
             {/* Call to Action Section */}
             <section className="flex justify-center items-center h-[790px] px-5 text-center text-white mb-[70px] bg-cover bg-center">
                 <div className="max-w-[800px] mx-auto mb-[50px]">
-                    <h1 className="text-[5rem] font-bold mb-5 bg-gradient-to-l from-white to-[#fff] text-transparent bg-clip-text">
+                    <h1 className="text-[5rem] font-bold mb-5 bg-linear-to-l from-white to-[#fff] text-transparent bg-clip-text">
                         Ready to Create Content That Goes Viral?
                     </h1>
                     <div className="flex flex-col items-center space-y-[20px]">

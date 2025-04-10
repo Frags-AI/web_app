@@ -162,7 +162,7 @@ export default function CreatorStudio() {
                     placeholder={`Paste a ${placeholders[placeholderIndex]} URL`}
                     value={uploadName}
                     onChange={(e) => setUploadName(e.target.value)}
-                    className="bg-zinc-800 text-white p-3 pl-8 rounded-md outline-none placeholder:text-zinc-400 w-full"
+                    className="bg-zinc-800 text-white p-3 pl-8 rounded-md outline-hidden placeholder:text-zinc-400 w-full"
                   />
                 </div>
 
