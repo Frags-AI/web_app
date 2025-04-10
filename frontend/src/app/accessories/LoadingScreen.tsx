@@ -13,7 +13,7 @@ const LoadingScreen: React.FC = () => {
     }, []);
 
     return (
-        <div className="w-screen h-screen flex flex-col justify-center items-center bg-black text-white">
+        <div className="w-screen h-screen flex flex-col justify-center items-center bg-black">
             <Icons.Loader2 className="w-32 h-32 animate-spin text-gray-300" />
             <div className="text-4xl mt-4 font-semibold tracking-wide">
                 Loading{dots}

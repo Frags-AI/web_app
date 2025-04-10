@@ -1,11 +1,6 @@
 # syntax=docker/dockerfile:1
 
-
-
-ARG NODE_VERSION=22.13.1
-
-
-FROM node:${NODE_VERSION}-alpine AS base
+FROM node:latest AS base
 
 # Set working directory for all build stages.
 WORKDIR /usr/src/app
@@ -43,7 +38,6 @@ COPY package.json .
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/prisma/schema.prisma ./dist
-
 
 EXPOSE 3000
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from '@/components/theme-provider';
 import { ClerkProvider } from '@clerk/clerk-react';
 import localization from '@/clerk/localization';
 import './index.css';
@@ -21,21 +22,23 @@ if (!PUBLISHABLE_KEY) {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <div className='dark font-inter text-white'>
+  <div className='font-inter'>
     <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ClerkProvider 
-            publishableKey={PUBLISHABLE_KEY} 
-            signInUrl={SIGNIN_URL}
-            signUpUrl={SIGNUP_URL}
-            localization={localization}
-            signInFallbackRedirectUrl='/'
-            signUpFallbackRedirectUrl='/'
-            appearance={appearance}
-        >
-          <App />
-        </ClerkProvider>
-      </QueryClientProvider>
+      <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
+        <QueryClientProvider client={queryClient}>
+          <ClerkProvider 
+              publishableKey={PUBLISHABLE_KEY} 
+              signInUrl={SIGNIN_URL}
+              signUpUrl={SIGNUP_URL}
+              localization={localization}
+              signInFallbackRedirectUrl='/'
+              signUpFallbackRedirectUrl='/'
+              appearance={appearance}
+          >
+            <App />
+          </ClerkProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
     </React.StrictMode>
   </div>
 );

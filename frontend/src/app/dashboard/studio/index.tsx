@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@clerk/clerk-react";
+import { uploadVideo } from "./studioHelper";
 
 
 interface AssetLibraryProps {
@@ -26,8 +28,10 @@ export default function CreatorStudio() {
   const [selectedModel, setSelectedModel] = useState< "Basic" | "Advanced" | "Pro" >("Basic");
   const [hoveredModel, setHoveredModel] = useState<"Basic" | "Advanced" | "Pro" | null>(null);
   const [hoveredAsset, setHoveredAsset] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File>(null);
   const [hoveredButton, setHoveredButton] = useState<SourceName | null>(null);
   const placeholders = ["YouTube", "Twitch", "Rumble", "Zoom"];
+  const { getToken } = useAuth();
 
   const assetLibrary: AssetLibraryProps[] = [
       { icon: "/assets/star.png", label: "Long to shorts", description:"AI find hooks, highlights, and turns your video into viral shorts." },
@@ -65,19 +69,20 @@ export default function CreatorStudio() {
     const file = e.target.files?.[0];
     if (file) {
       setUploadName(file.name);
+      setUploadedFile(file);
     }
   };
   
   const handleModelSelect = (name: string) => {
     setSelectedModel(name as "Basic" | "Advanced" | "Pro");
   }
+
   const handleModelHover = (name: string | null) => {
     if (name) {
       setHoveredModel(name as "Basic" | "Advanced" | "Pro");
     } else setHoveredModel(null);
   }
   
-
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const text = e.dataTransfer.getData("text/plain");
@@ -86,39 +91,40 @@ export default function CreatorStudio() {
     }
   };
 
+  const handleUploadClick = async () => {
+    if (uploadedFile) {
+      const token = await getToken()
+      const response = await uploadVideo(uploadedFile, token);
+      console.log("Upload response: ", response);
+    }
+  }
+
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
-    }, 2000); // 2 seconds
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <>
-
-      {/* Main Area */}
       <div className="flex-1 flex flex-col">
-
-        {/* Page header */}
         <div className="p-4">
           <h1 className="text-2xl font-bold">Creator Studio</h1>
           <p>Welcome to your creator dashboard.</p>
         </div>
 
-        {/* Centered Card */}
         <div className="flex justify-center mt-15">
           <div className="flex flex-col items-center">
-            {/* Model header */}
-            <div className="flex items-center justify-around gap-2 text-sm text-white mb-4">
+            <div className="flex items-center justify-around gap-2 text-sm  mb-4">
               {models.map((model, index) => (
                 <div key={`model-${index}`} className="flex flex-col items-center gap-2 relative">
                 <AnimatePresence>
                   {hoveredModel === model.name && (
                     <motion.div 
-                      className="absolute -top-8 z-10 whitespace-nowrap bg-white text-black px-2 py-1 text-xs rounded-lg font-bold"
+                      className="absolute -top-8 z-10 whitespace-nowrap bg-primary text-primary-foreground px-2 py-1 text-xs rounded-lg font-bold"
                       initial={{opacity: 0, y: 10}}
                       animate={{opacity: 1, y: 0}}
                       transition={{ duration: 0.3 }}
@@ -129,7 +135,7 @@ export default function CreatorStudio() {
                   )}
                 </AnimatePresence>
                 <Button
-                    className={`font-semibold flex items-center gap-1 px-2 py-2 rounded-md hover:bg-zinc-900 transition ${model.name === selectedModel ? "bg-zinc-900" : ""}`}
+                    className={`font-semibold flex items-center gap-1 px-2 py-2 rounded-md hover:bg-primary/20 transition ${model.name === selectedModel ? "bg-primary/20" : ""}`}
                     variant="ghost"
                     onClick={() => handleModelSelect(model.name)}
                     onMouseOver={() => handleModelHover(model.name)}
@@ -142,32 +148,27 @@ export default function CreatorStudio() {
                     />
                   }
                   <div>{model.name}</div>
-                  <Info className="text-zinc-400" />
+                  <Info className="text-muted-foreground" />
                 </Button>
                 </div>
               ))}
             </div>
 
-            {/* Card with Midway Border Cut */}
-            <div className="relative bg-[#050406] rounded-xl p-6 shadow-md w-[550px] border border-[#363638]">
-              {/* Midway cut overlay */}
-              <div className="absolute -bottom-[1px] left-1/2 transform -translate-x-1/2 w-[550px] h-[19px] z-10 bg-[#050406]" />
-
-              {/* Card Content */}
+            <div className="relative rounded-xl p-6 shadow-md w-[550px] border">
+              <div className="absolute -bottom-[1px] left-1/2 transform -translate-x-1/2 w-[550px] h-[19px] z-10" />
               <div className="flex flex-col gap-4">
                 <div className="relative">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 text-sm">🔗</span>
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground text-sm">🔗</span>
                     <Input
                     type="text"
                     placeholder={`Paste a ${placeholders[placeholderIndex]} URL`}
                     value={uploadName}
                     onChange={(e) => setUploadName(e.target.value)}
-                    className="bg-zinc-800 text-white p-3 pl-8 rounded-md outline-hidden placeholder:text-zinc-400 w-full"
+                    className="bg-primary/15 text-white p-3 pl-8 rounded-md outline-hidden placeholder:text-muted-foreground w-full"
                   />
                 </div>
 
-               {/* Upload buttons */}
-               <div className="flex gap-6 items-center text-sm text-zinc-400 mt-2 px-1">
+               <div className="flex gap-6 items-center text-sm text-muted-foreground mt-2 px-1">
                 {sources.map((source) => (
                   <div
                     key={source.name}
@@ -186,7 +187,7 @@ export default function CreatorStudio() {
                       )}
                     </AnimatePresence>
                     <Button
-                      className="flex items-center gap-2 px-3 py-2 rounded-md bg-transparent text-white hover:bg-zinc-900"
+                      className="flex items-center gap-2 px-3 py-2 rounded-md bg-transparent  hover:bg-zinc-900"
                       onClick={() => {
                         if (source.name === "upload") {
                           fileInputRef.current?.click();
@@ -210,12 +211,15 @@ export default function CreatorStudio() {
               </div>
 
 
-                <Button className="bg-white text-black font-bold py-3 rounded-md text-center">
+                <Button 
+                  className="bg-white text-black font-bold py-3 rounded-md text-center"
+                  onClick={handleUploadClick}
+                >
                   Get clips in 1 click
                 </Button>
                 <Link
                   to="#"
-                  className="text-sm text-white underline text-center"
+                  className="text-sm  underline text-center"
                 >
                   Click here to try a sample project
                 </Link>
@@ -224,13 +228,12 @@ export default function CreatorStudio() {
           </div>
         </div>
 
-        {/* Icon Feature Row */}
         <div className="flex justify-center mt-10">
           <div className="flex justify-evenly gap-9 text-center w-full max-w-2xl">
             {assetLibrary.map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center text-sm text-white gap-2 relative"
+                className="flex flex-col items-center text-sm  gap-2 relative"
                 onMouseEnter={() => setHoveredAsset(item.label)}
                 onMouseLeave={() => setHoveredAsset(null)}
               >
@@ -261,10 +264,6 @@ export default function CreatorStudio() {
             ))}
           </div>
         </div>
-
-       
-
-        {/* Hidden file input for Upload */}
         <input
             type="file"
             accept="video/*"

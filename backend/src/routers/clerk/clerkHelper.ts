@@ -4,10 +4,10 @@ import { ClerkUserCreatedEvent, ClerkUserUpdatedEvent, ClerkUserDeletedEvent } f
 import { Webhook } from "svix";
 import { PrismaClient } from "@prisma/client";
 import clerkClient from "@/clients/clerk";
-
+import { WebhookEvent } from "@clerk/backend";
 const prisma = new PrismaClient();
 
-export const authenticateRequest = (req: HonoRequest) => {
+export const authenticateRequest = async (req: HonoRequest) => {
     const signing_secret = config.CLERK_SIGNING_SECRET
 
     if (!signing_secret) {
@@ -16,19 +16,20 @@ export const authenticateRequest = (req: HonoRequest) => {
 
     const wh = new Webhook(signing_secret)
 
-    const headers = req.header
-    const payload = req.json()
+    const headers = req.header()
+    const payload = await req.json()
 
-    const svix_id = headers('svix-id')
-    const svix_timestamp = headers('svix-timestamp')
-    const svix_signature = headers('svix-signature')
+    const svix_id = headers["svix-id"]
+    const svix_timestamp = headers["svix-timestamp"]
+    const svix_signature = headers["svix-signature"]
 
-    const evt = wh.verify(JSON.stringify(payload), {
-    'svix-id': svix_id as string,
-    'svix-timestamp': svix_timestamp as string,
-    'svix-signature': svix_signature as string,
+
+    const evt = wh.verify(JSON.stringify(payload),{
+        'svix-id': svix_id as string,
+        'svix-timestamp': svix_timestamp as string,
+        'svix-signature': svix_signature as string,
     }) as any
-    
+
     return evt
 }
 

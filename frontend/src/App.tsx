@@ -13,6 +13,7 @@ import CheckoutSuccess from './app/checkout/CheckoutSuccess';
 import DashboardLayout from "@/app/dashboard/Layout";
 import DashboardHome from "@/app/dashboard/home";
 import CreatorStudio from './app/dashboard/studio';
+import Subscriptions from './app/dashboard/subscriptions';
 import NotFound from './app/accessories/NotFound';
 
 const App = () => {
@@ -28,6 +29,7 @@ const App = () => {
                 <Route path="dashboard" element={<DashboardLayout />}>
                   <Route index element={<DashboardHome />}/>
                   <Route path="studio" element={<CreatorStudio />} />
+                  <Route path="subscriptions" element={<Subscriptions />} />
                 </Route>
                 <Route path="/login/*" element={<Login />} />
                 <Route path="/signup/*" element={<SignUp />} />

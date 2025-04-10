@@ -7,11 +7,10 @@ import LoadingScreen from "../accessories/LoadingScreen";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { loadStripe, StripeElementsOptions, StripePaymentElementOptions } from "@stripe/stripe-js";
 import { Button } from "@/components/ui/button";
-import Icons from "../../components/icons";
+import Icons from "@/components/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStripeS } from "@fortawesome/free-brands-svg-icons";
 import ProtectedRoute from "../authentication/ProtectedRoute";
-import { setUserSubscription } from "./checkoutHelper";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY! as string)
 
