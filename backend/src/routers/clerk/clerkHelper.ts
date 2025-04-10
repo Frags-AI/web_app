@@ -69,15 +69,15 @@ async function getUser(userId: string) {
     const clerkUser = await clerkClient.users.getUser(userId);
 
     const dbUser = await prisma.user.findUnique({
-    where: { clerk_user_id: clerkUser.id },
-    include: {
-        subscriptions: true,
-        videos: true,
-    },
+        where: { clerk_user_id: clerkUser.id },
+        include: {
+            subscriptions: true,
+            videos: true,
+        },
     });
 
     if (!dbUser) {
-    throw new Error("User not found in the database");
+        throw new Error("User not found in the database");
     }
 
     const combinedUser = {

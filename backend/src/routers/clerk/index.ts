@@ -9,7 +9,7 @@ const clerkRouter = new Hono();
 clerkRouter.use(clerkMiddleware())
 
 
-clerkRouter.post("/", async (c) => {
+clerkRouter.post("/webhook", async (c) => {
     const evt = authenticateRequest(c.req)
 
     const { id } = evt.data
