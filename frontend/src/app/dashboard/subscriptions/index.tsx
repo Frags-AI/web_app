@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import { CreditCard, Calendar, CheckCircle, AlertCircle, Clock, Download, ChevronRight, Shield } from 'lucide-react'
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -17,27 +16,15 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import { useAuth } from "@clerk/clerk-react"
+import { useQuery } from "@tanstack/react-query"
+import { getSubscriptionData } from "./subscriptionHelper"
+import LoadingScreen from "@/app/accessories/LoadingScreen"
+import { SubscriptionDataProps } from "@/types"
+import { planFeatures } from "./planFeatures"
 
 // Mock subscription data
-const subscriptionData = {
-  plan: "Pro",
-  status: "active",
-  nextBillingDate: "April 15, 2025",
-  amount: "$29.99",
-  billingCycle: "monthly",
-  paymentMethod: {
-    type: "Credit Card",
-    last4: "4242",
-    expiryDate: "09/26"
-  },
-  features: [
-    "Unlimited projects",
-    "Priority support",
-    "Advanced analytics",
-    "Custom domains",
-    "Team collaboration"
-  ]
-}
+
 
 // Mock billing history
 const billingHistory = [
@@ -50,50 +37,45 @@ const billingHistory = [
 // Available plans
 const availablePlans = [
   { 
-    id: "basic", 
-    name: "Basic", 
+    id: "clipper", 
+    name: "Clipper", 
     price: "$9.99", 
-    cycle: "/month",
-    features: [
-      "5 projects",
-      "Basic support",
-      "Basic analytics",
-      "1 user"
-    ]
+    cycle: "/ month",
+    features: planFeatures.Clipper,
   },
   { 
-    id: "pro", 
-    name: "Pro", 
+    id: "creator", 
+    name: "Creator", 
     price: "$29.99", 
-    cycle: "/month",
-    features: [
-      "Unlimited projects",
-      "Priority support",
-      "Advanced analytics",
-      "Custom domains",
-      "Team collaboration"
-    ],
+    cycle: "/ month",
+    features: planFeatures.Creator,
     current: true
   },
   { 
-    id: "enterprise", 
-    name: "Enterprise", 
+    id: "business", 
+    name: "Business", 
     price: "$99.99", 
-    cycle: "/month",
-    features: [
-      "Everything in Pro",
-      "24/7 dedicated support",
-      "Enterprise SSO",
-      "Advanced security",
-      "Custom integrations",
-      "Unlimited team members"
-    ]
+    cycle: "/ month",
+    features: planFeatures.Business,
   }
 ]
 
 const Subscription: React.FC = () => {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState("pro")
+  const { getToken } = useAuth()
+
+  const { data: subscriptionData, isLoading, error } = useQuery<SubscriptionDataProps>({
+    queryKey: ["subscriptionData"],
+    queryFn: async () => {
+      const token = await getToken()
+      return getSubscriptionData(token)
+    }
+  })
+
+  if (isLoading) return <LoadingScreen />
+
+  if (error) return <div>Error loading subscription data</div>
 
   return (
     <div className="container mx-auto max-w-4xl p-4 py-8">
@@ -114,7 +96,7 @@ const Subscription: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-2xl">
-                    {subscriptionData.plan} Plan
+                    {subscriptionData.type} Plan
                   </CardTitle>
                   <CardDescription>
                     Your current subscription details
@@ -124,12 +106,12 @@ const Subscription: React.FC = () => {
                   {subscriptionData.status === "active" ? (
                     <>
                       <CheckCircle className="mr-1 h-3 w-3" />
-                      Active
+                      {subscriptionData.status.charAt(0).toUpperCase() + subscriptionData.status.slice(1)}
                     </>
                   ) : (
                     <>
                       <AlertCircle className="mr-1 h-3 w-3" />
-                      Inactive
+                      {subscriptionData.status}
                     </>
                   )}
                 </Badge>
@@ -140,13 +122,13 @@ const Subscription: React.FC = () => {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">Billing Amount</p>
-                  <p className="font-semibold text-xl">{subscriptionData.amount} / month</p>
+                  <p className="font-semibold text-xl">{subscriptionData.rate}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">Next Billing Date</p>
                   <div className="flex items-center">
                     <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <p>{subscriptionData.nextBillingDate}</p>
+                    <p>{subscriptionData.endDate}</p>
                   </div>
                 </div>
               </div>
@@ -160,10 +142,10 @@ const Subscription: React.FC = () => {
                   <CreditCard className="h-5 w-5 mr-3 text-muted-foreground" />
                   <div>
                     <p className="font-medium">
-                      {subscriptionData.paymentMethod.type} ending in {subscriptionData.paymentMethod.last4}
+                      {subscriptionData.default_payment.card_type} ending in {subscriptionData.default_payment.last4}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Expires {subscriptionData.paymentMethod.expiryDate}
+                      Expires {subscriptionData.default_payment.exp_date}
                     </p>
                   </div>
                   <Button variant="ghost" size="sm" className="ml-auto">
@@ -176,7 +158,7 @@ const Subscription: React.FC = () => {
               <div>
                 <h3 className="font-medium mb-2">Included Features</h3>
                 <ul className="grid gap-2 md:grid-cols-2">
-                  {subscriptionData.features.map((feature, index) => (
+                  {planFeatures[subscriptionData.type].map((feature, index) => (
                     <li key={index} className="flex items-center">
                       <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
                       {feature}
@@ -202,7 +184,7 @@ const Subscription: React.FC = () => {
                       <div className="flex items-center">
                         <Clock className="h-5 w-5 mr-2 " />
                         <p className="text-sm">
-                          Your subscription will remain active until <span className="font-medium">{subscriptionData.nextBillingDate}</span>
+                          Your subscription will remain active until <span className="font-medium">{subscriptionData.endDate}</span>
                         </p>
                       </div>
                     </div>
@@ -280,9 +262,9 @@ const Subscription: React.FC = () => {
         <TabsContent value="plans" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-3">
             {availablePlans.map((plan) => (
-              <Card key={plan.id} className={plan.current ? "border-primary" : ""}>
+              <Card key={plan.id} className={`flex flex-col ${plan.current ? "border-primary" : ""}`}>
                 {plan.current && (
-                  <div className="bg-primary text-primary-foreground text-center py-1 text-sm font-medium">
+                  <div className="bg-primary text-primary-foreground text-center py-1 text-sm font-medium rounded-t-md">
                     Current Plan
                   </div>
                 )}
@@ -303,7 +285,7 @@ const Subscription: React.FC = () => {
                     ))}
                   </ul>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="mt-auto">
                   <Button 
                     className="w-full" 
                     variant={plan.current ? "outline" : "default"}

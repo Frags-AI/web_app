@@ -1,6 +1,7 @@
-import { Hono, HonoRequest } from "hono";
+import { Hono } from "hono";
 import { getAuth } from "@hono/clerk-auth";
-import { getStripeUser, createSubscription } from "./stripeHelper";
+import { getStripeUser } from "./stripeHelper";
+import { createSubscription, getSubscription } from "./subscriptionHelper";
 
 const subscriptionRouter = new Hono();
 
@@ -23,3 +24,20 @@ subscriptionRouter.post("/", async (c) => {
         return c.json(subscription, 200);
     }
 });
+
+subscriptionRouter.get("/", async (c) => {
+
+    const auth = getAuth(c);
+    const userId = auth?.userId
+
+    if (!userId) {
+        throw new Error("User is not authorized");
+    }
+
+    const customer = await getStripeUser(auth.userId as string);
+    const subscription = await getSubscription(customer);
+
+    return c.json(subscription, 200);
+})
+
+export default subscriptionRouter

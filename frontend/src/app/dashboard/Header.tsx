@@ -1,5 +1,5 @@
 import Icons from "@/components/icons"
-import { Button } from "react-bootstrap"
+import { Button } from "@/components/ui/button"
 
 interface HeaderProps {
     className?: string
@@ -16,7 +16,7 @@ export default function Header({className}: HeaderProps) {
                     <Icons.Zap size={20} fill="#d4b455" color="#d4b455"/>
                     <div>60</div>
                 </div>
-                <Button className="bg-primary/30 hover:bg-primary/40 transition duration-300 px-3 py-1 rounded-lg">
+                <Button className="bg-primary/90 hover:bg-primary/80 font-bold transition duration-300 px-3 py-1 rounded-lg">
                     Add more credits
                 </Button>
             </div>
