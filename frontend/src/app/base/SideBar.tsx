@@ -42,7 +42,7 @@ const SideBar: React.FC<SideBarProps> = ({ expanded, setExpanded, components }) 
 
       <aside
         className={`
-          fixed top-0 left-0 z-50 h-screen bg-black text-white p-4 
+          fixed top-0 left-0 z-50 h-screen bg-black  p-4 
           overflow-y-auto 
           w-full max-w-sm     /* or w-64 if you prefer a fixed width */
           transition-transform duration-300 ease-in-out

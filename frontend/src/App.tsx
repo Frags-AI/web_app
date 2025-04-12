@@ -13,6 +13,7 @@ import CheckoutSuccess from './app/checkout/CheckoutSuccess';
 import DashboardLayout from "@/app/dashboard/Layout";
 import DashboardHome from "@/app/dashboard/home";
 import CreatorStudio from './app/dashboard/studio';
+import Subscriptions from './app/dashboard/subscriptions';
 import NotFound from './app/accessories/NotFound';
 import Workflow from './app/dashboard/workflow';
 
@@ -29,6 +30,7 @@ const App = () => {
                 <Route path="dashboard" element={<DashboardLayout />}>
                   <Route index element={<DashboardHome />}/>
                   <Route path="studio" element={<CreatorStudio />} />
+                  <Route path="subscriptions" element={<Subscriptions />} />
                   <Route path="workflow" element={<Workflow />} />
                 </Route>
                 <Route path="/login/*" element={<Login />} />

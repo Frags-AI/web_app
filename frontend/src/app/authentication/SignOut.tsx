@@ -16,7 +16,7 @@ export const SignOut: React.FC = () => {
 
     if (isPending) {
         return (
-            <div className="flex h-screen w-full items-center justify-center text-white">
+            <div className="flex h-screen w-full items-center justify-center">
                 <p>Signing you out...</p>
             </div>
         );
@@ -24,7 +24,7 @@ export const SignOut: React.FC = () => {
 
     if (error) {
         return (
-            <div className="flex h-screen w-full items-center justify-center text-white">
+            <div className="flex h-screen w-full items-center justify-center">
                 <p>There was an error signing you out.</p>
             </div>
         );

@@ -1,40 +1,45 @@
 import { Theme } from "@clerk/types";
 import { dark } from "@clerk/themes";
-export const appearance:Theme = {
+
+const isDark = "dark" === localStorage.getItem("vite-ui-theme")
+
+
+const appearance: Theme = {
   // baseTheme: dark
 
   variables: {
-      colorBackground: "#1A1A1C",
-      colorText: "#FFFFFF",
-      colorTextSecondary: "#A0A0AB"
-    },
-    elements: {
-      headerTitle: "text-3xl",
-      cardBox: "w-[600px]", 
-      headerSubtitle: "text-md",
-      socialButtons: "bg-[#131314] rounded-full hover:bg-[#262629] transition-colors duration-500 ease-in-out",
-      socialButtonsBlockButtonText: "text-[#A0A0AB] text-lg",
-      socialButtonsProviderIcon: "w-8 h-8 text-xl",
-      dividerText: "text-[#A0A0AB] text-lg", 
-      dividerLine: "bg-[#3F3F46]",
-      profileSection: "px-4 py-6 border-y-1 border-[#1A1A1C]",
-      profileSectionPrimaryButton: "text-white hover:text-[#00D4CA]",
-      profileSectionTitleText: "font-bold text-base",
-      formFieldInput: "bg-[#1E1F21] text-lg text-white border-[#3F3F46] focus:border-[#00D4CA] box-shadow-none ",
-      formFieldInputShowPasswordIcon: "text-[#A0A0AB] w-6 h-6 hover:text-[#00D4CA] transition-colors duration-300 ease-in-out", 
-      formFieldInputShowPasswordButton: "bg-[#1E1F21]",
-      formFieldLabel: "text-[#FFFFFF] text-lg",
-      formButtonPrimary: "bg-[#FFFFFF] text-black w-full py-3 px-8 rounded-full hover:bg-[#e6e3e3] transition duration-300 text-lg",
-      buttonArrowIcon: "hidden",
-      footerActionText: "text-[#828282] text-base",
-      footerActionLink: "text-[#00D4CA] text-base hover:text-[#2bf0e2] transition duration-300 hover:no-underline",
-      spinner: "text-[#00D4CA]",
-      userButtonPopoverActionButton: "text-[#A0A0AB] hover:bg-[#262629] hover:text-[#FFFFFF] transition-colors duration-500 ease-in-out",
-      badge: "bg-[#00D4CA] text-black",
-      avatarImageActionsUpload: "text-white",
-      formButtonReset: "text-red-500",
-      navbarButton: "text-white",
-    }
+    colorBackground: `${"dark" === localStorage.getItem("vite-ui-theme") ? "#0a0a0a" : "#FFFFFF"}`,
+    colorText: `${"dark" === localStorage.getItem("vite-ui-theme") ? "#FFFFFF" : "#0a0a0a"}`,
+  },
+  elements: {
+    headerTitle: "text-3xl!",
+    cardBox: "min-w-[600px]!", 
+    headerSubtitle: "text-md!",
+    socialButtons: "bg-primary/10! rounded-full! hover:bg-primary/20! transition-colors! duration-500! ease-in-out!",
+    socialButtonsBlockButton: "rounded-full!",
+    socialButtonsBlockButtonText: "text-muted-foreground! text-lg!",
+    socialButtonsProviderIcon: "w-8! h-8! text-xl!",
+    dividerText: "text-muted-foreground! text-lg!", 
+    dividerLine: "bg-muted-foreground!",
+    profileSection: "px-4! py-6! border-y-1! border-muted!",
+    profileSectionPrimaryButton: "text-primary! hover:text-highlight!",
+    profileSectionTitleText: "font-bold! text-base!",
+    formFieldInput: "bg-primary/10! text-foreground! text-base! border! focus:border-highlight! border-2! box-shadow-none! rounded-lg!",
+    formFieldInput__deleteConfirmation: "focus:border-red-500!",
+    formFieldInputShowPasswordIcon: "text-muted-foreground! w-6! h-6! hover:text-highlight! transition-colors! duration-300! ease-in-out!", 
+    formFieldInputShowPasswordButton: "bg-primary/10!",
+    formFieldLabel: "text-foreground! text-lg!",
+    formButtonPrimary: "bg-primary! text-primary-foreground! w-full! py-3! px-8! rounded-full! hover:bg-primary/90! transition! duration-300! text-lg!",
+    buttonArrowIcon: "hidden!",
+    footerActionText: "text-muted-foreground! text-base!",
+    footerActionLink: "text-highlight! text-base! hover:text-highlight/60! transition! duration-300! hover:no-underline!",
+    spinner: "text-highlight!",
+    userButtonPopoverActionButton: "text-muted-foreground! hover:bg-primary/10! transition-colors! duration-500! ease-in-out!",
+    badge: "bg-highlight! text-primary-foreground!",
+    formButtonReset: "text-red-500!",
+    navbarButtonText: "text-foreground!",
+    navbarButtonIcon: "text-foreground!",
+  }
 }
 
 export default appearance;

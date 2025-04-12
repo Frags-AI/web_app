@@ -36,7 +36,7 @@ export default function Mission() {
                 {missions.map((mission, index) => {
                     return (
                         <div className="flex flex-col lg:flex-row gap-16 lg:gap-0 justify-between items-center">
-                            {index % 2 !== 0 && <div className="bg-[#1A1A1C] w-full lg:w-2/5 h-[600px] rounded-lg hidden lg:block" />}
+                            {index % 2 !== 0 && <div className="bg-muted w-full lg:w-2/5 h-[600px] rounded-lg hidden lg:block" />}
                             <div className="flex flex-col items-start justify-center gap-5 lg:w-2/5">
                                 <div className="text-3xl font-bold">{mission.title}</div>
                                 <div className="text-xl">{mission.description}</div>
@@ -44,8 +44,8 @@ export default function Mission() {
                                     Try For Free
                                 </Button>
                             </div>
-                            <div className="bg-[#1A1A1C] w-full lg:w-2/5 h-[600px] rounded-lg lg:hidden" />
-                            {index % 2 === 0 && <div className="bg-[#1A1A1C] w-full lg:w-2/5 h-[400px] lg:h-[600px] rounded-lg hidden lg:block" />}
+                            <div className="bg-muted w-full lg:w-2/5 h-[600px] rounded-lg lg:hidden" />
+                            {index % 2 === 0 && <div className="bg-muted w-full lg:w-2/5 h-[400px] lg:h-[600px] rounded-lg hidden lg:block" />}
                         </div>
                     )
                 })}

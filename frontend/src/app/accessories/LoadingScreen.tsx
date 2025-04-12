@@ -13,9 +13,9 @@ const LoadingScreen: React.FC = () => {
     }, []);
 
     return (
-        <div className="w-screen h-screen flex flex-col justify-center items-center bg-black text-white">
-            <Icons.Loader2 className="w-32 h-32 animate-spin text-gray-300" />
-            <div className="text-4xl mt-4 font-semibold tracking-wide">
+        <div className="w-screen h-screen flex flex-col justify-center items-center bg-background">
+            <Icons.Loader2 className="w-32 h-32 animate-spin text-muted-foreground" />
+            <div className="text-4xl mt-4 font-semibold tracking-wide text-muted-foreground">
                 Loading{dots}
             </div>
         </div>

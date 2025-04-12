@@ -18,7 +18,7 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({components}) => {
 
-  const selected = "text-[#52FFF3] font-bold hover:text-[#2CDCD0] transition duration-150"
+  const selected = "text-highlight font-bold hover:text-highlight transition duration-150"
   const windowName = window.location.pathname
 
   return (
@@ -73,7 +73,7 @@ const ListItem = React.forwardRef<
         <a
           ref={ref}
           className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-neutral-950",
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-neutral-950",
             className
           )}
           {...props}

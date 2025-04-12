@@ -60,7 +60,7 @@ const features: FeatureProps[] = [
   }
 ]
 
-const selectedStyling = "outline-[#00D4CA] text-[#00D4CA]";
+const selectedStyling = "outline-highlight text-highlight";
 
 const Features = () => {
 
@@ -89,7 +89,7 @@ const Features = () => {
             {features.map((feature, index) => {
               return (
                 <div 
-                  className={`outline outline-2 rounded-lg w-[160px] h-[80px] flex flex-col items-center justify-center cursor-pointer transition duration-300 hover:bg-[#191a19] ${featureIndex === index ? selectedStyling : ''}`}
+                  className={`outline outline-2 rounded-lg w-[160px] h-[80px] flex flex-col items-center justify-center cursor-pointer transition duration-300 hover:bg-primary-invert ${featureIndex === index ? selectedStyling : ''}`}
                   onClick={() => handleFeatureSelect(index)}
                 >
                   {feature.title.split(' ').map((word) => {
@@ -109,7 +109,7 @@ const Features = () => {
                 Try For Free
               </Button>
             </div>
-            <div className="bg-[#1A1A1C] lg:w-2/5 h-[600px] rounded-lg"></div>
+            <div className="bg-muted lg:w-2/5 h-[600px] rounded-lg"></div>
           </div>
         </div>
       </div>

@@ -1,6 +1,8 @@
 import { Hono, HonoRequest } from "hono";
 import { AuthObject } from "@clerk/backend";
+import subscriptionRouter from "@/routers/stripe/subscriptionRouter";
 import stripe from "@/clients/stripe";
+import Stripe from "stripe";
 import config from "@/utils/config";
 
 const stripeRouter = new Hono()
@@ -12,13 +14,14 @@ interface AuthRequest extends HonoRequest {
 const signing_secret = config.STRIPE_SIGNING_SECRET
 
 stripeRouter.post("/webhook", async(c) => {
-    const signature = c.req.header('stripe-signature') as string
+    const headers = c.req.header()
+    const signature = headers["stripe-signature"] as string
 
     if (!signing_secret) {
         throw new Error('Error: Please add SIGNING_SECRET from Stripe Dashboard to .env')
     }
 
-    const body = await c.req.json()
+    const body = await c.req.text()
     const event = await stripe.webhooks.constructEventAsync(body, signature, signing_secret)
 
     switch (event.type) {
@@ -27,7 +30,21 @@ stripeRouter.post("/webhook", async(c) => {
             break
         }
         case 'customer.subscription.updated': {
-            console.log("Subscription updated", event.data.object)
+
+            const customerId = event.data.object.customer as string
+            let customer = await stripe.customers.retrieve(customerId) as Stripe.Customer
+            const defaultPaymentMethod = event.data.object.default_payment_method as string
+
+
+            if (!customer.invoice_settings.default_payment_method) {
+                customer = await stripe.customers.update(customerId, {
+                    invoice_settings: {
+                        default_payment_method: defaultPaymentMethod,
+                        
+                    }
+                })
+            }
+            console.log(customer)
             break
         }
         case 'customer.subscription.deleted': {
@@ -45,7 +62,9 @@ stripeRouter.post("/webhook", async(c) => {
     }
 
     console.log("Received event: ", event.type)
-    return c.json({ received: true }, 200)
+    return c.json({ received: true, type: event.type }, 200)
 })
+
+stripeRouter.route("/subscription", subscriptionRouter)
 
 export default stripeRouter
