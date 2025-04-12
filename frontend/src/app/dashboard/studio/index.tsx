@@ -164,7 +164,7 @@ export default function CreatorStudio() {
                     placeholder={`Paste a ${placeholders[placeholderIndex]} URL`}
                     value={uploadName}
                     onChange={(e) => setUploadName(e.target.value)}
-                    className="bg-primary/15 text-white p-3 pl-8 rounded-md outline-hidden placeholder:text-muted-foreground w-full"
+                    className="bg-background text-foreground p-3 pl-8 rounded-md outline-hidden placeholder:text-muted-foreground w-full"
                   />
                 </div>
 
@@ -177,7 +177,7 @@ export default function CreatorStudio() {
                     <AnimatePresence>
                       {hoveredButton === source.name && (
                         <motion.div 
-                          className="absolute -top-10 z-10 whitespace-nowrap bg-white text-black px-2 py-1 text-xs rounded-lg font-bold"
+                          className="absolute -top-10 z-10 whitespace-nowrap bg-primary text-primary-foreground px-2 py-1 text-xs rounded-lg font-bold"
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -10 }}
@@ -187,7 +187,7 @@ export default function CreatorStudio() {
                       )}
                     </AnimatePresence>
                     <Button
-                      className="flex items-center gap-2 px-3 py-2 rounded-md bg-transparent  hover:bg-zinc-900"
+                      className="flex items-center gap-2 px-3 py-2 rounded-md bg-primary/5 hover:bg-primary/15 text-foreground"
                       onClick={() => {
                         if (source.name === "upload") {
                           fileInputRef.current?.click();
@@ -212,7 +212,7 @@ export default function CreatorStudio() {
 
 
                 <Button 
-                  className="bg-white text-black font-bold py-3 rounded-md text-center"
+                  className="font-bold py-3 rounded-md text-center"
                   onClick={handleUploadClick}
                 >
                   Get clips in 1 click
@@ -233,14 +233,14 @@ export default function CreatorStudio() {
             {assetLibrary.map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center text-sm  gap-2 relative"
+                className="flex flex-col items-center text-sm gap-2 relative"
                 onMouseEnter={() => setHoveredAsset(item.label)}
                 onMouseLeave={() => setHoveredAsset(null)}
               >
                 <AnimatePresence>
                   {hoveredAsset === item.label && (
                     <motion.div
-                      className="absolute -top-10 z-10 whitespace-nowrap bg-white text-black px-2 py-1 text-xs rounded-lg font-bold"
+                      className="absolute -top-10 z-10 whitespace-nowrap px-2 py-1 text-xs rounded-lg font-bold bg-primary text-primary-foreground"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
@@ -249,11 +249,11 @@ export default function CreatorStudio() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-                <div className="bg-zinc-800 w-20 h-20 rounded-full flex items-center justify-center">
+                <div className="bg-primary/20 w-20 h-20 rounded-full flex items-center justify-center cursor-pointer">
                   <motion.img
                     src={item.icon}
                     alt={item.label}
-                    className="w-8 h-8 hover:cursor-pointer"
+                    className="w-8 h-8"
                     initial={{ scale: 1 }}
                     whileHover={{ scale: 1.25 }}
                     transition={{ duration: 0.3 }}
