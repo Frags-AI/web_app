@@ -158,7 +158,7 @@ export default function CreatorStudio() {
               <div className="absolute -bottom-[1px] left-1/2 transform -translate-x-1/2 w-[550px] h-[19px] z-10" />
               <div className="flex flex-col gap-4">
                 <div className="relative">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground text-sm">🔗</span>
+                    <span className="absolute left-2 top-1/3 transform -translate-y-1/2 text-muted-foreground text-sm">🔗</span>
                     <Input
                     type="text"
                     placeholder={`Paste a ${placeholders[placeholderIndex]} URL`}
@@ -218,7 +218,7 @@ export default function CreatorStudio() {
                   Get clips in 1 click
                 </Button>
                 <Link
-                  to="#"
+                  to="/dashboard/workflow"
                   className="text-sm  underline text-center"
                 >
                   Click here to try a sample project
