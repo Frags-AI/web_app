@@ -223,6 +223,7 @@ export default function CreatorStudio() {
             </div>
           </div>
         </div>
+        
 
         {/* Icon Feature Row */}
         <div className="flex justify-center mt-10">
