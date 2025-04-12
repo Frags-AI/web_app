@@ -214,7 +214,7 @@ export default function CreatorStudio() {
                   Get clips in 1 click
                 </Button>
                 <Link
-                  to="#"
+                  to="/dashboard/workflow"
                   className="text-sm text-white underline text-center"
                 >
                   Click here to try a sample project

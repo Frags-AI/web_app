@@ -14,6 +14,7 @@ import DashboardLayout from "@/app/dashboard/Layout";
 import DashboardHome from "@/app/dashboard/home";
 import CreatorStudio from './app/dashboard/studio';
 import NotFound from './app/accessories/NotFound';
+import Workflow from './app/dashboard/workflow';
 
 const App = () => {
 
@@ -28,6 +29,7 @@ const App = () => {
                 <Route path="dashboard" element={<DashboardLayout />}>
                   <Route index element={<DashboardHome />}/>
                   <Route path="studio" element={<CreatorStudio />} />
+                  <Route path="workflow" element={<Workflow />} />
                 </Route>
                 <Route path="/login/*" element={<Login />} />
                 <Route path="/signup/*" element={<SignUp />} />
