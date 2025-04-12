@@ -1,4 +1,5 @@
 import Icons from "@/components/icons"
+import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
 
 interface HeaderProps {
@@ -16,6 +17,7 @@ export default function Header({className}: HeaderProps) {
                     <Icons.Zap size={20} fill="#d4b455" color="#d4b455"/>
                     <div>60</div>
                 </div>
+                <ModeToggle/>
                 <Button className="bg-primary/90 hover:bg-primary/80 font-bold transition duration-300 px-3 py-1 rounded-lg">
                     Add more credits
                 </Button>
