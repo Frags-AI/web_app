@@ -18,6 +18,8 @@ if (!PUBLISHABLE_KEY) {
   throw new Error('Clerk Publishable Key is missing.');
 }
 
+console.log(PUBLISHABLE_KEY, SIGNIN_URL, SIGNUP_URL);
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(

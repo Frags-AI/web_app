@@ -10,7 +10,7 @@ export default defineConfig({
         viteTsconfigPaths(),
     ],
     resolve: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        extensions: ['.ts', '.tsx', '.js', '.jsx',],
         alias: {
             "@": path.resolve(__dirname, "./src")
         }

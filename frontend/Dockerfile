@@ -1,43 +1,19 @@
 # syntax=docker/dockerfile:1
 
-ARG NODE_VERSION=22.13.1
-
-
-FROM node:${NODE_VERSION}-alpine as base
+FROM node:latest AS builder
 
 WORKDIR /usr/src/app
-
-
-
-FROM base as deps
-
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev
-
-
-FROM deps as build
-
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci
-
+COPY package*.json ./
+RUN npm install
 COPY . .
 RUN npm run build
 
-FROM base as final
+FROM nginx:latest
 
-ENV NODE_ENV production
+COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
+COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf 
 
-USER node
+EXPOSE 80
 
-COPY package.json .
+CMD ["nginx", "-g", "daemon off;"]
 
-COPY --from=build /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/dist ./dist
-
-EXPOSE 5173
-
-CMD ["npm", "run", "start"]
