@@ -1,7 +1,7 @@
 import Icons from "@/components/icons"
 import NavBar from "./NavBar"
 import {motion, AnimatePresence} from "framer-motion"
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import MobileMenu from "./MobileMenu";
@@ -125,18 +125,20 @@ const Header: React.FC = () => {
     navigate("/login");
   };
 
-  window.addEventListener("click", (e: MouseEvent) => {
-    console.log(e.clientY, headerRef.current?.clientHeight)
-    if (isMobileOpen && e.clientY > headerRef.current?.clientHeight!) {
-      setIsMobileOpen(false);
-    }
-  })
-
-  window.addEventListener("resize", () => {
-    if (window.innerWidth > 1024) {
-      setIsMobileOpen(false);
-    }
-  }) 
+  useEffect(() => {
+    window.addEventListener("click", (e: MouseEvent) => {
+      console.log(e.clientY, headerRef.current?.clientHeight)
+      if (isMobileOpen && e.clientY > headerRef.current?.clientHeight!) {
+        setIsMobileOpen(false);
+      }
+    })
+  
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 1024) {
+        setIsMobileOpen(false);
+      }
+    }) 
+  }, [isMobileOpen])
 
   return (
     <>

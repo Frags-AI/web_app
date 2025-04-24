@@ -7,6 +7,8 @@ import localization from '@/clerk/localization';
 import './index.css';
 import App from './App';
 import appearance from './clerk/clerkStyles';
+import { Toaster } from '@/components/ui/sonner';
+
 
 const queryClient = new QueryClient();
 
@@ -36,6 +38,7 @@ root.render(
               appearance={appearance}
           >
             <App />
+            <Toaster/>
           </ClerkProvider>
         </QueryClientProvider>
       </ThemeProvider>

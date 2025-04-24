@@ -55,4 +55,8 @@ videoRouter.get("/:name", async (c) => {
     return c.json({ message: "Video deleted successfully" }, 200);
 })
 
+videoRouter.post("/youtube", async (c) => {
+    
+})
+
 export default videoRouter

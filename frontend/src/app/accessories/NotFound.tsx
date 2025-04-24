@@ -1,13 +1,31 @@
 import React from "react"
 import { useNavigate, Link as RouterLink } from "react-router-dom"
 import { FileQuestion, Home, ArrowLeft, Search } from 'lucide-react'
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command"
 
 const NotFound: React.FC = () => {
   const navigate = useNavigate()
+
+  const routes = [
+    {name: "Home", path: "/"},
+    {name: "Pricing", path: "/pricing"},
+    {name: "Product", path: "/product"},
+    {name: "Dashboard", path: "/dashboard"},
+    {name: "Profile", path: "/profile"},
+    {name: "Blog", path: "/blog"},
+  ]
 
   const handleGoBack = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
@@ -27,17 +45,30 @@ const NotFound: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search for content..."
-              className="pl-8"
-            />
-          </div>
+          <Command className="max-h-[300px]">
+            <CommandInput placeholder="Type a command or search..." />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup heading="Routes">
+                {routes.map((route) => (
+                  <CommandItem key={route.path} asChild className="cursor-pointer">
+                    <RouterLink to={route.path} className="flex items-center">
+                      <Search className="mr-2 h-4 w-4" />
+                      {route.name}
+                      <CommandShortcut>{route.path}</CommandShortcut>
+                    </RouterLink>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+              <CommandSeparator />
+              <CommandGroup heading="Commands">
+                
+              </CommandGroup>
+            </CommandList>
+          </Command>
           <div className="text-center text-sm text-muted-foreground">
             <p>Error code: 404</p>
-          </div>
+          </div>          
         </CardContent>
         <CardFooter className="flex flex-col space-y-2 sm:flex-row sm:justify-between sm:space-x-2 sm:space-y-0">
           <Button variant="outline" className="w-full sm:w-auto" asChild>

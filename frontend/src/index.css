@@ -56,7 +56,7 @@ button {
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  --popover-foreground: oklch(1 0 0);
   --highlight: oklch(0.7683 0.2249 190.09);
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
@@ -165,14 +165,6 @@ button {
   }
 }
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
   *,
   ::after,
@@ -183,13 +175,14 @@ button {
   }
 }
 
-@utility no-scrollbar {
-  /* Chrome, Safari and Opera */
-  &::-webkit-scrollbar {
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 @layer utilities {

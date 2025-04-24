@@ -23,8 +23,6 @@ import LoadingScreen from "@/app/accessories/LoadingScreen"
 import { SubscriptionDataProps } from "@/types"
 import { planFeatures } from "./planFeatures"
 
-// Mock subscription data
-
 
 // Mock billing history
 const billingHistory = [
@@ -62,7 +60,6 @@ const availablePlans = [
 
 const Subscription: React.FC = () => {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState("pro")
   const { getToken } = useAuth()
 
   const { data: subscriptionData, isLoading, error } = useQuery<SubscriptionDataProps>({
