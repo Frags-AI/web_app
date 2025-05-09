@@ -17,8 +17,7 @@ import Subscriptions from './app/dashboard/subscriptions';
 import NotFound from './app/accessories/NotFound';
 import Workflow from './app/dashboard/workflow';
 
-const App = () => {
-
+export default function App () {
     return (
       <Router>
           <ScrollToTop>
@@ -47,5 +46,3 @@ const App = () => {
       </Router>
     )
 }
-
-export default App;

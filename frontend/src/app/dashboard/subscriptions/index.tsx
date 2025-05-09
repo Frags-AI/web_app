@@ -84,10 +84,7 @@ const Subscription: React.FC = () => {
           <TabsTrigger value="billing">Billing History</TabsTrigger>
           <TabsTrigger value="plans">Available Plans</TabsTrigger>
         </TabsList>
-        
-        {/* Current Plan Tab */}
         <TabsContent value="current" className="space-y-6">
-          {/* Subscription Overview Card */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -115,7 +112,6 @@ const Subscription: React.FC = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Subscription Details */}
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">Billing Amount</p>
@@ -132,7 +128,6 @@ const Subscription: React.FC = () => {
               
               <Separator />
               
-              {/* Payment Method */}
               <div>
                 <h3 className="font-medium mb-2">Payment Method</h3>
                 <div className="flex items-center p-3 border rounded-md">
@@ -151,7 +146,6 @@ const Subscription: React.FC = () => {
                 </div>
               </div>
               
-              {/* Features */}
               <div>
                 <h3 className="font-medium mb-2">Included Features</h3>
                 <ul className="grid gap-2 md:grid-cols-2">
@@ -177,7 +171,7 @@ const Subscription: React.FC = () => {
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
-                    <div className="rounded-md bg-muted text-black p-4">
+                    <div className="rounded-md bg-muted p-4">
                       <div className="flex items-center">
                         <Clock className="h-5 w-5 mr-2 " />
                         <p className="text-sm">
@@ -211,7 +205,7 @@ const Subscription: React.FC = () => {
                     <Button variant="ghost" onClick={() => setCancelDialogOpen(false)}>
                       Keep Subscription
                     </Button>
-                    <Button variant="destructive">
+                    <Button className="bg-red-500 dark:bg-red-700 hover:bg-red-600 dark:hover:bg-red-600 transition-colors duration-300 text-primary">
                       Confirm Cancellation
                     </Button>
                   </DialogFooter>
@@ -222,7 +216,6 @@ const Subscription: React.FC = () => {
           </Card>
         </TabsContent>
         
-        {/* Billing History Tab */}
         <TabsContent value="billing" className="space-y-6">
           <Card>
             <CardHeader>
@@ -255,7 +248,6 @@ const Subscription: React.FC = () => {
           </Card>
         </TabsContent>
         
-        {/* Available Plans Tab */}
         <TabsContent value="plans" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-3">
             {availablePlans.map((plan) => (

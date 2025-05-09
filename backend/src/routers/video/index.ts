@@ -1,6 +1,7 @@
-import { Hono, HonoRequest } from "hono";
+import { Hono } from "hono";
 import { getAuth } from "@hono/clerk-auth";
-import { uploadVideo, getVideo, getAllVideos, deleteVideo } from "./videoHelper";
+import { uploadVideo, getVideo, getAllVideos, deleteVideo, getYoutubeVideo, getYoutubeThumbnail } from "./videoHelper";
+import { modelRouter } from "./model";
 
 const videoRouter = new Hono();
 
@@ -56,7 +57,24 @@ videoRouter.get("/:name", async (c) => {
 })
 
 videoRouter.post("/youtube", async (c) => {
-    
-})
+    const body = await c.req.json();
+    const youtubeLink = body["link"] as string;
+    let data;
+  
+    if (body.type === "video") {
+      const res = await getYoutubeVideo(youtubeLink);
+      data = res.file
+      c.header("Content-Type", "video/mp4")
+    } else {
+      const res = await getYoutubeThumbnail(youtubeLink);
+      data = res.file
+      c.header("Content-Type", "image/png")
+    }
+    c.header("Content-Length", data.length.toString())
+
+    return c.body(data, 200)
+});
+
+videoRouter.route("/model", modelRouter)
 
 export default videoRouter

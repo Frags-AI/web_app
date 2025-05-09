@@ -28,8 +28,14 @@ model Video {
 
 model Subscription {
   id         String    @id @default(uuid())
-  stripe_id  String
+  stripe_id  String 
   userId     String    @unique
+  status String
+  plan String
+  periodStart DateTime
+  periodEnd DateTime
+  trialStart DateTime
+  trialEnd DateTime
   created_at DateTime  @default(now())
   deleted_at DateTime?
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)

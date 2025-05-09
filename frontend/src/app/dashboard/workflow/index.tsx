@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { generateVideoThumbnail } from "@/lib/thumbnail";
 
 export default function Workflow() {
   const location = useLocation()
@@ -31,20 +30,15 @@ export default function Workflow() {
   const [genre, setGenre] = useState<string | null>("Auto");
   const [clipLength, setClipLength] = useState<string | null>("Auto");
   const [thumbnail, setThumbnail] = useState<string | null>(null);
-  const fileName = location.state?.fileName || null;
   const model = location.state?.model || null;
   const file = location.state?.file || null;
 
   useEffect(() => {
-    if (!fileName || !file) {
-      navigate("/dashboard/studio", { state: { toastMessage: "Invalid File Format" } });
-    } else {
-      const generateThumbnail = async () => {
-        const thumbnailDataUrl = await generateVideoThumbnail(file) as string;
-        setThumbnail(thumbnailDataUrl);
-      }
-      generateThumbnail()
-    }
+    if (!file) {
+      toast.error("Invalid File Format")
+      navigate("/dashboard/studio", { state: { toastMessage: "Please upload a video first" } });
+    } else setThumbnail(location.state.thumbnail)
+
   }, [])
 
   const handleDefaultClick = () => {
@@ -52,17 +46,22 @@ export default function Workflow() {
     setGenre("Auto")
     toast.success("Reset to default settings")
   }
+
+  const handleClipClick = async () => {
+    // Send information to the API
+    // Create a web socket for this to work, believe it would be easier to implement as well
+  }
   
   return (
     <div className="flex flex-col items-center justify-center h-full p-4">
       <div className="font-bold text-4xl mb-4">Workflow</div>
       <div className="flex flex-col items-center justify-center gap-4 mb-4">
-        <img src={thumbnail} alt="thumbnail" className="w-[300px] h-[300px] object-cover rounded-lg" />
-        <div className="text-center text-lg font-semibold">{fileName}</div>
-        <div className="text-center text-sm text-muted-foreground font-semibold max-w-[400px]">
-        All rights to the images, music, clips, and other materials used belong to their respective owners. 
-        We do not claim ownership over any third-party content used. Fair Use Notice: This video may contain 
-        copyrighted material, the use of which has not always been specifically authorized by the copyright owner.
+        <div className="w-[500px] h-[350px] rounded-lg flex flex-col justify-center px-4 bg-primary/5"> 
+          <img src={thumbnail} alt="thumbnail" className="rounded-lg w-full h-full object-contain"/>
+        </div>
+        <div className="text-center text-sm text-muted-foreground font-semibold max-w-[450px] flex flex-col gap-4">
+          <div>All rights to the images, music, clips, and other materials used belong to their respective owners. We do not claim ownership over any third-party content used.</div>
+          <div>Fair Use Notice: This video may contain copyrighted material, the use of which has not always been specifically authorized by the copyright owner.</div>
         </div>
       </div>
       <div className="font-bold text-2xl mt-8 mb-4">Features</div>
@@ -72,7 +71,7 @@ export default function Workflow() {
           <TabsTrigger value="Edit Captions" className="font-semibold">Edit Captions</TabsTrigger>
           <TabsTrigger value="Adjust Clips" className="font-semibold">Adjust Clips</TabsTrigger>
         </TabsList>
-        <TabsContent value="AI Clipping" className="">
+        <TabsContent value="AI Clipping">
           <Card>
             <CardHeader>
               <CardTitle className="text-center mb-4">AI Clipping</CardTitle>
@@ -130,7 +129,7 @@ export default function Workflow() {
           </Card>
         </TabsContent>
       </Tabs>
-      <Button className="mt-16 max-w-[20rem] w-full font-bold text-lg">Convert Video to Clips</Button>
+      <Button className="mt-16 max-w-[20rem] w-full font-bold text-lg" onClick={handleClipClick}>Convert Video to Clips</Button>
     </div>
   )
 }

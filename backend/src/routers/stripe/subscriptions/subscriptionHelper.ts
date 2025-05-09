@@ -100,7 +100,6 @@ export const getSubscription = async (customer: Stripe.Customer) => {
     const price = rawPrice / 100
     const rate = currencyMap(subscription.items.data[0].price.currency as string) + price.toString() + planRate
 
-
     const subscriptionData = {
         type,
         rate,

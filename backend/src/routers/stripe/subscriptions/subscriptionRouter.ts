@@ -1,16 +1,14 @@
 import { Hono } from "hono";
 import { getAuth } from "@hono/clerk-auth";
-import { getStripeUser } from "./stripeHelper";
+import { getStripeUser } from "../stripeHelper";
 import { createSubscription, getSubscription } from "./subscriptionHelper";
 
-const subscriptionRouter = new Hono();
-
+export const subscriptionRouter = new Hono();
 
 subscriptionRouter.post("/", async (c) => {
 
     const auth = getAuth(c);
     const body = await c.req.json()
-    
     const userId = auth?.userId
     const lookupKey: string = body.lookupKey|| null;
 
@@ -39,5 +37,3 @@ subscriptionRouter.get("/", async (c) => {
 
     return c.json(subscription, 200);
 })
-
-export default subscriptionRouter

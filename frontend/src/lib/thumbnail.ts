@@ -5,6 +5,7 @@ export const generateVideoThumbnail = (file: File) => {
   
       video.autoplay = true;
       video.muted = true;
+      video.currentTime = 5.0
       video.src = URL.createObjectURL(file);
   
       video.onloadeddata = () => {

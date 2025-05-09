@@ -16,18 +16,17 @@ export default function CreatorStudio() {
 
   useEffect(() => {
     if (location.state?.toastMessage) {
-      toast(location.state.toastMessage, {
-        description: "Please upload a video first before going into workflow",
+      toast.error(location.state.toastMessage, {
         duration: 5000,
       });
     }
-  }, []);
+  }, [location?.state?.toastMessage]);
 
   const assetLibrary: AssetLibraryProps[] = [
       { icon: "/assets/star.png", label: "Long to shorts", description:"AI find hooks, highlights, and turns your video into viral shorts." },
       { icon: "/assets/cc.png", label: "AI Captions",description:"Add stylish captions or translate your content with one click." },
-      { icon: "/assets/film-strip.png", label: "AI B-Roll",description:"Let AI automatically reframe your content to ft any social platform. Save time on manual reframing." },
-      { icon: "/assets/crop.png", label: "AI Reframe" ,description:"Add AI generated B-Roll to your video in 1 click."},
+      { icon: "/assets/film-strip.png", label: "AI B-Roll",description:"Let AI automatically reframe your content to feature on any social platform." },
+      { icon: "/assets/crop.png", label: "AI Reframe" ,description:"Add AI generated B-Roll to your video with one click."},
       { icon: "/assets/speaking.png", label: "AI hook",description:"Create a sound hook with the AI voice-over." },
   ]
 

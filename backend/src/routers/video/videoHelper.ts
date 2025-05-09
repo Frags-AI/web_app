@@ -1,11 +1,15 @@
 import { 
-    S3Client, 
-    PutObjectCommand, 
-    GetObjectCommand, 
-    DeleteObjectCommand 
+  S3Client, 
+  PutObjectCommand, 
+  GetObjectCommand, 
+  DeleteObjectCommand 
 } from "@aws-sdk/client-s3";
 import { PrismaClient } from '@prisma/client';
 import config from '@/utils/config.js';
+import path = require("path");
+import { youtubeThumbnail, youtubeVideo } from "@/lib/video/youtube";
+
+const outputFolder = path.join(__dirname, "../../../static", "videos")
 
 const prisma = new PrismaClient();
 
@@ -116,13 +120,23 @@ export const getAllVideos = async (userId: string) => {
     const params = {
       Bucket: config.S3_BUCKET,
       Key: `${userId}/uploads/${videoName}`
-    };
+    }
   
     const command = new DeleteObjectCommand(params);
-    await s3.send(command);
+    await s3.send(command)
   
     await prisma.video.delete({
       where: { id: video.id }
-    });
-    return { message: "Video deleted successfully" };
-};
+    })
+    return { message: "Video deleted successfully" }
+}
+
+export const getYoutubeVideo = async (link: string) => {
+  const data = await youtubeVideo(link, outputFolder)
+  return data
+}
+
+export const getYoutubeThumbnail = async (link: string) => {
+  const data = await youtubeThumbnail(link, outputFolder)
+  return data
+}
