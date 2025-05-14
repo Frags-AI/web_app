@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/clients/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+  clerk_user_id String        @unique
+  stripe_id     String?
+  full_name     String?
+  subscription  Subscription?
+  projects      Project[]
+  videos        Video[]
+}
+
+model Project {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user_id    String
+  job_id     String   @unique
+  status     String
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  identifier String
+  title      String
+  videos     Video[]
+
+  @@unique([user_id, title])
+}
+
+model Video {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  name       String
+  project_id String
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  project    Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id           String    @id @default(uuid())
+  stripe_id    String
+  user_id      String    @unique
+  status       String
+  plan         String
+  period_start DateTime
+  period_end   DateTime
+  trial_start  DateTime
+  trial_end    DateTime
+  created_at   DateTime  @default(now())
+  deleted_at   DateTime?
+  user         User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}

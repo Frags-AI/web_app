@@ -2,7 +2,7 @@ import { HonoRequest } from "hono";
 import config from "@/utils/config";
 import { ClerkUserCreatedEvent, ClerkUserUpdatedEvent, ClerkUserDeletedEvent } from "@/types";
 import { Webhook } from "svix";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/clients/prisma";
 import clerkClient from "@/clients/clerk";
 import { WebhookEvent } from "@clerk/backend";
 const prisma = new PrismaClient();

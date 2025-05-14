@@ -25,7 +25,7 @@ app.notFound((c) => {
 
 app.onError((err, c) => {
     console.error(err)
-    return c.json({ error: "Internal Server Error", message: err }, 500)
+    return c.json({ error: "Internal Server Error", message: err.message, name: err.name}, 500)
 })
 
 export default app

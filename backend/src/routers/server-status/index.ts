@@ -1,4 +1,4 @@
-import { Hono, HonoRequest } from "hono";
+import { Hono } from "hono";
 
 const statusRouter = new Hono();
 

@@ -7,13 +7,13 @@
       "dom"
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["src/*"]
     },
     "baseUrl": ".",
     "declaration": true,
     "strict": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitThis": true,

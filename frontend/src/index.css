@@ -146,6 +146,16 @@ button {
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-border-spin: border-spin 7s linear infinite;
+
+  @keyframes border-spin {
+    from {
+      --border-angle: 0deg;
+    }
+    to {
+      --border-angle: 360deg;
+    }
+  }
 
   @keyframes accordion-down {
     from {
@@ -185,6 +195,12 @@ button {
   }
 }
 
+@property --border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
 @layer utilities {
   body {
     @apply font-inter;
@@ -201,7 +217,13 @@ button {
     font-family:
       source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
   }
+
+  .animate-border-spin {
+    animation: var(--animate-border-spin);
+  }
+
 }
+
 
 @layer base {
   * {

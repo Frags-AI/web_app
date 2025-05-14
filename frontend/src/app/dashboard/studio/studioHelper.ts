@@ -19,7 +19,7 @@ export const uploadVideo = async (file: File, token: string) => {
 }
 
 export const uploadYoutube = async(link: string, token: string, onProgress?: (progress: { video: number; thumbnail: number }) => void) => {
-    async function fetchYoutube(type: "video" | "image") {
+    async function fetchYoutube(type: "video" | "image" | "title") {
 
       try {
         const response = await axios.post(
@@ -27,22 +27,27 @@ export const uploadYoutube = async(link: string, token: string, onProgress?: (pr
           { link, type },
           {
             headers: { Authorization: `Bearer ${token}` },
-            responseType: "arraybuffer",
+            responseType: type === "title" ? "json" : "arraybuffer",
           }
         )
         const data = response.data
+        if (type === "title") {
+          return data.title
+        }
         const blob = new Blob([data])
         return blob
 
       } catch (error: any) {
         console.error(error)
-        throw new Error("One or both downloads have failed")
+        throw new Error(`Failed to fetch ${type}`)
       }
     }
-    const [video, thumbnail] = await Promise.all([
-        fetchYoutube("video"),
-        fetchYoutube("image")
+    const [video, thumbnail, title] = await Promise.all([
+        fetchYoutube("video") as Promise<Blob>,
+        fetchYoutube("image") as Promise<Blob>,
+        fetchYoutube("title") as Promise<string>,
     ])
+    axios.post(`${import.meta.env.VITE_API_URL}/api/video/clean`, {data: null}, {headers: {Authorization: `Bearer ${token}`}})
     
-    return { video, thumbnail }
+    return { video, thumbnail, title }
 }

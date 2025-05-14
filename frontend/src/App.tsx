@@ -3,7 +3,7 @@ import LandingPage from './app/landing-page/LandingPage';
 import Profile from './app/profile/Profile';
 import Pricing from './app/pricing-page/Pricing';
 import Product from './app/product-page/Product';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from "./app/authentication/Login";
 import SignUp from "./app/authentication/SignUp";
 import ScrollToTop from './app/accessories/ScrollToLocation';
@@ -15,7 +15,8 @@ import DashboardHome from "@/app/dashboard/home";
 import CreatorStudio from './app/dashboard/studio';
 import Subscriptions from './app/dashboard/subscriptions';
 import NotFound from './app/accessories/NotFound';
-import Workflow from './app/dashboard/workflow';
+import DashboardWorkflow from './app/dashboard/workflow';
+import DashboardClips from "./app/dashboard/clips"
 
 export default function App () {
     return (
@@ -30,7 +31,9 @@ export default function App () {
                   <Route index element={<DashboardHome />}/>
                   <Route path="studio" element={<CreatorStudio />} />
                   <Route path="subscriptions" element={<Subscriptions />} />
-                  <Route path="workflow" element={<Workflow />} />
+                  <Route path="workflow" element={<DashboardWorkflow />} />
+                  <Route path="clips" element={<Navigate to="/dashboard" />} /> {/* Modify this later to have better error handling and redirection */}
+                  <Route path="clips/*" element={<DashboardClips />} />
                 </Route>
                 <Route path="/login/*" element={<Login />} />
                 <Route path="/signup/*" element={<SignUp />} />

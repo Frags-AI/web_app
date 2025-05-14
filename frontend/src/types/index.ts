@@ -47,3 +47,11 @@ export interface DefaultPayment {
   account_holder_type?: string;
   routing_number?: string;
 }
+
+export interface ProjectProps {
+  status: "processing" | "completed" | "failed",
+  jobId: string,
+  thumbnail: string,
+  title: string,
+  identifier: string
+}

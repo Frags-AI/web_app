@@ -10,7 +10,6 @@ import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { generateVideoThumbnail } from "@/lib/thumbnail";
 
 interface ModelProps {
   name: string;
@@ -74,7 +73,7 @@ export default function VideoUploadForm() {
           })        
           toast.success("Video has been successfully uploaded")
           navigate("/dashboard/workflow", {
-            state: { file: data.video, thumbnail: URL.createObjectURL(data.thumbnail as Blob), model: selectedModel },
+            state: { file: data.video, thumbnail: data.thumbnail, title: data.title, model: selectedModel },
           });
           return uploadLink
         } catch (err) {
@@ -141,14 +140,8 @@ export default function VideoUploadForm() {
     setProcessing(true)
     if (uploadedFile) {
       toast.success("File Successfully Uploaded")
-      const generateThumbnail = async () => {
-        const thumbnailDataUrl = await generateVideoThumbnail(uploadedFile) as string;
-        setProcessing(false)
-        return thumbnailDataUrl
-      }
-      const thumbnail = generateThumbnail()
       navigate("/dashboard/workflow", {
-        state: { file: uploadedFile, model: selectedModel, thumbnail: thumbnail },
+        state: { file: uploadedFile, title: uploadedFile.name, model: selectedModel },
       });
     }
     setProcessing(false)

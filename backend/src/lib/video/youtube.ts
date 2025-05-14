@@ -1,5 +1,7 @@
-import { spawn } from "child_process";
+import { spawn, exec } from "child_process";
 import { promises } from "fs";
+
+// Consult and use exec to cut down on logging if not using web sockets for progress
 
 /**
  * Converts a YouTube video to MP4 and returns it as a Blob.
@@ -11,6 +13,7 @@ import { promises } from "fs";
 export async function youtubeVideo(
   link: string,
   outputFolder: string,
+  id: string,
   name = "output"
 ): Promise<Record<string, Buffer<ArrayBufferLike>>> {
 
@@ -20,14 +23,10 @@ export async function youtubeVideo(
     name = name.substring(0, name.indexOf("."))
   }
 
-  const outputPath = "static/videos/" + name + ".%(ext)s"
+  const outputPath = `static/videos/${id}/` + name + ".%(ext)s"
+  const command = ["--cookies-from-browser", "firefox", "-f", "bestvideo[height<=1080]+bestaudio", "--merge-output-format", "mp4", "-o", outputPath, link]
 
-  const process = spawn("yt-dlp", [
-    // "--cookies-from-browser", "chrome",
-    "-f", "bestvideo+bestaudio",
-    "--merge-output-format", "mp4",
-    "-o", outputPath, link
-  ]);
+  const process = spawn("yt-dlp", command);
 
   return new Promise((resolve, reject) => {
     process.on("error", (err) => {
@@ -58,10 +57,9 @@ export async function youtubeVideo(
     process.on("close", async (code) => {
       if (code === 0) {
         try {
-          const videoPath = outputFolder + "/" + name + ".mp4"
+          const videoPath = `static/videos/${id}/` + name + ".mp4"
           const fileBuffer = await promises.readFile(videoPath);
           const video = fileBuffer
-          await promises.unlink(videoPath)
           resolve({ file: video });
         } catch (err) {
           reject(new Error(`File handling error: ${(err as Error).message}`));
@@ -83,6 +81,7 @@ export async function youtubeVideo(
 export async function youtubeThumbnail(
   link: string,
   outputFolder: string,
+  id: string,
   name = "output"
 ): Promise<Record<string, Buffer<ArrayBufferLike>>> {
 
@@ -92,14 +91,10 @@ export async function youtubeThumbnail(
     name = name.substring(0, name.indexOf("."))
   }
 
-  const outputPath = "static/videos/" + name + ".%(ext)s"
+  const outputPath = `static/videos/${id}/` + name + ".%(ext)s"
+  const commands = ["--cookies-from-browser", "firefox", "--skip-download", "--write-thumbnail", "--convert-thumbnails", "jpg", "-o", outputPath, link]
 
-  const process = spawn("yt-dlp", [
-    // "--cookies-from-browser", "chrome", 
-    "--skip-download",
-    "--write-thumbnail", "--convert-thumbnails",
-    "jpg", "-o", outputPath, link
-  ]);
+  const process = spawn("yt-dlp", commands);
 
   return new Promise((resolve, reject) => {
     process.on("error", (err) => {
@@ -107,33 +102,19 @@ export async function youtubeThumbnail(
     });
 
     process.stderr.on("data", (data) => {
-      const dataStr = data.toString()
       console.error(`stderr: ${data}`);
     });
 
     process.stdout.on("data", (data) => {
-      const dataStr = data.toString();
-      console.log(`stdout: ${dataStr}`);
-
-      if (dataStr.includes("[download]") && dataStr.includes("%")) {
-        try {
-          const percentMatch = dataStr.match(/(\d+\.\d+)%/);
-          if (percentMatch && percentMatch[1]) {
-            const percent = parseFloat(percentMatch[1]);
-          }
-        } catch (err) {
-          console.error("Error parsing progress:", err);
-        }
-      }
+      console.log(`stdout: ${data}`);
     });
 
     process.on("close", async (code) => {
       if (code === 0) {
         try {
-          const thumbnailPath = outputFolder + "/" + name + ".jpg"
+          const thumbnailPath = `static/videos/${id}/` + name + ".jpg"
           const fileBuffer = await promises.readFile(thumbnailPath);
           const thumbnail = fileBuffer
-          await promises.unlink(thumbnailPath)
           resolve({ file: thumbnail });
         } catch (err) {
           reject(new Error(`File handling error: ${(err as Error).message}`));
@@ -146,72 +127,21 @@ export async function youtubeThumbnail(
 }
 
 /**
- * Converts a YouTube video to JPG (thumbnail) and returns it as a Blob.
+ * Grabs the video title of a YouTube link.
  * @param link The YouTube video link to download.
- * @param outputFolder The folder where the video will be temporarily saved.
- * @param videoName (Optional) The output video file name. Defaults to "output".
- * @returns A Promise that resolves to an object containing the thumbnail Blob.
+ * @returns A Promise that resolves to a string containing the video name.
  */
-export async function youtubeTitle(
-  link: string,
-  outputFolder: string,
-  name = "output"
-): Promise<Record<string, Buffer<ArrayBufferLike>>> {
-
+export function youtubeTitle(link: string): Promise<Record<string, string>> {
+  
   if (link.includes("&list")) {
     link = link.substring(0, link.indexOf("&list"));
-  } if (name.includes(".")) {
-    name = name.substring(0, name.indexOf("."))
   }
 
-  const outputPath = "static/videos/" + name + ".%(ext)s"
-
-  const process = spawn("yt-dlp", [
-    // "--cookies-from-browser", "chrome", 
-    "--skip-download",
-    "--write-thumbnail", "--convert-thumbnails",
-    "jpg", "-o", outputPath, link
-  ]);
-
   return new Promise((resolve, reject) => {
-    process.on("error", (err) => {
-      reject(new Error(`Process error: ${err.message}`));
-    });
-
-    process.stderr.on("data", (data) => {
-      console.error(`stderr: ${data}`);
-    });
-
-    process.stdout.on("data", (data) => {
-      const dataStr = data.toString();
-      console.log(`stdout: ${dataStr}`);
-
-      if (dataStr.includes("[download]") && dataStr.includes("%")) {
-        try {
-          const percentMatch = dataStr.match(/(\d+\.\d+)%/);
-          if (percentMatch && percentMatch[1]) {
-            const percent = parseFloat(percentMatch[1]);
-          }
-        } catch (err) {
-          console.error("Error parsing progress:", err);
-        }
-      }
-    });
-
-    process.on("close", async (code) => {
-      if (code === 0) {
-        try {
-          const thumbnailPath = outputFolder + "/" + name + ".jpg"
-          const fileBuffer = await promises.readFile(thumbnailPath);
-          const thumbnail = fileBuffer
-          await promises.unlink(thumbnailPath)
-          resolve({ file: thumbnail });
-        } catch (err) {
-          reject(new Error(`File handling error: ${(err as Error).message}`));
-        }
-      } else {
-        reject(new Error(`Process exited with code ${code}`))
-      }
+    exec(`yt-dlp --cookies-from-browser firefox --get-title "${link}"`, (error, stdout, stderr) => {
+      if (error) return reject(stderr || error.message);
+      resolve({ title: stdout.trim() });
     });
   });
+  
 }

@@ -23,21 +23,40 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@clerk/clerk-react";
+import { v4 } from "uuid"
+import { createProject } from "./workflowHelper";
+import { LoaderCircle } from "lucide-react"
+import { generateVideoThumbnail } from "@/lib/thumbnail";
 
 export default function Workflow() {
   const location = useLocation()
   const navigate = useNavigate()
-  const [genre, setGenre] = useState<string | null>("Auto");
-  const [clipLength, setClipLength] = useState<string | null>("Auto");
-  const [thumbnail, setThumbnail] = useState<string | null>(null);
-  const model = location.state?.model || null;
-  const file = location.state?.file || null;
+  const [genre, setGenre] = useState<string | null>("Auto")
+  const [clipLength, setClipLength] = useState<string | null>("Auto")
+  const [thumbnailURL, setThumbnailURL] = useState<string | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
+  const { getToken } = useAuth()
+  const model: string = location.state?.model || null
+  const file: File = location.state?.file || null
+  const thumbnail: Blob = location.state?.thumbnail || null
+  const title: string = location.state?.title || null
 
   useEffect(() => {
     if (!file) {
       toast.error("Invalid File Format")
       navigate("/dashboard/studio", { state: { toastMessage: "Please upload a video first" } });
-    } else setThumbnail(location.state.thumbnail)
+    } else {
+      if (thumbnail) {
+        setThumbnailURL(URL.createObjectURL(thumbnail))
+      } else {
+        const generateThumbnail = async() => {
+          const data = await generateVideoThumbnail(file) as string
+          setThumbnailURL(data)
+        }
+        generateThumbnail()
+      }
+    }
 
   }, [])
 
@@ -48,8 +67,24 @@ export default function Workflow() {
   }
 
   const handleClipClick = async () => {
-    // Send information to the API
-    // Create a web socket for this to work, believe it would be easier to implement as well
+    setLoading(true)
+    try {
+      const token: string = await getToken()
+      const jobId: string = v4()
+      const image = new File([thumbnail], "project_thumbnail.png", { type: "image/png" })
+      const response = await createProject(token, jobId, file as File, image, title)
+      if (!response.ok) {
+        toast.error("Something went wrong, please try again")
+        setLoading(false)
+        return
+      }
+      toast.success("Your video is currently being processed, we will let you know when it is done!")
+      setLoading(false)
+      navigate("/dashboard")
+    } catch (err) {
+      setLoading(false)
+      toast.error("Something went wrong, Please try again")
+    }
   }
   
   return (
@@ -57,7 +92,7 @@ export default function Workflow() {
       <div className="font-bold text-4xl mb-4">Workflow</div>
       <div className="flex flex-col items-center justify-center gap-4 mb-4">
         <div className="w-[500px] h-[350px] rounded-lg flex flex-col justify-center px-4 bg-primary/5"> 
-          <img src={thumbnail} alt="thumbnail" className="rounded-lg w-full h-full object-contain"/>
+          <img src={thumbnailURL} alt="thumbnail" className="rounded-lg w-full h-full object-contain"/>
         </div>
         <div className="text-center text-sm text-muted-foreground font-semibold max-w-[450px] flex flex-col gap-4">
           <div>All rights to the images, music, clips, and other materials used belong to their respective owners. We do not claim ownership over any third-party content used.</div>
@@ -129,7 +164,9 @@ export default function Workflow() {
           </Card>
         </TabsContent>
       </Tabs>
-      <Button className="mt-16 max-w-[20rem] w-full font-bold text-lg" onClick={handleClipClick}>Convert Video to Clips</Button>
+      <Button className="mt-16 max-w-[20rem] w-full font-bold text-lg" onClick={handleClipClick} disabled={loading}>
+        {loading ? <LoaderCircle className="animate-spin"/> : "Convert Video to Clips"}
+      </Button>
     </div>
   )
 }

@@ -1,19 +1,24 @@
 
 interface ConfigProps {
-    PORT: string;
-    ENVIRONMENT: string;
-    STRIPE_PUBLIC: string;
-    STRIPE_SECRET: string;
-    CLERK_PUBLIC: string;
-    CLERK_SECRET: string;
-    S3_ACCESS: string;
-    S3_SECRET: string;
-    S3_BUCKET: string;
-    S3_REGION: string;
-    NGROK_DOMAIN?: string;
-    NGROK_AUTHTOKEN?: string;
-    CLERK_SIGNING_SECRET: string;
-    STRIPE_SIGNING_SECRET: string;
+    PORT: string
+    ENVIRONMENT: string
+    STRIPE_PUBLIC: string
+    STRIPE_SECRET: string
+    CLERK_PUBLIC: string
+    CLERK_SECRET: string
+    S3_ACCESS: string
+    S3_SECRET: string
+    S3_BUCKET: string
+    S3_REGION: string
+    NGROK_DOMAIN?: string
+    NGROK_AUTHTOKEN?: string
+    CLERK_SIGNING_SECRET: string
+    STRIPE_SIGNING_SECRET: string
+    MODEL_SIGNING_SECRET: string
+    MODEL_SERVER_URL: string
+    FRONTEND_SERVER_URL: string
+    RESEND_API_KEY: string
+    RESEND_DOMAIN: string
 }
 
 
@@ -31,6 +36,11 @@ const NGROK_DOMAIN = process.env.NGROK_DOMAIN || ''
 const NGROK_AUTHTOKEN = process.env.NGROK_AUTHTOKEN || ''
 const CLERK_SIGNING_SECRET = process.env.CLERK_SIGNING_SECRET || ''
 const STRIPE_SIGNING_SECRET = process.env.STRIPE_SIGNING_SECRET || ''
+const MODEL_SIGNING_SECRET = process.env.MODEL_SIGNING_SECRET || ''
+const MODEL_SERVER_URL = process.env.MODEL_SERVER_URL || ''
+const FRONTEND_SERVER_URL = process.env.FRONTEND_SERVER_URL || ''
+const RESEND_API_KEY = process.env.RESEND_API_KEY || ''
+const RESEND_DOMAIN = process.env.RESEND_DOMAIN || ''
 
 
 const config: ConfigProps = {
@@ -47,7 +57,12 @@ const config: ConfigProps = {
     NGROK_DOMAIN,
     NGROK_AUTHTOKEN,
     CLERK_SIGNING_SECRET,
-    STRIPE_SIGNING_SECRET
+    STRIPE_SIGNING_SECRET,
+    MODEL_SIGNING_SECRET,
+    MODEL_SERVER_URL,
+    RESEND_API_KEY,
+    RESEND_DOMAIN,
+    FRONTEND_SERVER_URL
 }
 
 export default config
