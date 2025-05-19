@@ -2,14 +2,14 @@ import {
   S3Client, 
   PutObjectCommand, 
   GetObjectCommand, 
-  DeleteObjectCommand 
+  DeleteObjectsCommand,
+  DeleteObjectsCommandInput,
+  PutObjectCommandInput,
+  ListObjectsV2Command
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { PrismaClient, Project } from '@/clients/prisma';
 import config from '@/utils/config.js';
-import path = require("path");
-import { youtubeThumbnail, youtubeVideo, youtubeTitle } from "@/lib/video/youtube";
-const outputFolder = path.join(__dirname, "../../../static", "videos")
 import { existsSync, promises } from "fs";
 import { identifierGenerator } from "@/lib/idGenerator";
 
@@ -54,7 +54,7 @@ export async function createProject(userId: string, jobId: string, file: File, t
   form.append("video_name", newFileName)
   form.append("job_id", jobId)
 
-  const response = await fetch(`${config.MODEL_SERVER_URL}/api/upload-video/`, {
+  const response = await fetch(`${config.MODEL_SERVER_URL}/api/video/upload/`, {
       method: "POST",
       body: form
   })
@@ -152,12 +152,15 @@ export async function uploadToProject(files: File[], jobId: string) {
     const buffer = await file.arrayBuffer();
     const arrayBuffer = new Uint8Array(buffer);
   
-    const params = {
+    const params: PutObjectCommandInput = {
       Bucket: config.S3_BUCKET,
       Key: s3Key,
       Body: arrayBuffer,
       ContentType: file.type,
-      CacheControl: "3600"
+      CacheControl: "3600",
+      Metadata: {
+        "aspect_ratio": "16:9"
+      }
     };
   
     const command = new PutObjectCommand(params);
@@ -179,22 +182,51 @@ export async function uploadToProject(files: File[], jobId: string) {
   return results
 }
 
-export const getYoutubeVideo = async (link: string, userId: string) => {
-  const data = await youtubeVideo(link, outputFolder, userId)
-  return data
+export async function deleteProject(userId: string , identifier: string) {
+  const s3Key = `${userId}/${identifier}/`;
+  console.log(s3Key)
+
+  const listCommand = new ListObjectsV2Command({
+    Bucket: config.S3_BUCKET,
+    Prefix: s3Key
+  })
+
+  const objects = await s3.send(listCommand)
+
+  if (!objects.Contents || objects.Contents.length === 0) {
+    console.log("No files to delete")
+    return
+  }
+
+  const params: DeleteObjectsCommandInput = {
+    Bucket: config.S3_BUCKET,
+    Delete: {
+      Objects: objects.Contents.map(obj => ({Key: obj.Key})),
+      Quiet: true
+    }
+  }
+
+  const deleteCommand = new DeleteObjectsCommand(params)
+  const response = await s3.send(deleteCommand)
+
+  const data = await prisma.project.findFirst({
+    where: {
+      identifier: identifier
+    }
+  })
+
+  if (!data) throw new Error("Could not find project to delete")
+
+  await prisma.project.delete({
+    where: {
+      id: data?.id
+    }
+  })
+
+  return response
 }
 
-export const getYoutubeThumbnail = async (link: string, userId: string) => {
-  const data = await youtubeThumbnail(link, outputFolder, userId)
-  return data
-}
-
-export const getYoutubeTitle = async (link: string) => {
-  const data = await youtubeTitle(link)
-  return data
-}
-
-export const cleanYouTubeDownload = async (userId: string) => {
+export const cleanMediaDownloads = async (userId: string) => {
   if (existsSync(`static/videos/${userId}`)) {
     await promises.rm(`static/videos/${userId}`, {recursive: true, force: true})
   }

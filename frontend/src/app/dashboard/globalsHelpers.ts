@@ -1,5 +1,5 @@
-export const getInvoiceData = async (token: string) => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/stripe/invoice`, {
+export const getSubscriptionData = async (token: string) => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/stripe/subscription`, {
         method: "GET",
         headers: {
             Authorization: `Bearer ${token}`,

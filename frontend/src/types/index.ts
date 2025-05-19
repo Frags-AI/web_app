@@ -55,3 +55,10 @@ export interface ProjectProps {
   title: string,
   identifier: string
 }
+export interface InvoiceDataProps {
+  date: string,
+  amount: number,
+  number: string,
+  pdf_link: string,
+  status: "draft" | "paid" | "open" | "uncollectible" | "void"
+}

@@ -23,7 +23,7 @@ export const uploadYoutube = async(link: string, token: string, onProgress?: (pr
 
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/video/youtube`,
+          `${import.meta.env.VITE_API_URL}/api/video/youtube/download`,
           { link, type },
           {
             headers: { Authorization: `Bearer ${token}` },

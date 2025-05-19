@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { createProject, uploadToProject, getAllProjects, updateProjectStatus } from "./projectHelper";
+import { createProject, uploadToProject, getAllProjects, updateProjectStatus, deleteProject } from "./projectHelper";
 import { getAuth } from "@hono/clerk-auth";
 import clerkClient from "@/clients/clerk";
 import config from "@/utils/config";
@@ -46,7 +46,26 @@ projectRouter.post("/upload", async (c) => {
     const data = await updateProjectStatus(jobId, status)
     const user = await clerkClient.users.getUser(data.clerk_id)
     ClipsReadyNotification(user.primaryEmailAddress?.emailAddress as string, data.url)
-
     
     return c.json({ message: "Video clips has been successfully uploaded" }, 200)
+})
+
+projectRouter.post("/delete", async (c) => {
+    const userId = getAuth(c)?.userId
+
+    if (!userId) return c.json({message: "User is not authorzied"}, 401)
+
+    const body = await c.req.json()
+    const identifer = body.identifier as string
+
+    await deleteProject(userId, identifer)
+    
+    return c.json({message: "Project has been successfully deleted"}, 200)
+})
+
+projectRouter.post("/testing", async (c) => {
+    const auth = getAuth(c)
+    const user = await clerkClient.users.getUser(auth?.userId as string)
+    ClipsReadyNotification(user.primaryEmailAddress?.emailAddress as string, "https://www.youtube.com/watch?v=X9hZt1IRxe8")
+    return c.json({success: 'asdfasfdf'}, 200)
 })

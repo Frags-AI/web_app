@@ -16,12 +16,14 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { useAuth } from "@clerk/clerk-react"
 import { useQuery } from "@tanstack/react-query"
-import { getSubscriptionData } from "./subscriptionHelper"
-import LoadingScreen from "@/app/accessories/LoadingScreen"
-import { SubscriptionDataProps } from "@/types"
+import { SubscriptionDataProps, InvoiceDataProps } from "@/types"
+import { useAuth } from "@clerk/clerk-react"
 import { planFeatures } from "./planFeatures"
+import { getSubscriptionData } from "@/app/dashboard/globalsHelpers"
+import LoadingScreen from "@/app/accessories/LoadingScreen"
+import { getInvoiceData } from "./subscriptionHelper"
+import { toast } from "sonner"
 
 
 // Mock billing history
@@ -59,20 +61,47 @@ const availablePlans = [
 ]
 
 const Subscription: React.FC = () => {
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const { getToken } = useAuth()
 
-  const { data: subscriptionData, isLoading, error } = useQuery<SubscriptionDataProps>({
-    queryKey: ["subscriptionData"],
-    queryFn: async () => {
-      const token = await getToken()
-      return getSubscriptionData(token)
+  const getSubscription = async () => {
+    const token = await getToken()
+    return await getSubscriptionData(token)
+  }
+
+  const getInvoices = async () => {
+    const token = await getToken()
+    return await getInvoiceData(token)
+  }
+
+  const handlePDFDownload = async (url: string) => {
+    try {
+      
+      const link = document.createElement("a")
+      link.href = url
+      link.target = "_blank"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+    } catch (err) {
+      toast.error(err.message)
     }
+
+  }
+
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false) 
+  const { data: subscriptionData, isLoading: subscriptionLoading } = useQuery<SubscriptionDataProps>({
+    queryKey: ["subscriptionData"],
+    queryFn: getSubscription,
+    staleTime: 1000 * 3600
   })
 
-  if (isLoading) return <LoadingScreen />
+  const { data: invoiceData, isLoading: invoiceLoading } = useQuery<InvoiceDataProps[]>({
+    queryKey: ["invoiceData"],
+    queryFn: getInvoices
+  })
 
-  if (error) return <div>Error loading subscription data</div>
+  if (subscriptionLoading || invoiceLoading) return <LoadingScreen />
 
   return (
     <div className="container mx-auto max-w-4xl p-4 py-8">
@@ -112,39 +141,43 @@ const Subscription: React.FC = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">Billing Amount</p>
-                  <p className="font-semibold text-xl">{subscriptionData.rate}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">Next Billing Date</p>
-                  <div className="flex items-center">
-                    <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <p>{subscriptionData.endDate}</p>
+              {subscriptionData.rate !== "0.00" && 
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Billing Amount</p>
+                    <p className="font-semibold text-xl">{subscriptionData.rate}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Renews on</p>
+                    <div className="flex items-center">
+                      <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <p>{subscriptionData.endDate}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              }
               
               <Separator />
               
-              <div>
-                <h3 className="font-medium mb-2">Payment Method</h3>
-                <div className="flex items-center p-3 border rounded-md">
-                  <CreditCard className="h-5 w-5 mr-3 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">
-                      {subscriptionData.default_payment.card_type} ending in {subscriptionData.default_payment.last4}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Expires {subscriptionData.default_payment.exp_date}
-                    </p>
+              {subscriptionData.default_payment && 
+                <div>
+                  <h3 className="font-medium mb-2">Payment Method</h3>
+                  <div className="flex items-center p-3 border rounded-md">
+                    <CreditCard className="h-5 w-5 mr-3 text-muted-foreground" />
+                    <div>
+                      <p className="font-medium">
+                        {subscriptionData.default_payment.card_type} ending in {subscriptionData.default_payment.last4}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Expires {subscriptionData.default_payment.exp_date}
+                      </p>
+                    </div>
+                    <Button variant="ghost" size="sm" className="ml-auto">
+                      Update
+                    </Button>
                   </div>
-                  <Button variant="ghost" size="sm" className="ml-auto">
-                    Update
-                  </Button>
                 </div>
-              </div>
+              }
               
               <div>
                 <h3 className="font-medium mb-2">Included Features</h3>
@@ -226,20 +259,20 @@ const Subscription: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {billingHistory.map((invoice) => (
-                  <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-md">
+                {invoiceData.map((invoice) => (
+                  <div key={invoice.number} className="flex items-center justify-between p-4 border rounded-md">
                     <div>
-                      <p className="font-medium">{invoice.id}</p>
+                      <p className="font-medium">{invoice.number}</p>
                       <p className="text-sm text-muted-foreground">{invoice.date}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium">{invoice.amount}</p>
+                      <p className="font-medium">$ {invoice.amount}</p>
                       <Badge variant="outline" className="ml-2">
                         {invoice.status}
                       </Badge>
                     </div>
-                    <Button variant="ghost" size="icon">
-                      <Download className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" onClick={() => handlePDFDownload(invoice.pdf_link)}>
+                      <Download className="h-4 w-4"/>
                     </Button>
                   </div>
                 ))}
@@ -251,8 +284,8 @@ const Subscription: React.FC = () => {
         <TabsContent value="plans" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-3">
             {availablePlans.map((plan) => (
-              <Card key={plan.id} className={`flex flex-col ${plan.current ? "border-primary" : ""}`}>
-                {plan.current && (
+              <Card key={plan.id} className={`flex flex-col ${plan.name === subscriptionData.type ? "border-primary" : ""}`}>
+                {plan.name === subscriptionData.type && (
                   <div className="bg-primary text-primary-foreground text-center py-1 text-sm font-medium rounded-t-md">
                     Current Plan
                   </div>
@@ -277,10 +310,10 @@ const Subscription: React.FC = () => {
                 <CardFooter className="mt-auto">
                   <Button 
                     className="w-full" 
-                    variant={plan.current ? "outline" : "default"}
-                    disabled={plan.current}
+                    variant={plan.name === subscriptionData.type ? "outline" : "default"}
+                    disabled={plan.name === subscriptionData.type}
                   >
-                    {plan.current ? "Current Plan" : `Switch to ${plan.name}`}
+                    {plan.name === subscriptionData.type ? "Current Plan" : `Switch to ${plan.name}`}
                   </Button>
                 </CardFooter>
               </Card>

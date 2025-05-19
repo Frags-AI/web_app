@@ -13,5 +13,5 @@ invoiceRouter.get("/", async (c) => {
     const customer = await getStripeUser(auth.userId)
     const invoices = await getCustomerInvoices(customer)
 
-    return c.json({ message: "success", invoices }, 200)
+    return c.json(invoices , 200)
 })

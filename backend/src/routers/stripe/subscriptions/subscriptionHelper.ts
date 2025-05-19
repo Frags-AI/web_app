@@ -54,7 +54,15 @@ export const getSubscription = async (customer: Stripe.Customer) => {
     })
 
     if (subscriptions.data.length === 0) {
-        let freeTier 
+
+        return {
+            type: "Free",
+            rate: "0.00",
+            status: "active",
+            endDate: null,
+            default_payment: null
+        }
+        
     }
     const subscription = subscriptions.data[0]
     const paymentMethod = subscription.default_payment_method as Stripe.PaymentMethod

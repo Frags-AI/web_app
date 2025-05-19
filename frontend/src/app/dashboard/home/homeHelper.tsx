@@ -17,6 +17,17 @@ export async function getProjects(token: string) {
     return data
 }
 
+export async function deleteProject(token: string, identifier: string) {
+    const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/video/project/delete`,
+        { identifier },
+        {headers: {Authorization: `Bearer ${token}`}}
+    )
+
+    const data = response.data
+    return data
+}
+
 type SetProgressProps = (motionProgress: number, clippingProgress: number) => void
 
 export async function trackProgress(onProgress: SetProgressProps, jobId: string) {

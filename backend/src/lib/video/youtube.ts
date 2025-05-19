@@ -4,15 +4,14 @@ import { promises } from "fs";
 // Consult and use exec to cut down on logging if not using web sockets for progress
 
 /**
- * Converts a YouTube video to MP4 and returns it as a Blob.
+ * Converts a YouTube video to MP4 and returns it as a buffer.
  * @param link The YouTube video link to download.
- * @param outputFolder The folder where the video will be temporarily saved.
- * @param videoName (Optional) The output video file name. Defaults to "output".
- * @returns A Promise that resolves to an object containing the video Blob.
+ * @param id The Clerk ID of the user that sent the request. 
+ * @param name (Optional) The output video file name. Defaults to "output".
+ * @returns A Promise that resolves to an object containing the video buffer.
  */
 export async function youtubeVideo(
   link: string,
-  outputFolder: string,
   id: string,
   name = "output"
 ): Promise<Record<string, Buffer<ArrayBufferLike>>> {
@@ -72,15 +71,14 @@ export async function youtubeVideo(
 }
 
 /**
- * Converts a YouTube video to JPG (thumbnail) and returns it as a Blob.
+ * Converts a YouTube video to JPG (thumbnail) and returns it as a buffer.
  * @param link The YouTube video link to download.
- * @param outputFolder The folder where the video will be temporarily saved.
- * @param videoName (Optional) The output video file name. Defaults to "output".
- * @returns A Promise that resolves to an object containing the thumbnail Blob.
+ * @param id The Clerk ID of the user that sent the request.
+ * @param name (Optional) The output video file name. Defaults to "output".
+ * @returns A Promise that resolves to an object containing the thumbnail buffer.
  */
 export async function youtubeThumbnail(
   link: string,
-  outputFolder: string,
   id: string,
   name = "output"
 ): Promise<Record<string, Buffer<ArrayBufferLike>>> {

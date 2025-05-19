@@ -34,17 +34,17 @@ export const handleWebhooks = async (event: Stripe.Event) => {
             const subscriptionData = {
                 stripe_id:subscription.id,
                 status: subscription.status,
-                userId: user.id,
+                user_id: user.id,
                 plan: plan,
-                periodStart: new Date(subscription.items.data[0].current_period_start),
-                periodEnd: new Date(subscription.items.data[0].current_period_end),
-                trialStart: new Date(subscription.trial_start ? subscription.trial_start : 0),
-                trialEnd: new Date(subscription.trial_end ? subscription.trial_end : 0),
+                period_start: new Date(subscription.items.data[0].current_period_start),
+                period_end: new Date(subscription.items.data[0].current_period_end),
+                trial_start: new Date(subscription.trial_start ? subscription.trial_start : 0),
+                trial_end: new Date(subscription.trial_end ? subscription.trial_end : 0),
             }
 
             await prisma.subscription.upsert({
                 where: {
-                    userId: user.id
+                    user_id: user.id
                 },
                 update: subscriptionData,
                 create: subscriptionData

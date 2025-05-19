@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
-import { getProjects } from "./homeHelper"
+import { deleteProject, getProjects } from "./homeHelper"
 import { useAuth } from "@clerk/clerk-react"
 import LoadingScreen from "@/app/accessories/LoadingScreen"
 import { useNavigate } from "react-router-dom"
@@ -16,6 +16,16 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { trackProgress } from "./homeHelper"
 import { useTime, useTransform, motion } from "framer-motion"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
+
 
 function ProjectProcessingOverlay({ project }: { project: ProjectProps }) {
     const [motionProgress, setMotionProgress] = useState<number>(0)
@@ -68,17 +78,29 @@ function ProjectProcessingOverlay({ project }: { project: ProjectProps }) {
 }
 
 function ProjectCards({projects}: {projects: ProjectProps[]}) {
+    const { getToken } = useAuth()
     const navigate = useNavigate()
+    const [displayDeleteForm, setDisplayDeleteForm] = useState<boolean>(false)
 
     const handleCardClick = (identifier: string) => {
         navigate(`/dashboard/clips/${identifier}`)
     }
 
+    const deleteUserProject = async (identifer: string) => {
+        try {
+            const token = await getToken()
+            const data = await deleteProject(token, identifer)
+            toast.success(data.message)
+        } catch (err) {
+            toast.error(err.message)
+        }
+    }
+
     return (
         <div className="flex flex-wrap gap-16 mt-8">
             {projects.map((project) => (
-                <div className={`bg-primary/5 p-4 rounded-lg w-[18.75rem] h-[15rem] relative flex flex-col hover:cursor-pointer`} onClick={() => handleCardClick(project.identifier)}>
-                    <div className="bg-background grow flex justify-center w-full h-4/5">
+                <div className={`bg-primary/5 p-4 rounded-lg w-[18.75rem] h-[15rem] relative flex flex-col`}>
+                    <div className="bg-background grow flex justify-center w-full h-4/5 hover:cursor-pointer" onClick={() => handleCardClick(project.identifier)}>
                         <img src={project.thumbnail} className={`object-contain ${project.status === "processing" ? "blur-xs" : ""}`} />
                     </div>
                     <div className="flex items-center mt-4 gap-4 w-full justify-between">
@@ -89,9 +111,26 @@ function ProjectCards({projects}: {projects: ProjectProps[]}) {
                                 <DropdownMenuLabel>Options</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem className="hover:cursor-pointer">Share Project</DropdownMenuItem>
-                                <DropdownMenuItem className="hover:cursor-pointer">Delete Project</DropdownMenuItem>
+                                <DropdownMenuItem className="hover:cursor-pointer" onClick={() => setDisplayDeleteForm(true)}>Delete Project</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
+                        {displayDeleteForm &&
+                            <Dialog open={displayDeleteForm} onOpenChange={() => setDisplayDeleteForm((prev) => !prev)}>
+                            <DialogContent>
+                                <DialogHeader>
+                                <DialogTitle className="mb-4">You are about to delete "{project.title}"</DialogTitle>
+                                <DialogDescription className="flex flex-col gap-4">
+                                    <div>This action cannot be undone. This will permanently delete all of the project data from your account, including clips and transcriptions</div>
+                                    <div className="font-bold text-foreground text-lg">Are you sure you want to delete this project?</div>
+                                    <div className="flex gap-4 justify-end">
+                                        <Button variant="outline">Cancel</Button>
+                                        <Button className="bg-red-500 hover:bg-red-600 text-foreground" onClick={() => deleteUserProject(project.identifier)}>Delete Project</Button>
+                                    </div>
+                                </DialogDescription>
+                                </DialogHeader>
+                            </DialogContent>
+                            </Dialog>
+                        }
                     </div>
                     {project.status === "processing" && <ProjectProcessingOverlay project={project} />}
                 </div>

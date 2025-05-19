@@ -19,6 +19,9 @@ interface ConfigProps {
     FRONTEND_SERVER_URL: string
     RESEND_API_KEY: string
     RESEND_DOMAIN: string
+    GOOGLE_CLIENT_ID: string
+    GOOGLE_CLIENT_SECERET: string
+    GOOGLE_REDIRECT_URI: string
 }
 
 
@@ -41,6 +44,9 @@ const MODEL_SERVER_URL = process.env.MODEL_SERVER_URL || ''
 const FRONTEND_SERVER_URL = process.env.FRONTEND_SERVER_URL || ''
 const RESEND_API_KEY = process.env.RESEND_API_KEY || ''
 const RESEND_DOMAIN = process.env.RESEND_DOMAIN || ''
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || ''
+const GOOGLE_CLIENT_SECERET = process.env.GOOGLE_CLIENT_SECRET || ''
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || ''
 
 
 const config: ConfigProps = {
@@ -62,7 +68,10 @@ const config: ConfigProps = {
     MODEL_SERVER_URL,
     RESEND_API_KEY,
     RESEND_DOMAIN,
-    FRONTEND_SERVER_URL
+    FRONTEND_SERVER_URL,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECERET,
+    GOOGLE_REDIRECT_URI
 }
 
 export default config
