@@ -6,6 +6,9 @@ import serverRouter from "@/routers/server-status";
 import videoRouter from "@/routers/video";
 import stripeRouter from "@/routers/stripe";
 import clerkRouter from "@/routers/clerk";
+import { OAuthRouter } from "@/routers/oauth";
+import { callbackRouter } from "./routers/callback";
+import { socialMediaRouter } from "./routers/social-media";
 
 const app = new Hono()
 
@@ -16,6 +19,9 @@ app.use(logger())
 app.route("/api/clerk", clerkRouter)
 app.route("/api/video", videoRouter)
 app.route("/api/stripe", stripeRouter)
+app.route("/api/oauth", OAuthRouter)
+app.route("/api/callback", callbackRouter)
+app.route("/api/social", socialMediaRouter)
 app.route("/api", serverRouter)
 
 app.notFound((c) => {

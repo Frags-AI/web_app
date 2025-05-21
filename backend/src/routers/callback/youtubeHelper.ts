@@ -1,0 +1,54 @@
+import { OAuth2Client } from "@/clients/google-clients";
+import { PrismaClient } from "@/clients/prisma";
+import * as fs from "fs"
+import { Credentials } from "google-auth-library";
+import { google } from "googleapis";
+
+
+export async function storeYoutubeToken(userId: string, token: Credentials) {
+    const prisma = new PrismaClient()
+
+    const user = await prisma.user.findUnique({ where: { clerk_user_id: userId }})
+
+    if (!user || !token) return null
+
+    OAuth2Client.setCredentials({
+        access_token: token.access_token,
+        refresh_token: token.refresh_token
+    })
+
+    const youtube = google.youtube({
+        version: "v3",
+        auth: OAuth2Client
+    })
+    const res = await youtube.channels.list({
+        part: ["snippet"],
+        mine: true
+    })
+
+    const channel = res.data.items?.[0]
+    const channelName = channel?.snippet?.title
+    const channelId = channel?.id
+
+    const platform = await prisma.platform.create({
+        data: {
+            user_id: user.id,
+            provider: "youtube",
+            scope: token.scope,
+            name: channelName,
+            external_id: channelId
+        }
+    })
+
+    const data = await prisma.oAuthToken.create({
+        data: {
+            platform_id: platform.id,
+            access_token: token.access_token as string,
+            refresh_token: token.refresh_token as string,
+            expiry_date: new Date(token.expiry_date as number),
+            token_type: token.token_type
+        }
+    })
+
+    return data
+}

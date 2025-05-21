@@ -1,11 +1,12 @@
 import LoadingScreen from "@/app/accessories/LoadingScreen"
-import { changeAspectRatio, getAllClips } from "./clipHelper"
-import { useState, useMemo } from "react"
+import { changeAspectRatio, handleSocialMediaUpload, getAllClips } from "./clipHelper"
+import { useState, useMemo, useCallback } from "react"
 import { useAuth } from "@clerk/clerk-react"
 import { useQuery } from "@tanstack/react-query"
 import ReactPlayer from "react-player"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCirclePause, faCirclePlay } from "@fortawesome/free-solid-svg-icons"
+import { faYoutube, faTiktok, faInstagram, faFacebook } from "@fortawesome/free-brands-svg-icons"
 import { 
     DropdownMenu,
     DropdownMenuTrigger,
@@ -22,10 +23,12 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger
 } from "@/components/ui/dialog"
-import { Ellipsis, Download, Pencil, Proportions } from "lucide-react"
+import { Ellipsis, Download, Pencil, Proportions, CloudUpload } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import { SocialMediaCardProps } from "@/types"
 
 interface VideoProps {
     title: string
@@ -56,6 +59,13 @@ function VideoCard({video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx}:
         setCurrentIdx((prev) => prev === videoIdx ? -1 : videoIdx)
     }
 
+    const socialMediaCards: SocialMediaCardProps[] = [
+        { name: "YouTube", type: "youtube", description: "Upload to Channel", icon: faYoutube},
+        { name: "TikTok", type: "tiktok", description: "Upload to Feed", icon: faTiktok},
+        { name: "Facebook", type: "facebook", description: "Upload to Page", icon: faFacebook},
+        { name: "Instagram", type: "instagram", description: "Upload to Page", icon: faInstagram},
+    ]
+
     const handleVideoLoad = () => {
         setVideoNumber((prev) => prev + 1)
     }
@@ -63,6 +73,17 @@ function VideoCard({video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx}:
     const handleClipExpand = () => {
         setCurrentIdx(-1)
         setShowModal((prev) => !prev)
+    }
+
+    const handleSocialMediaClick = async (type: string, link: string, title: string) => {
+        try {
+            const token = await getToken()
+            toast.info(`Uploading clip to ${type}`)
+            const message = await handleSocialMediaUpload(type, link, title, token)
+            toast.info(message)
+        } catch (err) {
+            toast.error(err.message)
+        }
     }
 
     const handleDownloadClip = async (url: string, videoName: string) => {
@@ -152,7 +173,7 @@ function VideoCard({video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx}:
                             <DialogTitle className="text-4xl text-center">{video.title}</DialogTitle>
                         </DialogHeader>
                         <DialogDescription className="flex gap-4">
-                            <ReactPlayer url={video.link} width="600px" height="400px" controls={true}/>
+                            <ReactPlayer url={video.link} width="600px" height="400px" controls={true} playing={showModal} />
                             <div className="flex flex-col gap-4 justify-center">
                                 <Button 
                                   className="flex gap-2 font-bold justify-start" 
@@ -161,7 +182,7 @@ function VideoCard({video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx}:
                                 >
                                     <Download size={16}/>
                                     <div>Download Clip</div>
-                                  </Button>
+                                </Button>
                                 <Button className="flex gap-2 font-bold justify-start" variant="secondary">
                                   <Pencil size={16}/>
                                   <div>Edit Clip</div>
@@ -183,6 +204,35 @@ function VideoCard({video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx}:
                                     </DropdownMenuRadioGroup>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
+                                <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="secondary" className="flex gap-2 font-bold justify-start">
+                                    <CloudUpload />
+                                    <div>Upload to Social Media</div>
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-md">
+                                    <DialogHeader>
+                                    <DialogTitle className="text-lg font-bold text-center">Choose a platform</DialogTitle>
+                                    </DialogHeader>
+                                    <div className="grid grid-cols-2 gap-4 mt-4">
+                                    {socialMediaCards.map((card) => (
+                                        <div
+                                            key={card.type}
+                                            className={`border border-4 rounded-lg p-4 flex flex-col items-center text-center gap-2 font-bold hover:bg-secondary/60 
+                                            hover:cursor-pointer transition duration-300${card.name === "YouTube" ? "" : " pointer-events-none bg-muted"}`}
+                                            onClick={() => handleSocialMediaClick(card.type, video.link, video.title)}
+                                            
+                                        >
+                                        <FontAwesomeIcon icon={card.icon} size="xl"/>
+                                        <div className="text-lg">{card.name}</div>
+                                        <div className="text-muted-foreground text-sm">{card.description}</div>
+                                        {card.name !== "YouTube" && <div className="text-muted-foreground text-sm">Coming soon!</div>}
+                                        </div>
+                                    ))}
+                                    </div>
+                                </DialogContent>
+                                </Dialog>
                             </div>
                         </DialogDescription>
                     </DialogContent>
@@ -222,17 +272,19 @@ function VideoCards({videos}: { videos: VideoProps[] }) {
 }
 
 export default function Page() {
-    const { getToken } = useAuth()
+    const { getToken, isLoaded } = useAuth()
 
-    async function getVideoClips() {
+    const getVideoClips = useCallback(async () => {
         const token = await getToken()
         return await getAllClips(token, projectIdentifier)
-    }
+    }, [getToken])
 
     const {data, isLoading, error} = useQuery({
         queryKey: [`ProjectVideoClips${projectIdentifier}`],
         queryFn: getVideoClips,
         refetchOnWindowFocus: false,
+        staleTime: 3600 * 1000,
+        enabled: isLoaded,
         retry: false,
         refetchOnReconnect: false
     })

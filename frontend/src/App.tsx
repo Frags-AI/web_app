@@ -17,6 +17,7 @@ import Subscriptions from './app/dashboard/subscriptions';
 import NotFound from './app/accessories/NotFound';
 import DashboardWorkflow from './app/dashboard/workflow';
 import DashboardClips from "./app/dashboard/clips"
+import DashboardSocial from "./app/dashboard/social"
 
 export default function App () {
     return (
@@ -34,6 +35,7 @@ export default function App () {
                   <Route path="workflow" element={<DashboardWorkflow />} />
                   <Route path="clips" element={<Navigate to="/dashboard" />} /> {/* Modify this later to have better error handling and redirection */}
                   <Route path="clips/*" element={<DashboardClips />} />
+                  <Route path="social" element={<DashboardSocial />} />
                 </Route>
                 <Route path="/login/*" element={<Login />} />
                 <Route path="/signup/*" element={<SignUp />} />

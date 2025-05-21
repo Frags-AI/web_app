@@ -62,3 +62,10 @@ export interface InvoiceDataProps {
   pdf_link: string,
   status: "draft" | "paid" | "open" | "uncollectible" | "void"
 }
+
+export interface SocialMediaCardProps {
+    name: string,
+    type: string,
+    description?: string,
+    icon: IconDefinition
+}

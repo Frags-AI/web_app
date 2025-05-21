@@ -38,6 +38,7 @@
     "cross-env": "^7.0.3",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
+    "google-auth-library": "^9.15.1",
     "googleapis": "^148.0.0",
     "hono": "^4.7.5",
     "react": "^19.1.0",

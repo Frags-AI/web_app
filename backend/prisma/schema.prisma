@@ -16,9 +16,11 @@ model User {
   clerk_user_id String        @unique
   stripe_id     String?
   full_name     String?
+
   subscription  Subscription?
   projects      Project[]
   videos        Video[]
+  platforms     Platform[]
 }
 
 model Project {
@@ -59,4 +61,31 @@ model Subscription {
   created_at DateTime  @default(now())
   deleted_at DateTime?
   user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Platform {
+  id              String    @id @default(uuid())
+  user_id         String    
+  provider        String
+  name            String?  // Name of channel/page/feed
+  scope           String?
+  external_id     String? // specific id of platform
+
+  user            User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  token           OAuthToken?
+
+  @@unique([user_id, provider, external_id])
+}
+
+model OAuthToken {
+  id            String      @id @default(uuid())
+  platform_id   String      @unique
+  access_token  String
+  refresh_token String?
+  token_type    String?
+  expiry_date   DateTime?
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+
+  platform      Platform    @relation(fields: [platform_id], references: [id], onDelete: Cascade)
 }
