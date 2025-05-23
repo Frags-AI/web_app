@@ -14,7 +14,7 @@ export async function youtubeVideo(
   link: string,
   id: string,
   name = "output"
-): Promise<Record<string, Buffer<ArrayBufferLike>>> {
+): Promise<Record<string, Buffer>> {
 
   if (link.includes("&list")) {
     link = link.substring(0, link.indexOf("&list"));
@@ -81,7 +81,7 @@ export async function youtubeThumbnail(
   link: string,
   id: string,
   name = "output"
-): Promise<Record<string, Buffer<ArrayBufferLike>>> {
+): Promise<Record<string, Buffer>> {
 
   if (link.includes("&list")) {
     link = link.substring(0, link.indexOf("&list"));

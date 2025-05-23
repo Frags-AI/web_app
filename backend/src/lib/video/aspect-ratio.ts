@@ -14,7 +14,7 @@ export async function convert1to1Ratio(inputPath: string, outputPath: string) {
   
   const process = spawn("ffmpeg", commands)
 
-  return new Promise<Record<string, Buffer<ArrayBufferLike>>>((resolve, reject) => {
+  return new Promise<Record<string, Buffer>>((resolve, reject) => {
     process.on("error", (err) => {
       reject(new Error(`Process error: ${err.message}`));
     });
@@ -55,7 +55,7 @@ export async function convert9to16Ratio(inputPath: string, outputPath: string) {
   ];
   const process = spawn("ffmpeg", commands)
 
-  return new Promise<Record<string, Buffer<ArrayBufferLike>>>((resolve, reject) => {
+  return new Promise<Record<string, Buffer>>((resolve, reject) => {
     process.on("error", (err) => {
       reject(new Error(`Process error: ${err.message}`));
     });
@@ -101,7 +101,7 @@ export async function convert16to9Ratio(inputPath: string, outputPath: string) {
   
   const process = spawn("ffmpeg", croppingCommands)
 
-  return new Promise<Record<string, Buffer<ArrayBufferLike>>>((resolve, reject) => {
+  return new Promise<Record<string, Buffer>>((resolve, reject) => {
     process.on("error", (err) => {
       reject(new Error(`Process error: ${err.message}`));
     });

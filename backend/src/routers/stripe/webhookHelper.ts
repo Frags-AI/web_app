@@ -1,6 +1,6 @@
 import Stripe from "stripe"
 import stripe from "@/clients/stripe"
-import { PrismaClient } from "@/clients/prisma"
+import { PrismaClient } from "../../clients/prisma"
 
 export const handleWebhooks = async (event: Stripe.Event) => {
     switch (event.type) {

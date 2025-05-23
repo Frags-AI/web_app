@@ -2,7 +2,7 @@ import * as fs from "fs"
 import { promises as fsPromises } from "fs"
 import { OAuth2Client } from "google-auth-library"
 import { google } from "googleapis"
-import { PrismaClient } from "@/clients/prisma"
+import { PrismaClient } from "../../clients/prisma"
 
 const prisma = new PrismaClient()
 

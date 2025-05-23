@@ -1,5 +1,5 @@
 import { OAuth2Client } from "@/clients/google-clients";
-import { PrismaClient } from "@/clients/prisma";
+import { PrismaClient } from "../../clients/prisma";
 import * as fs from "fs"
 import { Credentials } from "google-auth-library";
 import { google } from "googleapis";

@@ -1,6 +1,6 @@
 import stripe from "@/clients/stripe";
 import clerkClient from "@/clients/clerk";
-import { PrismaClient } from "@/clients/prisma";
+import { PrismaClient } from "../../clients/prisma";
 
 export const getStripeUser = async (userId: string) => {
     if (!userId)  {

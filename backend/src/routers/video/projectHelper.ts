@@ -8,7 +8,7 @@ import {
   ListObjectsV2Command
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { PrismaClient, Project } from '@/clients/prisma';
+import { PrismaClient, Project } from "../../clients/prisma";
 import config from '@/utils/config.js';
 import { existsSync, promises } from "fs";
 import { identifierGenerator } from "@/lib/idGenerator";

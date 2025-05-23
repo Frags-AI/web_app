@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/clients/prisma";
+import { PrismaClient } from "../../clients/prisma";
 
 export async function getAllMediaPlatforms(userId: string) {
     const prisma = new PrismaClient()

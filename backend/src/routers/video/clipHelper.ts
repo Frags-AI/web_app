@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/clients/prisma"
+import { PrismaClient } from "../../clients/prisma"
 import { 
     S3Client, 
     GetObjectCommand, 

@@ -2,7 +2,7 @@ import { HonoRequest } from "hono";
 import config from "@/utils/config";
 import { ClerkUserCreatedEvent, ClerkUserUpdatedEvent, ClerkUserDeletedEvent } from "@/types";
 import { Webhook } from "svix";
-import { PrismaClient } from "@/clients/prisma";
+import { PrismaClient } from "../../clients/prisma";
 import clerkClient from "@/clients/clerk";
 import { WebhookEvent } from "@clerk/backend";
 const prisma = new PrismaClient();
@@ -72,7 +72,7 @@ async function getUser(userId: string) {
     const dbUser = await prisma.user.findUnique({
         where: { clerk_user_id: clerkUser.id },
         include: {
-            subscriptions: true,
+            subscription: true,
             videos: true,
         },
     });
@@ -84,7 +84,7 @@ async function getUser(userId: string) {
     const combinedUser = {
         ...clerkUser,
         stripeId: dbUser.stripe_id,
-        subscriptions: dbUser.subscriptions,
+        subscription: dbUser.subscription,
         videos: dbUser.videos,
     };
     return combinedUser;
