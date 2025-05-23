@@ -10,7 +10,6 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import { faFacebook, faXTwitter, faLinkedin, faDiscord, faYoutube, faTiktok, faInstagram }  from '@fortawesome/free-brands-svg-icons'
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Circle } from "lucide-react";
 
 const Pricing: React.FC = () => {
   const [isYearly, setIsYearly] = useState(false);
