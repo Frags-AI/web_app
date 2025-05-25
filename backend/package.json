@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "start": "node dist/index.js",
-    "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
+    "dev": "cross-env NODE_ENV=DEVELOPMENT tsx watch src/index.ts",
     "test": "jest",
     "cdk": "cdk"
   },
@@ -42,8 +42,9 @@
     "dotenv": "^16.4.7",
     "google-auth-library": "^9.15.1",
     "googleapis": "^148.0.0",
-    "hono": "^4.7.5",
+    "hono": "^4.7.10",
     "postcss": "^8.5.3",
+    "puppeteer": "^24.9.0",
     "react": "^19.1.0",
     "resend": "^4.5.1",
     "stripe": "^18.0.0",

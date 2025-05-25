@@ -1,5 +1,9 @@
 import { spawn, exec } from "child_process";
 import { promises } from "fs";
+import path from "path"
+
+const staticDir = path.join(process.cwd(), "static")
+const cookiesPath = path.resolve(staticDir, "cookies.txt")
 
 // Consult and use exec to cut down on logging if not using web sockets for progress
 
@@ -22,8 +26,10 @@ export async function youtubeVideo(
     name = name.substring(0, name.indexOf("."))
   }
 
-  const outputPath = `static/videos/${id}/` + name + ".%(ext)s"
-  const command = ["--cookies-from-browser", "firefox", "-f", "bestvideo[height<=1080]+bestaudio", "--merge-output-format", "mp4", "-o", outputPath, link]
+  const outputPath = path.join(staticDir, "videos", id, `${name + ".%(ext)s"}`)
+  const commandWithCookies = ["--cookies", cookiesPath, "-f", "bestvideo[height<=1080]+bestaudio", "--merge-output-format", "mp4", "-o", outputPath, link]
+  const command = ["-f", "bestvideo[height<=1080]+bestaudio", "--merge-output-format", "mp4", "-o", outputPath, link]
+  
 
   const process = spawn("yt-dlp", command);
 
@@ -89,8 +95,9 @@ export async function youtubeThumbnail(
     name = name.substring(0, name.indexOf("."))
   }
 
-  const outputPath = `static/videos/${id}/` + name + ".%(ext)s"
-  const commands = ["--cookies-from-browser", "firefox", "--skip-download", "--write-thumbnail", "--convert-thumbnails", "jpg", "-o", outputPath, link]
+  const outputPath = path.join(staticDir, "videos", id, `${name + ".%(ext)s"}`)
+  const commandsWithCookies = ["--cookies", cookiesPath, "--skip-download", "--write-thumbnail", "--convert-thumbnails", "jpg", "-o", outputPath, link]
+  const commands = ["--skip-download", "--write-thumbnail", "--convert-thumbnails", "jpg", "-o", outputPath, link]
 
   const process = spawn("yt-dlp", commands);
 
@@ -135,8 +142,11 @@ export function youtubeTitle(link: string): Promise<Record<string, string>> {
     link = link.substring(0, link.indexOf("&list"));
   }
 
+  const commandWithCookies = `yt-dlp --cookies ${cookiesPath} --get-title "${link}"`
+  const command = `yt-dlp --get-title "${link}"`
+
   return new Promise((resolve, reject) => {
-    exec(`yt-dlp --cookies-from-browser firefox --get-title "${link}"`, (error, stdout, stderr) => {
+    exec(command, (error, stdout, stderr) => {
       if (error) return reject(stderr || error.message);
       resolve({ title: stdout.trim() });
     });

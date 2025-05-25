@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import { clerkMiddleware } from "@hono/clerk-auth";
 import { logger } from "hono/logger";
 import serverRouter from "@/routers/server-status";
+import config from "./utils/config";
 import videoRouter from "@/routers/video";
 import stripeRouter from "@/routers/stripe";
 import clerkRouter from "@/routers/clerk";
@@ -12,7 +13,15 @@ import { socialMediaRouter } from "./routers/social-media";
 
 const app = new Hono()
 
-app.use("/api/*", cors())
+app.use("*",cors({
+    origin: config.ALLOWED_ORIGINS,
+    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowHeaders: ["Origin", "Content-Type", "Accept", "Authorization"],
+    exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
+    maxAge: 600,
+    credentials: true
+  })
+)
 app.use(clerkMiddleware())
 app.use(logger())
 
