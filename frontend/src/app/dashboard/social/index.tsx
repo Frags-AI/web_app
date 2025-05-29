@@ -31,9 +31,8 @@ import { useQuery } from "@tanstack/react-query"
 import LoadingScreen from "@/app/accessories/LoadingScreen"
 
 interface SocialMediaDataProps {
-  name: string,
-  provider: "youtube" | "tiktok" | "facebook" | "instagram",
-  id: string
+  scope: string,
+  provider: "youtube" | "tiktok" | "facebook" | "instagram"
 }
 
 export default function Page() {
@@ -121,12 +120,11 @@ export default function Page() {
         </SelectContent>
       </Select>
       <div className="min-w-[400px] min-h-[600px] max-w-[400px] max-h-[600px] p-4 border border-3 rounded-lg overflow-y-auto no-scrollbar">
-        {/* Use this to map the user's current platforms */}
         {!isLoading && socialPlatforms.map((platform) => (
-          <div key={platform.id} className="flex items-center gap-4 hover:cursor-pointer hover:bg-secondary/60 rounded-lg p-2 transition duration-300">
+          <div key={platform.provider + platform.scope} className="flex items-center gap-4 hover:cursor-pointer hover:bg-secondary/60 rounded-lg p-2 transition duration-300">
             <FontAwesomeIcon icon={iconMapping[platform.provider]} size="xl" />
             <div className="font-bold text-lg">{nameMapping[platform.provider]}</div>
-            <div className="font-bold text-muted-foreground">{platform.name}</div>
+            <div className="font-bold text-muted-foreground">{platform.scope}</div>
           </div>
         ))}
       </div>

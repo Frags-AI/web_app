@@ -53,7 +53,8 @@ export interface ProjectProps {
   jobId: string,
   thumbnail: string,
   title: string,
-  identifier: string
+  identifier: string,
+  createdAt: string
 }
 export interface InvoiceDataProps {
   date: string,

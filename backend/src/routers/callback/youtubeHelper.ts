@@ -12,31 +12,25 @@ export async function storeYoutubeToken(userId: string, token: Credentials) {
 
     if (!user || !token) return null
 
-    OAuth2Client.setCredentials({
-        access_token: token.access_token,
-        refresh_token: token.refresh_token
+    OAuth2Client.setCredentials(token)
+    
+    const authorizer = google.oauth2({
+        auth: OAuth2Client,
+        version: "v2"
     })
 
-    const youtube = google.youtube({
-        version: "v3",
-        auth: OAuth2Client
-    })
-    const res = await youtube.channels.list({
-        part: ["snippet"],
-        mine: true
-    })
+    const userInfo = (await authorizer.userinfo.get()).data
 
-    const channel = res.data.items?.[0]
-    const channelName = channel?.snippet?.title
-    const channelId = channel?.id
+    const email = userInfo.email || ""
+    const name = userInfo.name || ""
 
     const platform = await prisma.platform.create({
         data: {
             user_id: user.id,
-            provider: "youtube",
-            scope: token.scope,
-            name: channelName,
-            external_id: channelId
+            provider: "google",
+            scope: "youtube",
+            name,
+            email
         }
     })
 

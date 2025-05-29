@@ -1,5 +1,4 @@
 import { 
-  S3Client, 
   PutObjectCommand, 
   GetObjectCommand, 
   DeleteObjectsCommand,
@@ -12,16 +11,9 @@ import { PrismaClient, Project } from "../../clients/prisma";
 import config from '@/utils/config.js';
 import { existsSync, promises } from "fs";
 import { identifierGenerator } from "@/lib/idGenerator";
+import { s3 } from "@/clients/aws";
 
 const prisma = new PrismaClient();
-
-const s3 = new S3Client({
-  region: config.S3_REGION,
-  credentials: {
-    accessKeyId: config.S3_ACCESS,
-    secretAccessKey: config.S3_SECRET
-  }
-});
 
 async function getDbUser(userId: string) {
     const user = await prisma.user.findUnique({
@@ -90,7 +82,7 @@ export async function createProject(userId: string, jobId: string, file: File, t
     CacheControl: "3600"
   };
   const command = new PutObjectCommand(params)
-  const info = await s3.send(command)
+  await s3.send(command)
 
   return data
 }
@@ -107,7 +99,6 @@ export async function getAllProjects(userId: string) {
     const params = {
       Bucket: config.S3_BUCKET,
       Key: s3Key,
-      CacheControl: "3600"
     };
     const command = new GetObjectCommand(params)
     const url = await getSignedUrl(s3, command, {expiresIn: 3600})
@@ -117,6 +108,7 @@ export async function getAllProjects(userId: string) {
       status: project.status,
       thumbnail: url,
       title: project.title,
+      createdAt: project.created_at
 
     }
   }
@@ -183,7 +175,7 @@ export async function uploadToProject(files: File[], jobId: string) {
 }
 
 export async function deleteProject(userId: string , identifier: string) {
-  const s3Key = `${userId}/${identifier}/`;
+  const s3Key = `${userId}/${identifier}`;
   console.log(s3Key)
 
   const listCommand = new ListObjectsV2Command({

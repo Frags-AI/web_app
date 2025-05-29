@@ -5,10 +5,12 @@ import { serve } from "@hono/node-server"
 
 serve({
     fetch: app.fetch,
-    port: parseInt(config.PORT),
+    port: config.PORT,
 })
 
-if (config.ENVIRONMENT === "development") {
+console.log(`Server is running on port ${config.PORT}`)
+
+if (config.ENVIRONMENT === "DEVELOPMENT") {
     (async function() {
         const listener = await ngrok.forward({
             addr: config.PORT,

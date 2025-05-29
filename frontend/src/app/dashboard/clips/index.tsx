@@ -4,301 +4,657 @@ import { useState, useMemo, useCallback } from "react"
 import { useAuth } from "@clerk/clerk-react"
 import { useQuery } from "@tanstack/react-query"
 import ReactPlayer from "react-player"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCirclePause, faCirclePlay } from "@fortawesome/free-solid-svg-icons"
-import { faYoutube, faTiktok, faInstagram, faFacebook } from "@fortawesome/free-brands-svg-icons"
-import { 
-    DropdownMenu,
-    DropdownMenuTrigger,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuItem,
-    DropdownMenuRadioItem,
-    DropdownMenuRadioGroup,
-} from "@/components/ui/dropdown-menu"
+import { motion, AnimatePresence } from "framer-motion"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from "@/components/ui/dialog"
-import { Ellipsis, Download, Pencil, Proportions, CloudUpload } from "lucide-react"
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+  DropdownMenuRadioItem,
+  DropdownMenuRadioGroup,
+} from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { faYoutube, faTiktok, faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons"
+import {
+  Ellipsis,
+  Download,
+  Pencil,
+  Proportions,
+  Play,
+  Pause,
+  Maximize2,
+  Share2,
+  Clock,
+  Eye,
+  Grid3X3,
+  List,
+  Search,
+  Filter,
+  SortDesc,
+  Copy,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
-import { SocialMediaCardProps } from "@/types"
+import type { SocialMediaCardProps } from "@/types"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 interface VideoProps {
-    title: string
-    link: string,
-    aspectRatio: string
+  title: string
+  link: string
+  aspectRatio: string
+  duration?: number
+  createdAt?: string
+  thumbnail?: string
 }
 
 const urlParts = window.location.pathname.split("/")
 const projectIdentifier = urlParts[urlParts.length - 1]
 
 interface VideoCardProps {
-    video: VideoProps,
-    setVideoNumber: React.Dispatch<React.SetStateAction<number>>,
-    videoIdx: number,
-    currentIdx: number,
-    setCurrentIdx: React.Dispatch<React.SetStateAction<number>>
+  video: VideoProps
+  setVideoNumber: React.Dispatch<React.SetStateAction<number>>
+  videoIdx: number
+  currentIdx: number
+  setCurrentIdx: React.Dispatch<React.SetStateAction<number>>
+  viewMode: "grid" | "list"
 }
 
-function VideoCard({video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx}: VideoCardProps) {
-    const { getToken } = useAuth()
-    const [displayPlayback, setDisplayPlayback] = useState<boolean>(false)
-    const [showModal, setShowModal] = useState<boolean>(false)
-    const [aspectRatio, setAspectRatio] = useState<string>(video.aspectRatio)
-    const [isProcessing, setIsProcessing] = useState<boolean>(false)
-    const isTall = aspectRatio === "9:16"
-    
-    const handleClick = () => {
-        setCurrentIdx((prev) => prev === videoIdx ? -1 : videoIdx)
+function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx, viewMode }: VideoCardProps) {
+  const { getToken } = useAuth()
+  const [displayPlayback, setDisplayPlayback] = useState<boolean>(false)
+  const [showModal, setShowModal] = useState<boolean>(false)
+  const [aspectRatio, setAspectRatio] = useState<string>(video.aspectRatio)
+  const [isProcessing, setIsProcessing] = useState<boolean>(false)
+  const [isHovered, setIsHovered] = useState<boolean>(false)
+
+  const isPlaying = currentIdx === videoIdx
+  const isTall = aspectRatio === "9:16"
+
+  const handleClick = () => {
+    setCurrentIdx((prev) => (prev === videoIdx ? -1 : videoIdx))
+  }
+
+  const socialMediaCards: SocialMediaCardProps[] = [
+    { name: "YouTube", type: "youtube", description: "Upload to Channel", icon: faYoutube },
+    { name: "TikTok", type: "tiktok", description: "Upload to Feed", icon: faTiktok },
+    { name: "Facebook", type: "facebook", description: "Upload to Page", icon: faFacebook },
+    { name: "Instagram", type: "instagram", description: "Upload to Page", icon: faInstagram },
+  ]
+
+  const handleVideoLoad = () => {
+    setVideoNumber((prev) => prev + 1)
+  }
+
+  const handleClipExpand = () => {
+    setCurrentIdx(-1)
+    setShowModal(true)
+  }
+
+  const handleSocialMediaClick = async (type: string, link: string, title: string) => {
+    try {
+      const token = await getToken()
+      toast.info(`Uploading clip to ${type}`)
+      const message = await handleSocialMediaUpload(type, link, title, token)
+      toast.success(message)
+    } catch (err: any) {
+      toast.error(err.message)
     }
+  }
 
-    const socialMediaCards: SocialMediaCardProps[] = [
-        { name: "YouTube", type: "youtube", description: "Upload to Channel", icon: faYoutube},
-        { name: "TikTok", type: "tiktok", description: "Upload to Feed", icon: faTiktok},
-        { name: "Facebook", type: "facebook", description: "Upload to Page", icon: faFacebook},
-        { name: "Instagram", type: "instagram", description: "Upload to Page", icon: faInstagram},
-    ]
+  const handleDownloadClip = async (url: string, videoName: string) => {
+    try {
+      toast.info("Downloading video...")
+      const response = await fetch(url)
+      if (!response.ok) throw new Error("Failed to download video")
 
-    const handleVideoLoad = () => {
-        setVideoNumber((prev) => prev + 1)
+      const blob = await response.blob()
+      const blobURL = URL.createObjectURL(blob)
+
+      const link = document.createElement("a")
+      link.href = blobURL
+      link.download = videoName.split(" ").join("_") + ".mp4"
+      document.body.appendChild(link)
+      link.click()
+
+      document.body.removeChild(link)
+      URL.revokeObjectURL(blobURL)
+
+      toast.success("Successfully downloaded video")
+    } catch (err: any) {
+      toast.error(err.message)
     }
-    
-    const handleClipExpand = () => {
-        setCurrentIdx(-1)
-        setShowModal((prev) => !prev)
+  }
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(video.link)
+      toast.success("Link copied to clipboard")
+    } catch (err) {
+      toast.error("Failed to copy link")
     }
+  }
 
-    const handleSocialMediaClick = async (type: string, link: string, title: string) => {
-        try {
-            const token = await getToken()
-            toast.info(`Uploading clip to ${type}`)
-            const message = await handleSocialMediaUpload(type, link, title, token)
-            toast.info(message)
-        } catch (err) {
-            toast.error(err.message)
-        }
+  const convertAspectRatio = async (video: VideoProps, ratio: string) => {
+    if (ratio === aspectRatio || isProcessing) return
+
+    try {
+      setIsProcessing(true)
+      toast.info("Starting conversion...")
+      const token = await getToken()
+      setShowModal(false)
+      const response = await changeAspectRatio(token, projectIdentifier, ratio, video.link, video.title)
+      if (!response.ok) throw new Error("Failed to convert aspect ratio")
+      setAspectRatio(ratio)
+      toast.success("Successfully changed aspect ratio")
+    } catch (err: any) {
+      toast.error(err.message)
+    } finally {
+      setIsProcessing(false)
     }
+  }
 
-    const handleDownloadClip = async (url: string, videoName: string) => {
-        try {
-            toast.info("Downloading video...")
-            const response = await fetch(url)
-            if (!response.ok) throw new Error("Failed to download video")
-    
-            const blob = await response.blob()
-            const blobURL = URL.createObjectURL(blob)
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, "0")}`
+  }
 
-            const link = document.createElement("a")
-            link.href = blobURL
-            link.download = videoName.split(" ").join("_") + ".mp4"
-            document.body.appendChild(link)
-            link.click()
-
-            document.body.removeChild(link)
-            URL.revokeObjectURL(blobURL)
-
-            toast.success("Successfully downloaded video")
-        } catch (err) {
-            toast.error(err.message)
-        }
-    }
-    
-    const convertAspectRatio = async (video: VideoProps, ratio: string) => {
-        if (ratio === aspectRatio || isProcessing) return
-
-        try {
-            setIsProcessing(true)
-            toast.info("Starting conversion...")
-            const token = await getToken()
-            setShowModal(false)
-            const response = await changeAspectRatio(token, projectIdentifier, ratio, video.link, video.title)
-            if (!response.ok) throw new Error("Failed to convert aspect ratio")
-            setAspectRatio(ratio)
-            toast.success("Successfully changed aspect ratio")
-        } catch (err) {
-            toast.error(err.message)
-        }
-    }
-
+  if (viewMode === "list") {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="text-lg">{video.title}</div>
-        <div 
-            className={`flex${isTall ? "" : " flex-col"} justify-between bg-background hover:bg-secondary/20 hover:cursor-pointer items-center 
-                w-[500px] h-[350px] rounded-lg p-4${isProcessing ? " pointer-events-none" : ""}`}
-            onClick={(e) => {
-              const target = e.target as HTMLElement
-              if (
-                target.closest("button") ||
-                target.closest("[role='menu']") ||
-                target.closest("svg") ||
-                target.closest("a")
-              ) return
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`group ${isProcessing ? "opacity-50 pointer-events-none" : ""}`}
+      >
+        <Card className="hover:shadow-md transition-all duration-300">
+          <CardContent className="p-4">
+            <div className="flex gap-4 items-center">
+              <div
+                className="relative w-32 h-20 bg-muted rounded-lg overflow-hidden cursor-pointer flex-shrink-0"
+                onClick={handleClipExpand}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                <ReactPlayer
+                  url={video.link}
+                  width="100%"
+                  height="100%"
+                  playing={isPlaying}
+                  loop={true}
+                  onReady={handleVideoLoad}
+                  light={video.thumbnail}
+                />
+                <AnimatePresence>
+                  {isHovered && (
+                    <motion.div
+                      className="absolute inset-0 bg-black/20 flex items-center justify-center"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="rounded-full w-8 h-8 p-0"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleClick()
+                        }}
+                      >
+                        {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                      </Button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
-              handleClipExpand()
-            }}
-            onMouseEnter={() => setDisplayPlayback(true)}
-            onMouseLeave={() => setDisplayPlayback(false)}
-        >
-            <div className="relative w-full h-full rounded-lg flex items-center">
-                <ReactPlayer url={video.link} width="100%" height="100%" playing={videoIdx === currentIdx} loop={true} onReady={handleVideoLoad} style={{ position: "absolute", top: 0, left: 0}}/>
-                {displayPlayback &&                 
-                    <FontAwesomeIcon 
-                        icon={currentIdx !== videoIdx ? faCirclePlay : faCirclePause} 
-                        className={`text-primary absolute ${isTall ? "top-33 left-24" : "top-30 left-50"}`} size="2x" onClick={handleClick}/>
-                }
-            </div>
-            <div className={`text-base text-muted-foreground flex${isTall ? " flex-col h-full items-end" : " justify-end"} w-100 z-5`}>
-              <DropdownMenu>
-                  <DropdownMenuTrigger><Ellipsis /></DropdownMenuTrigger>
-                  <DropdownMenuContent className="z-5">
-                      <DropdownMenuLabel>Options</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="hover:cursor-pointer" onClick={() => handleDownloadClip(video.link, video.title)}><Download />Download Clip</DropdownMenuItem>
-                      <DropdownMenuItem className="hover:cursor-pointer"><Pencil />Edit Clip</DropdownMenuItem>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-sm truncate mb-1">{video.title}</h3>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    <span>{video.duration ? formatDuration(video.duration) : "0:30"}</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs">
+                    {aspectRatio}
+                  </Badge>
+                  {isProcessing && (
+                    <Badge variant="secondary" className="text-xs">
+                      Processing...
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleClipExpand}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </Button>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="sm" variant="ghost">
+                      <Ellipsis className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => handleDownloadClip(video.link, video.title)}>
+                      <Download className="w-4 h-4 mr-2" />
+                      Download
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleCopyLink}>
+                      <Copy className="w-4 h-4 mr-2" />
+                      Copy Link
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Pencil className="w-4 h-4 mr-2" />
+                      Edit Clip
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Share
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    )
+  }
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className={`group ${isProcessing ? "opacity-50 pointer-events-none" : ""}`}
+    >
+      <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div className="relative">
+          <div
+            className="aspect-video bg-muted cursor-pointer relative overflow-hidden"
+            onClick={handleClipExpand}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            <ReactPlayer
+              url={video.link}
+              width="100%"
+              height="100%"
+              playing={isPlaying}
+              loop={true}
+              onReady={handleVideoLoad}
+              light={video.thumbnail}
+            />
+
+            {/* Overlay Controls */}
+            <AnimatePresence>
+              {isHovered && (
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    className="rounded-full w-12 h-12 p-0 shadow-lg"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleClick()
+                    }}
+                  >
+                    {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+                  </Button>
+
+                  <div className="absolute top-3 right-3">
+                    <Button size="sm" variant="secondary" className="rounded-full w-8 h-8 p-0">
+                      <Maximize2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs">
+                      {video.duration ? formatDuration(video.duration) : "0:30"}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs bg-background/80">
+                      {aspectRatio}
+                    </Badge>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {isProcessing && (
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
+                <div className="bg-background rounded-lg px-4 py-2 flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  <span className="text-sm font-medium">Converting...</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <CardHeader className="p-4">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-sm truncate mb-1">{video.title}</h3>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Eye className="w-3 h-3" />
+                  <span>Ready to share</span>
+                </div>
+              </div>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                    <Ellipsis className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => handleDownloadClip(video.link, video.title)}>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleCopyLink}>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Link
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Pencil className="w-4 h-4 mr-2" />
+                    Edit Clip
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
               </DropdownMenu>
             </div>
-              {showModal && 
-                <Dialog open={showModal}>
-                    <DialogContent className="min-w-4xl">
-                        <DialogHeader className="mb-4">
-                            <DialogTitle className="text-4xl text-center">{video.title}</DialogTitle>
-                        </DialogHeader>
-                        <DialogDescription className="flex gap-4">
-                            <ReactPlayer url={video.link} width="600px" height="400px" controls={true} playing={showModal} />
-                            <div className="flex flex-col gap-4 justify-center">
-                                <Button 
-                                  className="flex gap-2 font-bold justify-start" 
-                                  variant="secondary" 
-                                  onClick={() => handleDownloadClip(video.link, video.title)}
-                                >
-                                    <Download size={16}/>
-                                    <div>Download Clip</div>
-                                </Button>
-                                <Button className="flex gap-2 font-bold justify-start" variant="secondary">
-                                  <Pencil size={16}/>
-                                  <div>Edit Clip</div>
-                                </Button>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button variant="secondary" className="flex gap-2 font-bold justify-start">
-                                      <Proportions />
-                                      <div>Change Aspect Ratio</div>
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent className="w-56">
-                                    <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuRadioGroup value={aspectRatio} onValueChange={(value) => convertAspectRatio(video, value)} >
-                                      <DropdownMenuRadioItem value="1:1" className="cursor-pointer">1:1</DropdownMenuRadioItem>
-                                      <DropdownMenuRadioItem value="9:16" className="cursor-pointer">9:16</DropdownMenuRadioItem>
-                                      <DropdownMenuRadioItem value="16:9" className="cursor-pointer">16:9</DropdownMenuRadioItem>
-                                    </DropdownMenuRadioGroup>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                                <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button variant="secondary" className="flex gap-2 font-bold justify-start">
-                                    <CloudUpload />
-                                    <div>Upload to Social Media</div>
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-md">
-                                    <DialogHeader>
-                                    <DialogTitle className="text-lg font-bold text-center">Choose a platform</DialogTitle>
-                                    </DialogHeader>
-                                    <div className="grid grid-cols-2 gap-4 mt-4">
-                                    {socialMediaCards.map((card) => (
-                                        <div
-                                            key={card.type}
-                                            className={`border border-4 rounded-lg p-4 flex flex-col items-center text-center gap-2 font-bold hover:bg-secondary/60 
-                                            hover:cursor-pointer transition duration-300${card.name === "YouTube" ? "" : " pointer-events-none bg-muted"}`}
-                                            onClick={() => handleSocialMediaClick(card.type, video.link, video.title)}
-                                            
-                                        >
-                                        <FontAwesomeIcon icon={card.icon} size="xl"/>
-                                        <div className="text-lg">{card.name}</div>
-                                        <div className="text-muted-foreground text-sm">{card.description}</div>
-                                        {card.name !== "YouTube" && <div className="text-muted-foreground text-sm">Coming soon!</div>}
-                                        </div>
-                                    ))}
-                                    </div>
-                                </DialogContent>
-                                </Dialog>
-                            </div>
-                        </DialogDescription>
-                    </DialogContent>
-                </Dialog>
-              }
+          </CardHeader>
+        </div>
+      </Card>
+
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">{video.title}</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <div className="aspect-video bg-black rounded-lg overflow-hidden">
+                <ReactPlayer url={video.link} width="100%" height="100%" controls={true} playing={showModal} />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  className="justify-start gap-2"
+                  onClick={() => handleDownloadClip(video.link, video.title)}
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </Button>
+                <Button variant="outline" className="justify-start gap-2">
+                  <Pencil className="w-4 h-4" />
+                  Edit
+                </Button>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                <h4 className="font-semibold text-sm">Aspect Ratio</h4>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      <div className="flex items-center gap-2">
+                        <Proportions className="w-4 h-4" />
+                        Current: {aspectRatio}
+                      </div>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-full">
+                    <DropdownMenuLabel>Select Ratio</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuRadioGroup
+                      value={aspectRatio}
+                      onValueChange={(value) => convertAspectRatio(video, value)}
+                    >
+                      <DropdownMenuRadioItem value="1:1" className="cursor-pointer">
+                        1:1 (Square)
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="9:16" className="cursor-pointer">
+                        9:16 (Vertical)
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="16:9" className="cursor-pointer">
+                        16:9 (Horizontal)
+                      </DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                <h4 className="font-semibold text-sm">Share to Social Media</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {socialMediaCards.map((platform) => (
+                    <Button
+                      key={platform.type}
+                      variant="outline"
+                      className={`h-auto p-3 flex flex-col gap-1 ${
+                        platform.name !== "YouTube" ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                      onClick={() =>
+                        platform.name === "YouTube" && handleSocialMediaClick(platform.type, video.link, video.title)
+                      }
+                      disabled={platform.name !== "YouTube"}
+                    >
+                      <FontAwesomeIcon icon={platform.icon} />
+                      <div className="text-lg">{platform.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {platform.name === "YouTube" ? "Ready" : "Coming Soon"}
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm">Video Details</h4>
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <div>Duration: {video.duration ? formatDuration(video.duration) : "0:30"}</div>
+                  <div>Aspect Ratio: {aspectRatio}</div>
+                  <div>Format: MP4</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </motion.div>
+  )
+}
+
+function VideoCards({ videos, viewMode }: { videos: VideoProps[]; viewMode: "grid" | "list" }) {
+  const [loadedVideos, setLoadedVideos] = useState<number>(0)
+  const [currentIdx, setCurrentIdx] = useState<number>(-1)
+
+  const allVideosLoaded = loadedVideos > 0 && loadedVideos >= videos.length
+
+  const videoCards = useMemo(() => {
+    return videos.map((video, idx) => (
+      <VideoCard
+        key={video.link}
+        video={video}
+        setVideoNumber={setLoadedVideos}
+        videoIdx={idx}
+        currentIdx={currentIdx}
+        setCurrentIdx={setCurrentIdx}
+        viewMode={viewMode}
+      />
+    ))
+  }, [videos, currentIdx, viewMode])
+
+  return (
+    <>
+      {!allVideosLoaded && <LoadingScreen />}
+      <AnimatePresence>
+        <motion.div
+          key={viewMode}
+          className={`${
+            viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-4"
+          } ${allVideosLoaded ? "" : "hidden"}`}
+          layout
+        >
+          {videoCards}
+        </motion.div>
+      </AnimatePresence>
+    </>
+  )
+}
+
+function ClipsHeader({
+  videoCount,
+  viewMode,
+  setViewMode,
+  searchQuery,
+  setSearchQuery,
+}: {
+  videoCount: number
+  viewMode: "grid" | "list"
+  setViewMode: (mode: "grid" | "list") => void
+  searchQuery: string
+  setSearchQuery: (query: string) => void
+}) {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Video Clips</h1>
+          <p className="text-muted-foreground">
+            {videoCount > 0 ? `${videoCount} clips ready to share` : "No clips available"}
+          </p>
         </div>
       </div>
-    )
-}
 
-function VideoCards({videos}: { videos: VideoProps[] }) {
-    const [loadedVideos, setLoadedVideos] = useState<number>(0)
-    const [currentIdx, setCurrentIdx] = useState<number>(-1)
-
-    const allVideosLoaded = loadedVideos > 0 && loadedVideos >= videos.length
-    const videoCards = useMemo(() => {
-        return videos.map((video, idx) => (
-            <VideoCard
-                key={video.link}
-                video={video}
-                setVideoNumber={setLoadedVideos}
-                videoIdx={idx}
-                currentIdx={currentIdx}
-                setCurrentIdx={setCurrentIdx}
-            />
-        ))
-    }, [videos, currentIdx])
-
-    return (
-        <>
-            {!allVideosLoaded && <LoadingScreen />}
-            <div className={`flex gap-8 flex-wrap ${allVideosLoaded ? "" : "hidden"}`}>
-                {videoCards}
+      {videoCount > 0 && (
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+          <div className="flex gap-4 items-center flex-1">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search clips..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
             </div>
-        </>
-    )
-}
 
-export default function Page() {
-    const { getToken, isLoaded } = useAuth()
+            <Button variant="outline" size="sm" className="gap-2">
+              <Filter className="w-4 h-4" />
+              Filter
+            </Button>
 
-    const getVideoClips = useCallback(async () => {
-        const token = await getToken()
-        return await getAllClips(token, projectIdentifier)
-    }, [getToken])
+            <Button variant="outline" size="sm" className="gap-2">
+              <SortDesc className="w-4 h-4" />
+              Sort
+            </Button>
+          </div>
 
-    const {data, isLoading, error} = useQuery({
-        queryKey: [`ProjectVideoClips${projectIdentifier}`],
-        queryFn: getVideoClips,
-        refetchOnWindowFocus: false,
-        staleTime: 3600 * 1000,
-        enabled: isLoaded,
-        retry: false,
-        refetchOnReconnect: false
-    })
-
-    let videos: VideoProps[] = []
-
-    if (data) videos = data as VideoProps[]
-
-    return (
-        <div className="flex flex-col">
-            <div className="font-bold text-2xl flex flex-col gap-4">
-                <div className="text-muted-foreground text-base">Total clips {`${isLoading ? "" : `(${videos.length})`}`}</div>
-                {isLoading ? <LoadingScreen /> : <VideoCards videos={videos} />}
-            </div>
+          <div className="flex gap-2">
+            <Button variant={viewMode === "grid" ? "default" : "outline"} size="sm" onClick={() => setViewMode("grid")}>
+              <Grid3X3 className="w-4 h-4" />
+            </Button>
+            <Button variant={viewMode === "list" ? "default" : "outline"} size="sm" onClick={() => setViewMode("list")}>
+              <List className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
-    )
+      )}
+    </div>
+  )
+}
+
+export default function EnhancedClipsPage() {
+  const { getToken, isLoaded } = useAuth()
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const getVideoClips = useCallback(async () => {
+    const token = await getToken()
+    return await getAllClips(token, projectIdentifier)
+  }, [getToken])
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: [`ProjectVideoClips${projectIdentifier}`],
+    queryFn: getVideoClips,
+    refetchOnWindowFocus: false,
+    staleTime: 3600 * 1000,
+    enabled: isLoaded,
+    retry: false,
+    refetchOnReconnect: false,
+  })
+
+  let videos: VideoProps[] = []
+  if (data) videos = data as VideoProps[]
+
+  const filteredVideos = videos.filter((video) => video.title.toLowerCase().includes(searchQuery.toLowerCase()))
+
+  if (isLoading) {
+    return <LoadingScreen />
+  }
+
+  return (
+    <div className="space-y-8 p-6">
+      <ClipsHeader
+        videoCount={filteredVideos.length}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
+
+      {filteredVideos.length === 0 && !isLoading ? (
+        <div className="text-center py-16">
+          <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+            <Eye className="w-12 h-12 text-muted-foreground" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2">No clips found</h3>
+          <p className="text-muted-foreground">
+            {searchQuery
+              ? "Try adjusting your search terms."
+              : "Your clips will appear here once processing is complete."}
+          </p>
+        </div>
+      ) : (
+        <VideoCards videos={filteredVideos} viewMode={viewMode} />
+      )}
+    </div>
+  )
 }

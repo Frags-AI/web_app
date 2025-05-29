@@ -4,7 +4,7 @@ import { ClipsReady } from "./templates/clip-ready-template";
 
 const resend = new Resend(config.RESEND_API_KEY)
 
-export const ClipsReadyNotification = async (email: string, url: string) => {
+export const clipsReadyNotification = async (email: string, url: string) => {
     const { data, error } = await resend.emails.send({
         from: `support${config.RESEND_DOMAIN}`,
         to: email,

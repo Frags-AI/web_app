@@ -1,8 +1,6 @@
 import config from "@/utils/config";
 import { S3Client } from "@aws-sdk/client-s3";
 
-console.log(config)
-
 export const s3 = new S3Client({
   region: config.S3_REGION,
   credentials: {

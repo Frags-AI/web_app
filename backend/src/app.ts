@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { clerkMiddleware } from "@hono/clerk-auth";
+import { bodyLimit } from "hono/body-limit"
 import { logger } from "hono/logger";
 import serverRouter from "@/routers/server-status";
 import config from "./utils/config";
@@ -13,15 +14,13 @@ import { socialMediaRouter } from "./routers/social-media";
 
 const app = new Hono()
 
-app.use("*",cors({
-    origin: config.ALLOWED_ORIGINS,
-    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowHeaders: ["Origin", "Content-Type", "Accept", "Authorization"],
-    exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
-    maxAge: 600,
-    credentials: true
-  })
-)
+// app.use(cors({
+//   origin: config.ALLOWED_ORIGINS,
+//   credentials: true
+// }))
+
+app.use(cors())
+
 app.use(clerkMiddleware())
 app.use(logger())
 

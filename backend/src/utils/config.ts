@@ -1,6 +1,8 @@
+import dotenv from "dotenv"
+dotenv.config()
 
 interface ConfigProps {
-    PORT: string
+    PORT: number
     ENVIRONMENT: string
     STRIPE_PUBLIC: string
     STRIPE_SECRET: string
@@ -25,8 +27,7 @@ interface ConfigProps {
     ALLOWED_ORIGINS: string[]
 }
 
-
-const PORT = process.env.PORT || '3000'
+const PORT = process.env.PORT && process.env.PORT !== "" ? parseInt(process.env.PORT) : 3000
 const ENVIRONMENT = process.env.NODE_ENV || 'DEVELOPMENT'
 const STRIPE_PUBLIC = process.env.STRIPE_PUBLISHABLE_KEY || ''
 const STRIPE_SECRET = process.env.STRIPE_SECRET_KEY || ''

@@ -51,8 +51,8 @@ export default function Workflow() {
         setThumbnailURL(URL.createObjectURL(thumbnail))
       } else {
         const generateThumbnail = async() => {
-          const data = await generateVideoThumbnail(file) as string
-          setThumbnailURL(data)
+          const response = await generateVideoThumbnail(file)
+          setThumbnailURL(response)
         }
         generateThumbnail()
       }
@@ -71,9 +71,10 @@ export default function Workflow() {
     try {
       const token: string = await getToken()
       const jobId: string = v4()
-      const image = new File([thumbnail], "project_thumbnail.png", { type: "image/png" })
+      const image = thumbnail ? new File([thumbnail], "project_thumbnail.png", { type: "image/png" }) : null
+
       const response = await createProject(token, jobId, file as File, image, title)
-      if (!response.ok) {
+      if (!response) {
         toast.error("Something went wrong, please try again")
         setLoading(false)
         return

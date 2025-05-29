@@ -13,9 +13,10 @@ export async function getAllMediaPlatforms(userId: string) {
 
     const data = user?.platforms.map((platform) => {
         const obj = {
-            name: platform.name,
+            scope: platform,
             provider: platform.provider,
-            id: platform.external_id
+            name: platform.name,
+            email: platform.email
         }
 
         return obj

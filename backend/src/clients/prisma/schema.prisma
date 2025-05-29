@@ -65,17 +65,17 @@ model Subscription {
 }
 
 model Platform {
-  id          String  @id @default(uuid())
-  user_id     String
-  provider    String
-  name        String? // Name of channel/page/feed
-  scope       String?
-  external_id String? // specific id of platform
+  id       String @id @default(uuid())
+  user_id  String
+  provider String
+  scope    String
+  name     String
+  email    String
 
   user  User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
   token OAuthToken?
 
-  @@unique([user_id, provider, external_id])
+  @@unique([user_id, provider, scope, email])
 }
 
 model OAuthToken {
