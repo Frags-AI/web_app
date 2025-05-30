@@ -5,6 +5,8 @@ export const generateYoutubeAuthURL = async (userId: string, clientURL: string) 
         access_type: "offline",
           scope: [
             "https://www.googleapis.com/auth/youtube",
+            "https://www.googleapis.com/auth/youtube.readonly",
+            "https://www.googleapis.com/auth/youtube.upload",
             "openid",
             "email",
             "profile"

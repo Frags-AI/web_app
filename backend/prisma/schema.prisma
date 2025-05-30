@@ -71,11 +71,12 @@ model Platform {
   name            String
   details         String
   email           String
+  external_id     String
 
   user            User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   token           OAuthToken?
 
-  @@unique([user_id, provider, scope, email])
+  @@unique([user_id, provider, scope, external_id])
 }
 
 model OAuthToken {

@@ -15,17 +15,23 @@ export async function storeYoutubeToken(userId: string, token: Credentials) {
     OAuth2Client.setCredentials(token)
 
     const userInfo = (await google.oauth2({auth: OAuth2Client, version: "v2"}).userinfo.get()).data
+    const youtubeData = (await google.youtube({ auth: OAuth2Client, version: "v3"}).channels.list({part: ["snippet"], mine: true})).data
+    const channel = youtubeData.items?.[0]!
+
+    if (!channel) throw new Error("Could not locate channel")
 
     const email = userInfo.email || ""
-    const name = userInfo.name || ""
+    
+    const channelName = channel.snippet?.title!
+    const channelId = channel.id!
 
     const response = await prisma.platform.findUnique({
         where: {
-            user_id_provider_scope_email: {
+            user_id_provider_scope_external_id: {
                 user_id: user.id,
                 provider: "Google",
                 scope: "YouTube",
-                email
+                external_id: channelId
             }
         }
     })
@@ -38,8 +44,9 @@ export async function storeYoutubeToken(userId: string, token: Credentials) {
             provider: "Google",
             scope: "YouTube",
             details: "Channel",
-            name,
-            email
+            name: channelName,
+            email,
+            external_id: channelId
         }
     })
 

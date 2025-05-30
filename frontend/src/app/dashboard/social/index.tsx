@@ -129,9 +129,9 @@ export default function Page() {
                 <div className="text-foreground">Name: </div>
                 {platform.name}
               </div>
-              <div className="text-muted-foreground flex justify-between">
+              <div className="text-muted-foreground flex justify-between gap-4">
                 <div className="text-foreground">Email: </div>
-                <div className="ellipsis">{platform.email}</div>
+                <div className="truncate">{platform.email}</div>
               </div>
               <div className="text-muted-foreground flex justify-between">
                 <div className="text-foreground">Type: </div>

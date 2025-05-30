@@ -506,6 +506,7 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
                                 providerData={getMappedProviders(providerData, platform.name)} 
                                 setter={setSelectedPlatform}
                                 link={video.link}
+                                title={video.title}
                               />
                             </SheetDescription>
                           </SheetHeader>

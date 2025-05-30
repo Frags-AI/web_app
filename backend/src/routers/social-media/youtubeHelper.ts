@@ -7,8 +7,6 @@ import { getOrRefreshGoogleAccessToken } from "@/utils/tokens"
 
 const prisma = new PrismaClient()
 
-const youtube = google.youtube("v3")
-
 async function getDbUser(userId: string) {
   return prisma.user.findFirst({
     where: { clerk_user_id: userId },
@@ -18,31 +16,6 @@ async function getDbUser(userId: string) {
       },
     },
   })
-}
-
-export async function getYouTubeChannels(platformId: string) {
-
-  const token = await getOrRefreshGoogleAccessToken(platformId)
-  OAuth2Client.setCredentials({ access_token: token })
-
-  const youtube = google.youtube({
-    auth: OAuth2Client,
-    version: "v3"
-  })
-
-  const channelResponse = (await youtube.channels.list({
-    part: ["snippet"],
-    mine: true
-  })).data
-
-  const channels = channelResponse?.items?.map((channel) => {
-    return {
-      title: channel.snippet?.title,
-      description: channel.snippet?.title,
-      id: channel.id
-    }
-  })
-  return channels
 }
 
 export async function createDownloadPath(title: string, link: string) {
@@ -58,22 +31,23 @@ export async function createDownloadPath(title: string, link: string) {
   return videoPath
 }
 
-export async function uploadToYouTube(userId: string, title: string, filePath: string) {
+export async function uploadToYouTube(userId: string, title: string, filePath: string, platformId: string) {
   const user = await getDbUser(userId)
   if (!user) throw new Error("User not found")
 
-  const youtubePlatform = user.platforms.find(p => p.provider === "youtube")
-  if (!youtubePlatform || !youtubePlatform.token) {
-    throw new Error("YouTube platform or token not found for this user")
-  }
+  const platform = await prisma.platform.findUnique({where: { id: platformId }})
 
-  const { access_token, refresh_token, expiry_date, token_type } = youtubePlatform.token
+  if (!platform) throw new Error("Failed to get platform")
+  
+  const token = await getOrRefreshGoogleAccessToken(platform.id)
 
   OAuth2Client.setCredentials({
-    access_token,
-    refresh_token,
-    expiry_date: expiry_date?.getTime(),
-    token_type
+    access_token: token
+  })
+
+  const youtube = google.youtube({
+    auth: OAuth2Client,
+    version: "v3"
   })
 
   const res = await youtube.videos.insert({
