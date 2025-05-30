@@ -26,56 +26,52 @@ import { Button } from "@/components/ui/button"
 import { useAuth } from "@clerk/clerk-react"
 import { toast } from "sonner"
 import { addPlatformProvider, getPlatforms } from "./socialHelper"
-import { useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
-import LoadingScreen from "@/app/accessories/LoadingScreen"
-
-interface SocialMediaDataProps {
-  scope: string,
-  provider: "youtube" | "tiktok" | "facebook" | "instagram"
-}
+import { PlatformDataProps } from "@/types"
 
 export default function Page() {
 
   const { getToken } = useAuth()
   const [filter, setFilter] = useState<string>("")
-  const navigate = useNavigate()
 
   const getAllPlatforms = async () => {
     const token = await getToken()
     const data = await getPlatforms(token)
+    console.log(data)
     return data
   }
 
-  const { data: socialPlatforms, error, isLoading } = useQuery<SocialMediaDataProps[]>({
+  const { data: socialPlatforms, error, isLoading } = useQuery<PlatformDataProps[]>({
     queryKey: ["SocialMediaPlatforms"],
     queryFn: () => getAllPlatforms(),
     refetchOnWindowFocus: false
   })
 
   const socialMediaCards: SocialMediaCardProps[] = [
-    { name: "All Platforms", type: "all-platforms", icon: faLayerGroup},
-    { name: "YouTube", type: "youtube", description: "Upload to Channel", icon: faYoutube},
-    { name: "TikTok", type: "tiktok", description: "Upload to Feed", icon: faTiktok},
-    { name: "Facebook", type: "facebook", description: "Upload to Page", icon: faFacebook},
-    { name: "Instagram", type: "instagram", description: "Upload to Page", icon: faInstagram},
+    { name: "All Platforms", type: "All-Platforms", icon: faLayerGroup},
+    { name: "YouTube", type: "YouTube", description: "Upload to Channel", icon: faYoutube},
+    { name: "TikTok", type: "TikTok", description: "Upload to Feed", icon: faTiktok},
+    { name: "Facebook", type: "Facebook", description: "Upload to Page", icon: faFacebook},
+    { name: "Instagram", type: "Instagram", description: "Upload to Page", icon: faInstagram},
   ]
 
+  const allowedProviders = [ "YouTube" ]
+
   const iconMapping = {
-    "youtube": faYoutube,
-    "tiktok": faTiktok,
-    "facebook": faFacebook,
-    "instagram": faInstagram
+    "YouTube": faYoutube,
+    "TikTok": faTiktok,
+    "Facebook": faFacebook,
+    "Instagram": faInstagram
   }
   const nameMapping = {
-    "youtube": "YouTube",
-    "tiktok": "TikTok",
-    "facebook": "Facebook",
-    "instagram": "Instagram"
+    "YouTube": "YouTube",
+    "TikTok": "TikTok",
+    "Facebook": "Facebook",
+    "Instagram": "Instagram"
   }
 
   const handleFilterChange = (value: string) => {
-    setFilter(value === "all-platforms" ? "" : value)
+    setFilter(value === "All-Platforms" ? "" : value)
   }
 
   const handleSocialCardClick = async (type: string) => {
@@ -97,18 +93,18 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col gap-4 w-[400px]">
+    <div className="flex flex-col gap-4 w-[400px] self-center">
       <div className="text-2xl font-bold">Manage Social Accounts</div>
-      <Select defaultValue="all-platforms" onValueChange={handleFilterChange}>
+      <Select defaultValue="All-Platforms" onValueChange={handleFilterChange}>
         <SelectTrigger>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectGroup defaultValue="all-platforms">
+          <SelectGroup>
             <SelectLabel className="text-xl font-bold mb-4">Select Platform</SelectLabel>
             <div className="flex flex-col gap-2">
               {socialMediaCards.map((card) => (
-                <SelectItem value={card.type} className="hover:cursor-pointer flex gap-4">
+                <SelectItem value={card.type} className="hover:cursor-pointer flex gap-4" key={card.type + card.name}>
                   <div className="flex gap-4">
                     <FontAwesomeIcon icon={card.icon} size="xl"/>
                     <div className="font-bold">{card.name}</div>
@@ -119,18 +115,35 @@ export default function Page() {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <div className="min-w-[400px] min-h-[600px] max-w-[400px] max-h-[600px] p-4 border border-3 rounded-lg overflow-y-auto no-scrollbar">
-        {!isLoading && socialPlatforms.map((platform) => (
-          <div key={platform.provider + platform.scope} className="flex items-center gap-4 hover:cursor-pointer hover:bg-secondary/60 rounded-lg p-2 transition duration-300">
-            <FontAwesomeIcon icon={iconMapping[platform.provider]} size="xl" />
-            <div className="font-bold text-lg">{nameMapping[platform.provider]}</div>
-            <div className="font-bold text-muted-foreground">{platform.scope}</div>
+      <div className="w-[400px] h-[600px] p-4 border border-3 rounded-lg overflow-y-auto no-scrollbar flex flex-col gap-4">
+        {!isLoading && socialPlatforms.filter((obj) => obj.scope.includes(filter)).map((platform) => (
+          <div className="flex flex-col gap-2 hover:cursor-pointer hover:bg-secondary/60 rounded-lg p-4 transition duration-300 text-lg border border-3">
+            <div key={platform.provider + platform.scope} className="flex items-center gap-4 w-full">
+              <FontAwesomeIcon icon={iconMapping[platform.scope]} size="xl" />
+              <div className="font-bold">{nameMapping[platform.scope]}</div>
+              <div className="grow"/>
+              <div className="font-bold text-muted-foreground">{platform.provider}</div>
+            </div>
+            <div className="font-bold text-base flex flex-col w-full ellipsis">
+              <div className="text-muted-foreground flex justify-between">
+                <div className="text-foreground">Name: </div>
+                {platform.name}
+              </div>
+              <div className="text-muted-foreground flex justify-between">
+                <div className="text-foreground">Email: </div>
+                <div className="ellipsis">{platform.email}</div>
+              </div>
+              <div className="text-muted-foreground flex justify-between">
+                <div className="text-foreground">Type: </div>
+                {platform.details}
+              </div>
+            </div>
           </div>
         ))}
       </div>
       <Dialog>
-        <DialogTrigger className="flex justify-end">
-          <Button className="flex gap-4">
+        <DialogTrigger>
+          <Button className="flex gap-4 w-full">
             <Plus />
             <div className="font-bold">Add Provider</div>
           </Button>
@@ -143,15 +156,14 @@ export default function Page() {
           {socialMediaCards.map((card) => card.name !== "All Platforms" && ( 
               <div
                 key={card.type}
-                className={`border border-4 rounded-lg p-4 flex flex-col items-center text-center gap-2 font-bold hover:bg-secondary/60 
-                  hover:cursor-pointer transition duration-300${card.name === "YouTube" ? "" : " pointer-events-none bg-muted"}`}
+                className={`border border-4 rounded-lg p-4 flex flex-col items-center justify-center text-center gap-2 font-bold hover:bg-secondary/60 
+                  hover:cursor-pointer transition duration-300${allowedProviders.includes(card.name) ? "" : " pointer-events-none bg-muted"}`}
                 onClick={() => handleSocialCardClick(card.type)}
-                
               >
               <FontAwesomeIcon icon={card.icon} size="xl"/>
               <div className="text-lg">{card.name}</div>
               <div className="text-muted-foreground text-sm">{card.description}</div>
-              {card.name !== "YouTube" && <div className="text-muted-foreground text-sm">Coming soon!</div>}
+              {!allowedProviders.includes(card.name) && <div className="text-muted-foreground text-sm">Coming soon!</div>}
               </div>
           ))}
           </div>

@@ -65,8 +65,17 @@ export interface InvoiceDataProps {
 }
 
 export interface SocialMediaCardProps {
-    name: string,
-    type: string,
-    description?: string,
-    icon: IconDefinition
+  name: string,
+  type: string,
+  description?: string,
+  icon: IconDefinition
+}
+
+export interface PlatformDataProps {
+  email: string,
+  name: string,
+  provider: string,
+  scope: "YouTube" | "TikTok" | "Facebook" | "Instagram",
+  details: string
+  id: string
 }

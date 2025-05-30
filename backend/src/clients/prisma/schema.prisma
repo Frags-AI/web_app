@@ -70,6 +70,7 @@ model Platform {
   provider String
   scope    String
   name     String
+  details  String
   email    String
 
   user  User        @relation(fields: [user_id], references: [id], onDelete: Cascade)

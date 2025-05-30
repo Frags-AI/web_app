@@ -1,5 +1,13 @@
 import LoadingScreen from "@/app/accessories/LoadingScreen"
-import { changeAspectRatio, handleSocialMediaUpload, getAllClips } from "./clipHelper"
+import { 
+  changeAspectRatio, 
+  handleSocialMediaUpload, 
+  getAllClips, SocialMediaForm, 
+  allowedProviders, 
+  Providers, 
+  getAllSocialProviders,
+  getMappedProviders,
+} from "./clipHelper"
 import { useState, useMemo, useCallback } from "react"
 import { useAuth } from "@clerk/clerk-react"
 import { useQuery } from "@tanstack/react-query"
@@ -35,6 +43,15 @@ import {
   SortDesc,
   Copy,
 } from "lucide-react"
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -43,6 +60,8 @@ import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import type { SocialMediaCardProps } from "@/types"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { PlatformDataProps } from "@/types"
+
 
 interface VideoProps {
   title: string
@@ -62,16 +81,18 @@ interface VideoCardProps {
   videoIdx: number
   currentIdx: number
   setCurrentIdx: React.Dispatch<React.SetStateAction<number>>
+  providerData: PlatformDataProps[]
   viewMode: "grid" | "list"
 }
 
-function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx, viewMode }: VideoCardProps) {
+function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx, viewMode, providerData }: VideoCardProps) {
   const { getToken } = useAuth()
   const [displayPlayback, setDisplayPlayback] = useState<boolean>(false)
   const [showModal, setShowModal] = useState<boolean>(false)
   const [aspectRatio, setAspectRatio] = useState<string>(video.aspectRatio)
   const [isProcessing, setIsProcessing] = useState<boolean>(false)
   const [isHovered, setIsHovered] = useState<boolean>(false)
+  const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null)
 
   const isPlaying = currentIdx === videoIdx
   const isTall = aspectRatio === "9:16"
@@ -96,7 +117,7 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
     setShowModal(true)
   }
 
-  const handleSocialMediaClick = async (type: string, link: string, title: string) => {
+  const handleSocialUpload = async (type: string, link: string, title: string) => {
     try {
       const token = await getToken()
       toast.info(`Uploading clip to ${type}`)
@@ -163,6 +184,12 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
     return `${mins}:${secs.toString().padStart(2, "0")}`
+  }
+
+  const checkSelection = (provider: string) => {
+    const mapped = getMappedProviders(providerData, provider)
+    if (mapped) setSelectedPlatform(provider)
+    else toast.error(`Please create a provider for ${provider}`)
   }
 
   if (viewMode === "list") {
@@ -303,7 +330,6 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
               light={video.thumbnail}
             />
 
-            {/* Overlay Controls */}
             <AnimatePresence>
               {isHovered && (
                 <motion.div
@@ -332,7 +358,7 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
 
                   <div className="absolute bottom-3 left-3 flex items-center gap-2">
                     <Badge variant="secondary" className="text-xs">
-                      {video.duration ? formatDuration(video.duration) : "0:30"}
+                      {video.duration ? formatDuration(video.duration) : "01:00"}
                     </Badge>
                     <Badge variant="outline" className="text-xs bg-background/80">
                       {aspectRatio}
@@ -462,23 +488,37 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
                 <h4 className="font-semibold text-sm">Share to Social Media</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {socialMediaCards.map((platform) => (
-                    <Button
-                      key={platform.type}
-                      variant="outline"
-                      className={`h-auto p-3 flex flex-col gap-1 ${
-                        platform.name !== "YouTube" ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
-                      onClick={() =>
-                        platform.name === "YouTube" && handleSocialMediaClick(platform.type, video.link, video.title)
-                      }
-                      disabled={platform.name !== "YouTube"}
-                    >
-                      <FontAwesomeIcon icon={platform.icon} />
-                      <div className="text-lg">{platform.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {platform.name === "YouTube" ? "Ready" : "Coming Soon"}
-                      </div>
-                    </Button>
+                    <div key={platform.name + platform.type}>
+                      <Button
+                        key={platform.type}
+                        variant="outline"
+                        className={`w-full h-auto p-3 flex flex-col gap-1 ${
+                          !allowedProviders.includes(platform.name) ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        onClick={() => allowedProviders.includes(platform.name) && checkSelection(platform.name)}
+                        disabled={!allowedProviders.includes(platform.name)}
+                      >
+                        <FontAwesomeIcon icon={platform.icon} />
+                        <div className="text-lg">{platform.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {allowedProviders.includes(platform.name) ? "Ready" : "Coming Soon"}
+                        </div>
+                      </Button>
+                      <Sheet 
+                        key={platform.name} 
+                        open={selectedPlatform === platform.name} 
+                        onOpenChange={(value) => setSelectedPlatform((prev) => value ? prev : null)}
+                      >
+                        <SheetContent>
+                          <SheetHeader>
+                            <SheetTitle className="text-2xl">Upload to {platform.name}</SheetTitle>
+                            <SheetDescription>
+                              <SocialMediaForm provider={platform.name as Providers} providerData={getMappedProviders(providerData, platform.name)}/>
+                            </SheetDescription>
+                          </SheetHeader>
+                        </SheetContent>
+                      </Sheet>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -504,8 +544,23 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
 function VideoCards({ videos, viewMode }: { videos: VideoProps[]; viewMode: "grid" | "list" }) {
   const [loadedVideos, setLoadedVideos] = useState<number>(0)
   const [currentIdx, setCurrentIdx] = useState<number>(-1)
+  const { getToken } = useAuth()
+
+  async function getPlatforms() {
+    const token = await getToken()
+    const data = await getAllSocialProviders(token)
+    return data
+
+  }
+
+  const {data: providerData, isLoading: platformsLoading} = useQuery<PlatformDataProps[]>({
+    queryKey:["SocialMediaProviderList"],
+    queryFn: getPlatforms
+  })
+
 
   const allVideosLoaded = loadedVideos > 0 && loadedVideos >= videos.length
+
 
   const videoCards = useMemo(() => {
     return videos.map((video, idx) => (
@@ -517,9 +572,10 @@ function VideoCards({ videos, viewMode }: { videos: VideoProps[]; viewMode: "gri
         currentIdx={currentIdx}
         setCurrentIdx={setCurrentIdx}
         viewMode={viewMode}
+        providerData={providerData}
       />
     ))
-  }, [videos, currentIdx, viewMode])
+  }, [videos, currentIdx, viewMode, providerData])
 
   return (
     <>
@@ -601,7 +657,7 @@ function ClipsHeader({
   )
 }
 
-export default function EnhancedClipsPage() {
+export default function Page() {
   const { getToken, isLoaded } = useAuth()
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [searchQuery, setSearchQuery] = useState("")

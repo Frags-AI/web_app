@@ -4,7 +4,6 @@ import { getAuth } from "@hono/clerk-auth";
 
 export const youtubeRouter = new Hono()
 
-// Get OAuth URL
 youtubeRouter.get("", async (c) => {
     const userId = getAuth(c)?.userId
 
