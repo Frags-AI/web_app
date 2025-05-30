@@ -1,6 +1,6 @@
 import Stripe from "stripe"
 import stripe from "@/clients/stripe"
-import { PrismaClient } from "../../clients/prisma"
+import { prisma } from "@/clients/db";
 
 export const handleWebhooks = async (event: Stripe.Event) => {
     switch (event.type) {
@@ -26,7 +26,6 @@ export const handleWebhooks = async (event: Stripe.Event) => {
                 })
             }
 
-            const prisma = new PrismaClient()
             const user = await prisma.user.findFirst({ where: { stripe_id: customerId } })
 
             if (!user) return { received: true, type: event.type, code: 401 }

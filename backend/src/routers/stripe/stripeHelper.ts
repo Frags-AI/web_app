@@ -1,6 +1,6 @@
 import stripe from "@/clients/stripe";
 import clerkClient from "@/clients/clerk";
-import { PrismaClient } from "../../clients/prisma";
+import { prisma } from "@/clients/db";
 
 export const getStripeUser = async (userId: string) => {
     if (!userId)  {
@@ -37,8 +37,6 @@ export const createStripeUser = async (userId: string) => {
         email: user.primaryEmailAddress?.emailAddress || "",
         metadata: { clerk_id: user.id }
     })
-
-    const prisma = new PrismaClient()
 
     const res = await prisma.user.update({
         where: {

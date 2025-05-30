@@ -1,4 +1,5 @@
-import { PrismaClient } from "../../clients/prisma"
+import { prisma } from "@/clients/db";
+import { s3 } from "@/clients/aws";
 import { 
     S3Client, 
     GetObjectCommand, 
@@ -10,16 +11,6 @@ import {
 } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import config from "@/utils/config"
-
-const prisma = new PrismaClient();
-
-const s3 = new S3Client({
-  region: config.S3_REGION,
-  credentials: {
-    accessKeyId: config.S3_ACCESS,
-    secretAccessKey: config.S3_SECRET
-  }
-});
 
 export const getClips = async (userId: string, identifier: string) => {
     const s3Key = `${userId}/${identifier}/clips`

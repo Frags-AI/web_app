@@ -2,10 +2,9 @@ import { HonoRequest } from "hono";
 import config from "@/utils/config";
 import { ClerkUserCreatedEvent, ClerkUserUpdatedEvent, ClerkUserDeletedEvent } from "@/types";
 import { Webhook } from "svix";
-import { PrismaClient } from "../../clients/prisma";
+import { prisma } from "@/clients/db";
 import clerkClient from "@/clients/clerk";
 import { WebhookEvent } from "@clerk/backend";
-const prisma = new PrismaClient();
 
 export const authenticateRequest = async (req: HonoRequest) => {
     const signing_secret = config.CLERK_SIGNING_SECRET

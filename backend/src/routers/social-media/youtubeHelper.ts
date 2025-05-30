@@ -2,10 +2,9 @@ import * as fs from "fs"
 import { promises as fsPromises } from "fs"
 import { OAuth2Client } from "@/clients/google-clients"
 import { google } from "googleapis"
-import { PrismaClient } from "../../clients/prisma"
+import { prisma } from "@/clients/db";
 import { getOrRefreshGoogleAccessToken } from "@/utils/tokens"
 
-const prisma = new PrismaClient()
 
 async function getDbUser(userId: string) {
   return prisma.user.findFirst({

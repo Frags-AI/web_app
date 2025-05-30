@@ -1,12 +1,11 @@
 import { OAuth2Client } from "@/clients/google-clients";
-import { PrismaClient } from "../../clients/prisma";
+import { prisma } from "@/clients/db";
 import * as fs from "fs"
 import { Credentials } from "google-auth-library";
 import { google } from "googleapis";
 
 
 export async function storeYoutubeToken(userId: string, token: Credentials) {
-    const prisma = new PrismaClient()
 
     const user = await prisma.user.findUnique({ where: { clerk_user_id: userId }})
 

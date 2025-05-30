@@ -1,7 +1,6 @@
-import { PrismaClient } from "../../clients/prisma";
+import { prisma } from "@/clients/db";
 
 export async function getAllMediaPlatforms(userId: string) {
-    const prisma = new PrismaClient()
 
     const user = await prisma.user.findUnique({ 
         where: {clerk_user_id: userId },

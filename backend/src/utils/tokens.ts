@@ -15,22 +15,25 @@ export async function getOrRefreshGoogleAccessToken(platformId: string) {
     const currentTime = Date.now()
     const expirationTime = expiry_date?.getTime()
 
-    if (expirationTime && expirationTime - currentTime < 300000) { // 5 minutes or less from expiring
+    if (!expirationTime || expirationTime - currentTime < 300000) { // 5 minutes or less from expiring
+
         OAuth2Client.setCredentials({ refresh_token })
-        const token = (await OAuth2Client.getAccessToken()).token
+        const { credentials } = await OAuth2Client.refreshAccessToken();
 
-        if (!token) throw new Error("Failed to refresh access token")
+        const newToken = credentials.access_token
 
-        const tokenInfo = await OAuth2Client.getTokenInfo(token)
+        if (!newToken) throw new Error("Failed to refresh access token")
+
+        const tokenInfo = await OAuth2Client.getTokenInfo(newToken)
 
         await prisma.oAuthToken.update({
             where: {platform_id: platformId},
             data: {
-                access_token: token,
-                expiry_date: new Date(tokenInfo.expiry_date)
+                access_token: newToken,
+                expiry_date: credentials.expiry_date ? new Date(credentials.expiry_date) : null
             }
         })
 
-        return token
+        return newToken
     } else return access_token
 }
