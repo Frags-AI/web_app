@@ -1,8 +1,9 @@
 import * as fs from "fs"
 import { promises as fsPromises } from "fs"
-import { OAuth2Client } from "google-auth-library"
+import { OAuth2Client } from "@/clients/google-clients"
 import { google } from "googleapis"
 import { PrismaClient } from "../../clients/prisma"
+import { getOrRefreshGoogleAccessToken } from "@/utils/tokens"
 
 const prisma = new PrismaClient()
 
@@ -17,6 +18,31 @@ async function getDbUser(userId: string) {
       },
     },
   })
+}
+
+export async function getYouTubeChannels(platformId: string) {
+
+  const token = await getOrRefreshGoogleAccessToken(platformId)
+  OAuth2Client.setCredentials({ access_token: token })
+
+  const youtube = google.youtube({
+    auth: OAuth2Client,
+    version: "v3"
+  })
+
+  const channelResponse = (await youtube.channels.list({
+    part: ["snippet"],
+    mine: true
+  })).data
+
+  const channels = channelResponse?.items?.map((channel) => {
+    return {
+      title: channel.snippet?.title,
+      description: channel.snippet?.title,
+      id: channel.id
+    }
+  })
+  return channels
 }
 
 export async function createDownloadPath(title: string, link: string) {
@@ -43,13 +69,7 @@ export async function uploadToYouTube(userId: string, title: string, filePath: s
 
   const { access_token, refresh_token, expiry_date, token_type } = youtubePlatform.token
 
-  const oauth2Client = new OAuth2Client(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.GOOGLE_REDIRECT_URI
-  )
-
-  oauth2Client.setCredentials({
+  OAuth2Client.setCredentials({
     access_token,
     refresh_token,
     expiry_date: expiry_date?.getTime(),
@@ -57,7 +77,7 @@ export async function uploadToYouTube(userId: string, title: string, filePath: s
   })
 
   const res = await youtube.videos.insert({
-    auth: oauth2Client,
+    auth: OAuth2Client,
     part: ["snippet", "status"],
     requestBody: {
       snippet: {

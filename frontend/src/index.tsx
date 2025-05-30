@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ClerkProvider } from '@clerk/clerk-react';
+import { TooltipProvider } from './components/ui/tooltip';
 import localization from '@/clerk/localization';
 import './index.css';
 import App from './App';
@@ -37,8 +38,10 @@ root.render(
               signUpFallbackRedirectUrl='/'
               appearance={appearance}
           >
-            <App />
-            <Toaster/>
+            <TooltipProvider>
+              <App />
+              <Toaster/>
+            </TooltipProvider>
           </ClerkProvider>
         </QueryClientProvider>
       </ThemeProvider>

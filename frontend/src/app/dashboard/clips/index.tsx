@@ -1,7 +1,6 @@
 import LoadingScreen from "@/app/accessories/LoadingScreen"
 import { 
   changeAspectRatio, 
-  handleSocialMediaUpload, 
   getAllClips, SocialMediaForm, 
   allowedProviders, 
   Providers, 
@@ -115,17 +114,6 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
   const handleClipExpand = () => {
     setCurrentIdx(-1)
     setShowModal(true)
-  }
-
-  const handleSocialUpload = async (type: string, link: string, title: string) => {
-    try {
-      const token = await getToken()
-      toast.info(`Uploading clip to ${type}`)
-      const message = await handleSocialMediaUpload(type, link, title, token)
-      toast.success(message)
-    } catch (err: any) {
-      toast.error(err.message)
-    }
   }
 
   const handleDownloadClip = async (url: string, videoName: string) => {
@@ -513,7 +501,12 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
                           <SheetHeader>
                             <SheetTitle className="text-2xl">Upload to {platform.name}</SheetTitle>
                             <SheetDescription>
-                              <SocialMediaForm provider={platform.name as Providers} providerData={getMappedProviders(providerData, platform.name)}/>
+                              <SocialMediaForm 
+                                provider={platform.name as Providers} 
+                                providerData={getMappedProviders(providerData, platform.name)} 
+                                setter={setSelectedPlatform}
+                                link={video.link}
+                              />
                             </SheetDescription>
                           </SheetHeader>
                         </SheetContent>
