@@ -1,12 +1,11 @@
 import * as fs from "fs"
 import { promises as fsPromises } from "fs"
-import { OAuth2Client } from "google-auth-library"
+import { OAuth2Client } from "@/clients/google-clients"
 import { google } from "googleapis"
 import { PrismaClient } from "../../clients/prisma"
+import { getOrRefreshGoogleAccessToken } from "@/utils/tokens"
 
 const prisma = new PrismaClient()
-
-const youtube = google.youtube("v3")
 
 async function getDbUser(userId: string) {
   return prisma.user.findFirst({
@@ -32,32 +31,27 @@ export async function createDownloadPath(title: string, link: string) {
   return videoPath
 }
 
-export async function uploadToYouTube(userId: string, title: string, filePath: string) {
+export async function uploadToYouTube(userId: string, title: string, filePath: string, platformId: string) {
   const user = await getDbUser(userId)
   if (!user) throw new Error("User not found")
 
-  const youtubePlatform = user.platforms.find(p => p.provider === "youtube")
-  if (!youtubePlatform || !youtubePlatform.token) {
-    throw new Error("YouTube platform or token not found for this user")
-  }
+  const platform = await prisma.platform.findUnique({where: { id: platformId }})
 
-  const { access_token, refresh_token, expiry_date, token_type } = youtubePlatform.token
+  if (!platform) throw new Error("Failed to get platform")
+  
+  const token = await getOrRefreshGoogleAccessToken(platform.id)
 
-  const oauth2Client = new OAuth2Client(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.GOOGLE_REDIRECT_URI
-  )
+  OAuth2Client.setCredentials({
+    access_token: token
+  })
 
-  oauth2Client.setCredentials({
-    access_token,
-    refresh_token,
-    expiry_date: expiry_date?.getTime(),
-    token_type
+  const youtube = google.youtube({
+    auth: OAuth2Client,
+    version: "v3"
   })
 
   const res = await youtube.videos.insert({
-    auth: oauth2Client,
+    auth: OAuth2Client,
     part: ["snippet", "status"],
     requestBody: {
       snippet: {

@@ -6,7 +6,7 @@ export async function getPlatforms (token: string) {
 }
 
 export async function addPlatformProvider (token: string, provider: string) {
-    if (provider === "youtube") {
+    if (provider === "YouTube") {
         const response = await axios.get(
             `${import.meta.env.VITE_API_URL}/api/oauth/youtube`, 
             {

@@ -144,7 +144,6 @@ function ProjectCard({ project, onDelete }: { project: ProjectProps; onDelete: (
                   }`}
                 />
 
-                {/* Overlay for non-processing projects */}
                 {project.status !== "processing" && (
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                     <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -152,7 +151,6 @@ function ProjectCard({ project, onDelete }: { project: ProjectProps; onDelete: (
                 )}
               </div>
 
-              {/* Processing overlay */}
               <AnimatePresence>
                 {project.status === "processing" && <ProjectProcessingOverlay project={project} />}
               </AnimatePresence>
@@ -260,7 +258,7 @@ function EmptyState() {
       <p className="text-muted-foreground text-center max-w-md mb-6">
         Get started by creating your first project. Upload a video and let our AI create amazing clips for you.
       </p>
-      <Button onClick={() => navigate("/dashboard/upload")} className="gap-2">
+      <Button onClick={() => navigate("/dashboard/studio")} className="gap-2">
         <Plus className="w-4 h-4" />
         Create Your First Project
       </Button>
@@ -351,23 +349,20 @@ export default function Home() {
 
   return (
     <div className="space-y-8 p-6">
-      {/* Header */}
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-muted-foreground">Manage and view all your video projects</p>
           </div>
-          <Button onClick={() => navigate("/dashboard/upload")} className="gap-2">
+          <Button onClick={() => navigate("/dashboard/studio")} className="gap-2">
             <Plus className="w-4 h-4" />
             New Project
           </Button>
         </div>
 
-        {/* Stats */}
         {projects && projects.length > 0 && <ProjectStats projects={projects} />}
 
-        {/* Search and Filters */}
         {projects && projects.length > 0 && (
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
             <div className="flex gap-4 items-center flex-1">
@@ -410,7 +405,6 @@ export default function Home() {
         )}
       </div>
 
-      {/* Projects */}
       <div>
         {!projects || projects.length === 0 ? (
           <EmptyState />

@@ -65,17 +65,19 @@ model Subscription {
 }
 
 model Platform {
-  id       String @id @default(uuid())
-  user_id  String
-  provider String
-  scope    String
-  name     String
-  email    String
+  id          String @id @default(uuid())
+  user_id     String
+  provider    String
+  scope       String
+  name        String
+  details     String
+  email       String
+  external_id String
 
   user  User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
   token OAuthToken?
 
-  @@unique([user_id, provider, scope, email])
+  @@unique([user_id, provider, scope, external_id])
 }
 
 model OAuthToken {
