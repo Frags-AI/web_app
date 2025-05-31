@@ -9,7 +9,7 @@ import {
 } from "./clipHelper"
 import { useState, useMemo, useCallback } from "react"
 import { useAuth } from "@clerk/clerk-react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query"
 import ReactPlayer from "react-player"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -80,11 +80,16 @@ interface VideoCardProps {
   videoIdx: number
   currentIdx: number
   setCurrentIdx: React.Dispatch<React.SetStateAction<number>>
+  adjustRationMutation: UseMutationResult<
+    { clipTitle: string; newRatio: string; newLink: string },
+    Error,
+    { clipTitle: string; selectedRatio: string; selectedLink: string }
+  >
   providerData: PlatformDataProps[]
   viewMode: "grid" | "list"
 }
 
-function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx, viewMode, providerData }: VideoCardProps) {
+function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx, viewMode, providerData, adjustRationMutation }: VideoCardProps) {
   const { getToken } = useAuth()
   const [displayPlayback, setDisplayPlayback] = useState<boolean>(false)
   const [showModal, setShowModal] = useState<boolean>(false)
@@ -152,20 +157,26 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
   const convertAspectRatio = async (video: VideoProps, ratio: string) => {
     if (ratio === aspectRatio || isProcessing) return
 
-    try {
-      setIsProcessing(true)
-      toast.info("Starting conversion...")
-      const token = await getToken()
-      setShowModal(false)
-      const response = await changeAspectRatio(token, projectIdentifier, ratio, video.link, video.title)
-      if (!response.ok) throw new Error("Failed to convert aspect ratio")
-      setAspectRatio(ratio)
-      toast.success("Successfully changed aspect ratio")
-    } catch (err: any) {
-      toast.error(err.message)
-    } finally {
-      setIsProcessing(false)
-    }
+    setIsProcessing(true)
+    toast.info("Starting conversion...")
+    adjustRationMutation.mutate(
+      {
+        clipTitle: video.title,
+        selectedRatio: ratio,
+        selectedLink: video.link
+      },
+      {
+        onSuccess: (data) => {
+          toast.success("Aspect Ratio updated")
+          setAspectRatio(data.newRatio)
+        },
+        onSettled: () => {
+          setIsProcessing(false)
+          setShowModal(false)
+        }
+      }
+    )
+    
   }
 
   const formatDuration = (seconds: number) => {
@@ -539,6 +550,7 @@ function VideoCards({ videos, viewMode }: { videos: VideoProps[]; viewMode: "gri
   const [loadedVideos, setLoadedVideos] = useState<number>(0)
   const [currentIdx, setCurrentIdx] = useState<number>(-1)
   const { getToken } = useAuth()
+  const queryClient = useQueryClient()
 
   async function getPlatforms() {
     const token = await getToken()
@@ -552,6 +564,32 @@ function VideoCards({ videos, viewMode }: { videos: VideoProps[]; viewMode: "gri
     queryFn: getPlatforms
   })
 
+  const adjustRatioMutation = useMutation<
+    { clipTitle: string; newRatio: string; newLink: string },
+    Error,
+    { clipTitle: string; selectedRatio: string; selectedLink: string }
+  >({
+    mutationFn: async ({clipTitle, selectedRatio, selectedLink}) => {
+      const token = await getToken()
+      const response = await changeAspectRatio(
+          token,
+          projectIdentifier,
+          selectedRatio,
+          selectedLink,
+          clipTitle
+        ) 
+      return { newRatio: response.aspectRatio, newLink: response.link, clipTitle }
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData<VideoProps[]>(
+        ["ProjectVideoClips", projectIdentifier],
+        (oldClips) => oldClips?.map((clip) => clip.title === data.clipTitle ? { ...clip, link: data.newLink, aspectRatio: data.newRatio } : clip) || []
+      )
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    }
+  })
 
   const allVideosLoaded = loadedVideos > 0 && loadedVideos >= videos.length
 
@@ -565,6 +603,7 @@ function VideoCards({ videos, viewMode }: { videos: VideoProps[]; viewMode: "gri
         videoIdx={idx}
         currentIdx={currentIdx}
         setCurrentIdx={setCurrentIdx}
+        adjustRationMutation={adjustRatioMutation}
         viewMode={viewMode}
         providerData={providerData}
       />
@@ -667,8 +706,8 @@ export default function Page() {
     refetchOnWindowFocus: false,
     staleTime: 3600 * 1000,
     enabled: isLoaded,
-    retry: false,
-    refetchOnReconnect: false,
+    retry: true,
+    refetchOnReconnect: true,
   })
 
   let videos: VideoProps[] = []

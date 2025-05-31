@@ -46,7 +46,7 @@ export async function changeAspectRatio(token: string, identifier: string, ratio
         { identifier, ratio, link, title },
         { headers: {Authorization: `Bearer ${token}`} }
     )
-    return response.data
+    return response.data as {link: string, aspectRatio: string}
 }
 
 export function getMappedProviders(data: PlatformDataProps[], scope: string) {
