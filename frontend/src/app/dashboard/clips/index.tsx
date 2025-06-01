@@ -7,6 +7,9 @@ import {
   getAllSocialProviders,
   getMappedProviders,
 } from "./clipHelper"
+import {
+  addVideoSubtitles
+} from "./transcribingHelper"
 import { useState, useMemo, useCallback } from "react"
 import { useAuth } from "@clerk/clerk-react"
 import { useQuery, useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query"
@@ -41,6 +44,7 @@ import {
   Filter,
   SortDesc,
   Copy,
+  Captions
 } from "lucide-react"
 import {
   Sheet,
@@ -60,6 +64,7 @@ import { toast } from "sonner"
 import type { SocialMediaCardProps } from "@/types"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { PlatformDataProps } from "@/types"
+import { faL } from "@fortawesome/free-solid-svg-icons"
 
 
 interface VideoProps {
@@ -84,14 +89,18 @@ interface VideoCardProps {
     { clipTitle: string; newRatio: string; newLink: string },
     Error,
     { clipTitle: string; selectedRatio: string; selectedLink: string }
+  >,
+  addSubtitlesMutation: UseMutationResult<
+    {newLink: string; title: string}, 
+    Error, 
+    {selectedLink: string; title: string }, 
+    unknown
   >
   providerData: PlatformDataProps[]
   viewMode: "grid" | "list"
 }
 
-function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx, viewMode, providerData, adjustRationMutation }: VideoCardProps) {
-  const { getToken } = useAuth()
-  const [displayPlayback, setDisplayPlayback] = useState<boolean>(false)
+function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx, viewMode, providerData, adjustRationMutation, addSubtitlesMutation }: VideoCardProps) {
   const [showModal, setShowModal] = useState<boolean>(false)
   const [aspectRatio, setAspectRatio] = useState<string>(video.aspectRatio)
   const [isProcessing, setIsProcessing] = useState<boolean>(false)
@@ -99,7 +108,6 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null)
 
   const isPlaying = currentIdx === videoIdx
-  const isTall = aspectRatio === "9:16"
 
   const handleClick = () => {
     setCurrentIdx((prev) => (prev === videoIdx ? -1 : videoIdx))
@@ -154,17 +162,13 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
     }
   }
 
-  const convertAspectRatio = async (video: VideoProps, ratio: string) => {
+  const handleRatioChange = async (video: VideoProps, ratio: string) => {
     if (ratio === aspectRatio || isProcessing) return
 
     setIsProcessing(true)
     toast.info("Starting conversion...")
     adjustRationMutation.mutate(
-      {
-        clipTitle: video.title,
-        selectedRatio: ratio,
-        selectedLink: video.link
-      },
+      {clipTitle: video.title, selectedRatio: ratio, selectedLink: video.link},
       {
         onSuccess: (data) => {
           toast.success("Aspect Ratio updated")
@@ -173,6 +177,24 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
         onSettled: () => {
           setIsProcessing(false)
           setShowModal(false)
+        }
+      }
+    )
+  }
+
+  const handleSubtitleAddition = async (link: string, title: string) => {
+    if (isProcessing) return
+
+    setIsProcessing(true)
+    toast.info("Adding Subtitles...")
+    addSubtitlesMutation.mutate(
+      {selectedLink: link, title},
+      {
+        onSuccess: () => {
+          toast.success("Added Subtitles to Video")
+        },
+        onSettled: () => {
+          setIsProcessing(false)
         }
       }
     )
@@ -445,6 +467,10 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
                   <Pencil className="w-4 h-4" />
                   Edit
                 </Button>
+                <Button variant="outline" className="justify-start gap-2" onClick={() => handleSubtitleAddition(video.link, video.title)}>
+                  <Captions className="w-4 h-4"/>
+                  Add Subtitles
+                </Button>
               </div>
 
               <Separator />
@@ -465,7 +491,7 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
                     <DropdownMenuSeparator />
                     <DropdownMenuRadioGroup
                       value={aspectRatio}
-                      onValueChange={(value) => convertAspectRatio(video, value)}
+                      onValueChange={(value) => handleRatioChange(video, value)}
                     >
                       <DropdownMenuRadioItem value="1:1" className="cursor-pointer">
                         1:1 (Square)
@@ -528,7 +554,7 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
                 </div>
               </div>
 
-              <Separator />
+              {/* <Separator />
 
               <div className="space-y-2">
                 <h4 className="font-semibold text-sm">Video Details</h4>
@@ -537,7 +563,7 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
                   <div>Aspect Ratio: {aspectRatio}</div>
                   <div>Format: MP4</div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </DialogContent>
@@ -591,8 +617,28 @@ function VideoCards({ videos, viewMode }: { videos: VideoProps[]; viewMode: "gri
     }
   })
 
-  const allVideosLoaded = loadedVideos > 0 && loadedVideos >= videos.length
+  const addSubtitlesMutation = useMutation<
+    {newLink: string, title: string},
+    Error,
+    {selectedLink: string, title: string}
+  >({
+    mutationFn: async ({selectedLink, title}) => {
+      const token = await getToken()
+      const response = await addVideoSubtitles(token, selectedLink, title)
+      return {newLink: response.link, title: response.title}
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData<VideoProps[]>(
+        ["ProjectVideoClips", projectIdentifier],
+        (oldClips) => oldClips.map((clip) => clip.title === data.title ? { ...clip, link: data.newLink} : clip) || []
+      )
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    }
+  })
 
+  const allVideosLoaded = loadedVideos > 0 && loadedVideos >= videos.length
 
   const videoCards = useMemo(() => {
     return videos.map((video, idx) => (
@@ -604,6 +650,7 @@ function VideoCards({ videos, viewMode }: { videos: VideoProps[]; viewMode: "gri
         currentIdx={currentIdx}
         setCurrentIdx={setCurrentIdx}
         adjustRationMutation={adjustRatioMutation}
+        addSubtitlesMutation={addSubtitlesMutation}
         viewMode={viewMode}
         providerData={providerData}
       />

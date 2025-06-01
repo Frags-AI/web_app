@@ -5,6 +5,7 @@ import { projectRouter } from "./projectRouter";
 import { clipRouter } from "./clipRouter";
 import { youtubeRouter } from "./youtubeRouter";
 import { aspectRouter } from "./aspectRouter";
+import { subtitleRouter } from "./subtitleRouter";
 
 const videoRouter = new Hono();
 
@@ -20,5 +21,6 @@ videoRouter.route("/project", projectRouter)
 videoRouter.route("/youtube", youtubeRouter)
 videoRouter.route("/clip", clipRouter)
 videoRouter.route("/aspect", aspectRouter)
+videoRouter.route("/subtitle", subtitleRouter)
 
 export default videoRouter

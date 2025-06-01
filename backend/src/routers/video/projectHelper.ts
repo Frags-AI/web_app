@@ -1,6 +1,7 @@
 import { 
   PutObjectCommand, 
   GetObjectCommand, 
+  GetObjectCommandInput,
   DeleteObjectsCommand,
   DeleteObjectsCommandInput,
   PutObjectCommandInput,
@@ -222,4 +223,27 @@ export const cleanMediaDownloads = async (userId: string) => {
   if (existsSync(`static/videos/${userId}`)) {
     await promises.rm(`static/videos/${userId}`, {recursive: true, force: true})
   }
+}
+
+export async function updateVideoClip(userId: string, videoBuffer: Buffer, identifier: string, title: string, metadata?: Record<string, string>) {
+    const name = title.split(" ").map((word) => word.toLowerCase()).join("_")
+    const s3Key = `${userId}/${identifier}/clips/${name}.mp4`
+    
+    const putParams: PutObjectCommandInput = {
+        Bucket: config.S3_BUCKET,
+        Key: s3Key,
+        Body: new Uint8Array(videoBuffer),
+        Metadata: metadata ? metadata : {} 
+    }
+    const putCommand = new PutObjectCommand(putParams)
+    await s3.send(putCommand)
+
+    const getParams: GetObjectCommandInput = {
+        Bucket: config.S3_BUCKET,
+        Key: s3Key
+    }
+    const getCommand = new GetObjectCommand(getParams)
+    const url = await getSignedUrl(s3, getCommand)
+
+    return url
 }

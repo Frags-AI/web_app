@@ -1,6 +1,7 @@
 import { Hono } from "hono"
 import { getAuth } from "@hono/clerk-auth"
-import { ratioConverter, updateVideoClip } from "./aspectHelper"
+import { ratioConverter } from "./aspectHelper"
+import { updateVideoClip } from "./projectHelper"
 
 export const aspectRouter = new Hono()
 
