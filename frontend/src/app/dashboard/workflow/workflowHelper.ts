@@ -1,8 +1,7 @@
 import axios from "axios"
 
-export async function createProject(token: string, jobId: string, file: File, thumbnail: File, title: string) {
+export async function createProject(token: string,  file: File, thumbnail: File, title: string) {
     const formData = new FormData()
-    formData.append("jobId", jobId),
     formData.append("file", file),
     thumbnail ? formData.append("thumbnail", thumbnail) : null
     formData.append("title", title)

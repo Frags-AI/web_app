@@ -1,6 +1,4 @@
 import axios from "axios";
-import { io } from "socket.io-client";
-
 
 export const uploadVideo = async (file: File, token: string) => {
     const formData = new FormData();

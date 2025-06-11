@@ -1,5 +1,5 @@
 import Icons from "@/components/icons"
-import { useState } from "react"
+import { useState, Fragment } from "react"
 import { Button } from "@/components/ui/button"
 import { UserButton } from "@clerk/clerk-react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -102,7 +102,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
           </Button>
         </div>
         {IconGroups.map((group, idx) => (
-          <>
+          <Fragment key={group.title + "Key"}>
             {idx === IconGroups.length - 1 && <div className="grow"/>}
             <div className="flex flex-col mt-16 w-full">
                 <AnimatePresence>
@@ -161,7 +161,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
                 </div>
               ))}
             </div>
-          </>
+          </Fragment>
         ))}
       </div>
     </motion.div>

@@ -13,6 +13,8 @@ import config from '@/utils/config.js';
 import { existsSync, promises } from "fs";
 import { identifierGenerator } from "@/lib/idGenerator";
 import { s3 } from "@/clients/aws";
+import FormData from "form-data";
+import axios from "axios";
 
 const prisma = new PrismaClient();
 
@@ -26,36 +28,28 @@ async function getDbUser(userId: string) {
     return user;
 }
 
-async function getDbProject(jobId: string) {
-  const project = await prisma.project.findUnique({
-    where: { job_id: jobId }
-  })
+export async function createProject(userId: string, file: File, thumbnail: File, title: string) {
 
-  if (!project) throw new Error (`Project not found with Job ID: ${jobId}`)
-
-  return project
-}
-
-export async function createProject(userId: string, jobId: string, file: File, thumbnail: File, title: string) {
-
-  const blob = new Blob([await file.arrayBuffer()], { type: "video/mp4" });
-  const newFile = new File([blob], file.name, { type: "video/mp4" });
-  const newFileName = (newFile.name.endsWith(".mp4")) ? newFile.name : newFile.name.split(".")[0] + ".mp4"
+  const fileBuffer =  Buffer.from(await file.arrayBuffer());
+  const fileName = title.toLowerCase().replaceAll(" ", "_") + ".mp4"
 
   const form = new FormData()
-  form.append("video", newFile)
-  form.append("video_name", newFileName)
-  form.append("job_id", jobId)
-
-  const response = await fetch(`${config.MODEL_SERVER_URL}/api/video/upload/`, {
-      method: "POST",
-      body: form
+  form.append("video", fileBuffer, {
+    filename: fileName,
+    contentType: "video/mp4"
   })
 
-  if (!response.ok) {
-    const error = await response.json()
-    throw new Error(error.detail)
+  const response = await axios.post(
+    `${config.MODEL_SERVER_URL}/api/video/upload/`,
+    form,
+    {headers: form.getHeaders()}
+  )
+
+  if (response.status >= 400) {
+    throw new Error(response.data.detail)
   }
+
+  const responseData: {task_id: string, video_name: string, url: string} = response.data
 
   const user = await prisma.user.findFirst({
     where: {clerk_user_id: userId}
@@ -67,8 +61,8 @@ export async function createProject(userId: string, jobId: string, file: File, t
   const data = await prisma.project.create({
     data: { 
       user_id: user.id,
-      job_id: jobId,
-      status: "processing",
+      task_id: responseData.task_id,
+      status: "PROCESSING",
       identifier: projectIdentifier,
       title: title
     }
@@ -105,7 +99,7 @@ export async function getAllProjects(userId: string) {
     const url = await getSignedUrl(s3, command, {expiresIn: 3600})
     return {
       identifier: project.identifier,
-      jobId: project.job_id,
+      taskId: project.task_id,
       status: project.status,
       thumbnail: url,
       title: project.title,
@@ -116,63 +110,6 @@ export async function getAllProjects(userId: string) {
 
   const data = await Promise.all(response.map((res) => getProjectData(res)))
   return data
-}
-
-export async function updateProjectStatus(jobId: string, status: string) {
-  const data = await prisma.project.update({
-    where: { 
-      job_id: jobId 
-    },
-    data: {
-      status
-    }
-  })
-  const url = `${config.FRONTEND_SERVER_URL}/dashboard/clips/${data.identifier}` as string
-  const user = await prisma.user.findUnique({ where: {id: data.user_id}})
-  return { url, clerk_id: user?.clerk_user_id as string  }
-}
-
-export async function uploadToProject(files: File[], jobId: string) {
-  const project = await getDbProject(jobId)
-  const user = await prisma.user.findUnique({ where: { id: project.user_id }})
-
-  if (!user) throw new Error("User not found")
-
-  async function addFile(file: File) {
-    const fileName = file.name.replace(/ /g, "_");
-    const s3Key = `${user!.clerk_user_id}/${project.identifier}/clips/${fileName}`;
-
-    const buffer = await file.arrayBuffer();
-    const arrayBuffer = new Uint8Array(buffer);
-  
-    const params: PutObjectCommandInput = {
-      Bucket: config.S3_BUCKET,
-      Key: s3Key,
-      Body: arrayBuffer,
-      ContentType: file.type,
-      CacheControl: "3600",
-      Metadata: {
-        "aspect_ratio": "16:9"
-      }
-    };
-  
-    const command = new PutObjectCommand(params);
-    await s3.send(command);
-  
-    await prisma.video.create({
-      data: {
-        name: fileName,
-        user_id: user!.id,
-        project_id: project.id
-      }
-    });
-
-    const videoUrl = `https://${config.S3_BUCKET}.s3.${config.S3_REGION}.amazonaws.com/${s3Key}`;
-    return videoUrl
-  }
-
-  const results = await Promise.all(files.map((file) => addFile(file)))
-  return results
 }
 
 export async function deleteProject(userId: string , identifier: string) {

@@ -42,8 +42,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 
 function ProjectProcessingOverlay({ project }: { project: ProjectProps }) {
-  const [motionProgress, setMotionProgress] = useState<number>(0)
-  const [clippingProgress, setClippingProgress] = useState<number>(0)
+  const [progress, setProgress] = useState<number>(0)
+
   const time = useTime()
 
   const rotate = useTransform(time, [0, 5000], [0, 360], {
@@ -54,20 +54,15 @@ function ProjectProcessingOverlay({ project }: { project: ProjectProps }) {
     return `conic-gradient(from ${r}deg, #3b82f6 0deg, #8b5cf6 120deg, #06b6d4 240deg, #3b82f6 360deg)`
   })
 
-  const setProcessingProgress = (currentMotionProgress: number, currentClippingProgress: number) => {
-    setMotionProgress(currentMotionProgress)
-    setClippingProgress(currentClippingProgress)
-  }
+  const setProcessingProgress = (currentProgress: number) => setProgress(currentProgress)
 
-  const getProcessingStatus = () => {
-    trackProgress(setProcessingProgress, project.jobId)
-  }
+  const getProcessingStatus = () => trackProgress(setProcessingProgress, project.taskId)
 
   useEffect(() => {
     getProcessingStatus()
   }, [])
 
-  const totalProgress = Math.round(motionProgress * 0.5 + clippingProgress * 0.5)
+  
 
   return (
     <motion.div
@@ -83,10 +78,10 @@ function ProjectProcessingOverlay({ project }: { project: ProjectProps }) {
         />
         <div className="relative bg-background px-6 py-4 rounded-full border shadow-lg">
           <div className="flex items-center gap-3">
-            {totalProgress < 100 ? (
+            {progress < 100 ? (
               <>
                 <Hourglass className="w-5 h-5 animate-pulse text-primary" />
-                <div className="font-semibold text-sm">Processing {totalProgress}%</div>
+                <div className="font-semibold text-sm">Processing {progress}%</div>
               </>
             ) : (
               <>
@@ -106,7 +101,7 @@ function ProjectCard({ project, onDelete }: { project: ProjectProps; onDelete: (
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const handleCardClick = () => {
-    if (project.status !== "processing") {
+    if (project.status !== "PROCESSING") {
       navigate(`/dashboard/clips/${project.identifier}`)
     }
   }
@@ -140,11 +135,11 @@ function ProjectCard({ project, onDelete }: { project: ProjectProps; onDelete: (
                   src={project.thumbnail || "/placeholder.svg"}
                   alt={project.title}
                   className={`w-full h-full object-cover transition-all duration-300 ${
-                    project.status === "processing" ? "blur-sm" : "group-hover:scale-105"
+                    project.status === "PROCESSING" ? "blur-sm" : "group-hover:scale-105"
                   }`}
                 />
 
-                {project.status !== "processing" && (
+                {project.status !== "PROCESSING" && (
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                     <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
@@ -152,7 +147,7 @@ function ProjectCard({ project, onDelete }: { project: ProjectProps; onDelete: (
               </div>
 
               <AnimatePresence>
-                {project.status === "processing" && <ProjectProcessingOverlay project={project} />}
+                {project.status === "PROCESSING" && <ProjectProcessingOverlay project={project} />}
               </AnimatePresence>
             </CardContent>
 
@@ -167,7 +162,7 @@ function ProjectCard({ project, onDelete }: { project: ProjectProps; onDelete: (
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Badge variant={project.status === "completed" ? "default" : "secondary"} className="text-xs">
+                  <Badge variant={project.status === "SUCCESS" ? "default" : "secondary"} className="text-xs">
                     {project.status}
                   </Badge>
 
@@ -268,8 +263,8 @@ function EmptyState() {
 
 function ProjectStats({ projects }: { projects: ProjectProps[] }) {
   const totalProjects = projects?.length || 0
-  const processingProjects = projects?.filter((p) => p.status === "processing").length || 0
-  const completedProjects = projects?.filter((p) => p.status === "completed").length || 0
+  const processingProjects = projects?.filter((p) => p.status === "PROCESSING").length || 0
+  const completedProjects = projects?.filter((p) => p.status === "SUCCESS").length || 0
 
   const stats = [
     { label: "Total Projects", value: totalProjects, icon: Video },
@@ -310,7 +305,7 @@ export default function Home() {
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState("")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [filterStatus, setFilterStatus] = useState<"all" | "processing" | "completed">("all")
+  const [filterStatus, setFilterStatus] = useState<"ALL" | "PROCESSING" | "SUCCESS" | "FAILURE">("ALL")
 
   async function getAllProjects() {
     const token = await getToken()
@@ -328,7 +323,7 @@ export default function Home() {
   const filteredProjects =
     projects?.filter((project) => {
       const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesFilter = filterStatus === "all" || project.status === filterStatus
+      const matchesFilter = filterStatus === "ALL" || project.status === filterStatus
       return matchesSearch && matchesFilter
     }) || []
 
@@ -378,9 +373,9 @@ export default function Home() {
 
               <Tabs value={filterStatus} onValueChange={(value: any) => setFilterStatus(value)}>
                 <TabsList>
-                  <TabsTrigger value="all">All</TabsTrigger>
-                  <TabsTrigger value="processing">Processing</TabsTrigger>
-                  <TabsTrigger value="completed">Completed</TabsTrigger>
+                  <TabsTrigger value="ALL">All</TabsTrigger>
+                  <TabsTrigger value="PROCESSING">Processing</TabsTrigger>
+                  <TabsTrigger value="SUCCESS">Completed</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>

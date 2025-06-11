@@ -7,14 +7,14 @@ import { promises } from "fs";
  * @param outputPath The path to the video that's been converted
  * @returns A Promise that resolves to an object containing the video Blob.
  */
-export async function convert1to1Ratio(inputPath: string, outputPath: string) {
+export async function convert1to1Ratio(inputPath: string, outputPath: string): Promise<Buffer> {
   const commands = [ "-y", "-i", inputPath, "-vf", "crop='if(gt(a,1),ih,iw)':'if(gt(a,1),ih,iw)',scale=720:720,setsar=1",
     "-c:a", "copy", outputPath
   ];
   
   const process = spawn("ffmpeg", commands)
 
-  return new Promise<Record<string, Buffer>>((resolve, reject) => {
+  return new Promise<Buffer>((resolve, reject) => {
     process.on("error", (err) => {
       reject(new Error(`Process error: ${err.message}`));
     });
@@ -31,7 +31,7 @@ export async function convert1to1Ratio(inputPath: string, outputPath: string) {
       if (code === 0) {
         try {
           const videoBuffer = await promises.readFile(outputPath)
-          resolve({ videoBuffer });
+          resolve( videoBuffer );
         } catch (err) {
           reject(new Error(`File handling error: ${(err as Error).message}`));
         }
@@ -48,14 +48,14 @@ export async function convert1to1Ratio(inputPath: string, outputPath: string) {
  * @param outputPath The path to the video that's been converted
  * @returns A Promise that resolves to an object containing the video Blob.
  */
-export async function convert9to16Ratio(inputPath: string, outputPath: string) {
+export async function convert9to16Ratio(inputPath: string, outputPath: string): Promise<Buffer> {
 
   const commands = [ "-y", "-i", inputPath, "-vf", "scale=w='if(gt(a,9/16),720,-1)':h='if(gt(a,9/16),-1,1280)',pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1", 
     "-c:a", "copy", outputPath
   ];
   const process = spawn("ffmpeg", commands)
 
-  return new Promise<Record<string, Buffer>>((resolve, reject) => {
+  return new Promise<Buffer>((resolve, reject) => {
     process.on("error", (err) => {
       reject(new Error(`Process error: ${err.message}`));
     });
@@ -72,7 +72,7 @@ export async function convert9to16Ratio(inputPath: string, outputPath: string) {
       if (code === 0) {
         try {
           const videoBuffer = await promises.readFile(outputPath)
-          resolve({ videoBuffer });
+          resolve( videoBuffer );
         } catch (err) {
           reject(new Error(`File handling error: ${(err as Error).message}`));
         }
@@ -89,7 +89,7 @@ export async function convert9to16Ratio(inputPath: string, outputPath: string) {
  * @param outputPath The path to the video that's been converted
  * @returns A Promise that resolves to an object containing the video Blob.
  */
-export async function convert16to9Ratio(inputPath: string, outputPath: string) {
+export async function convert16to9Ratio(inputPath: string, outputPath: string): Promise<Buffer> {
 
   const paddingCommands = [ "-y", "-i", inputPath, "-vf", "scale=w='if(gt(a,16/9),1280,-1)':h='if(gt(a,16/9),-1,720)',pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1", 
     "-c:a", "copy", outputPath
@@ -101,7 +101,7 @@ export async function convert16to9Ratio(inputPath: string, outputPath: string) {
   
   const process = spawn("ffmpeg", croppingCommands)
 
-  return new Promise<Record<string, Buffer>>((resolve, reject) => {
+  return new Promise<Buffer>((resolve, reject) => {
     process.on("error", (err) => {
       reject(new Error(`Process error: ${err.message}`));
     });
@@ -118,7 +118,7 @@ export async function convert16to9Ratio(inputPath: string, outputPath: string) {
       if (code === 0) {
         try {
           const videoBuffer = await promises.readFile(outputPath)
-          resolve({ videoBuffer });
+          resolve( videoBuffer );
         } catch (err) {
           reject(new Error(`File handling error: ${(err as Error).message}`));
         }

@@ -1,8 +1,7 @@
 import { Hono } from "hono";
-import { createProject, uploadToProject, getAllProjects, updateProjectStatus, deleteProject } from "./projectHelper";
+import { createProject, getAllProjects, deleteProject } from "./projectHelper";
 import { getAuth } from "@hono/clerk-auth";
 import clerkClient from "@/clients/clerk";
-import config from "@/utils/config";
 import { clipsReadyNotification } from "@/lib/resend";
 import { generateThumbnailFromBuffer } from "@/lib/video/thumbnail";
 
@@ -23,7 +22,6 @@ projectRouter.post("/create", async (c) => {
     if (!userId) return c.json({ message: "User is not authorized" }, 401)
 
     const body = await c.req.parseBody()
-    const jobId = body.jobId as string
     const file = body.file as File
     let thumbnail = body.thumbnail as File | null
     const title = body.title as string
@@ -34,27 +32,9 @@ projectRouter.post("/create", async (c) => {
         thumbnail = new File([thumbnailBlob], "project_thumbnail.png", {type: "image/png"})
     }
 
-    const response = await createProject(userId, jobId, file, thumbnail, title)
+    const response = await createProject(userId, file, thumbnail, title)
     
     return c.json(response, 200)
-})
-
-projectRouter.post("/upload", async (c) => {
-    const body = await c.req.parseBody({ all: true })
-    const headers = c.req.header()
-    
-    if (headers["model_signing_secret"] !== config.MODEL_SIGNING_SECRET) return c.json({ message: "Request is not authorized"}, 401)
-
-    const clips = body["files"] as File[]
-    const jobId = body["job_id"] as string
-    const status = body["status"] as string
-
-    await uploadToProject(clips, jobId)
-    const data = await updateProjectStatus(jobId, status)
-    const user = await clerkClient.users.getUser(data.clerk_id)
-    await clipsReadyNotification(user.primaryEmailAddress?.emailAddress as string, data.url)
-    
-    return c.json({ message: "Video clips has been successfully uploaded" }, 200)
 })
 
 projectRouter.post("/delete", async (c) => {

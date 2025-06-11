@@ -24,12 +24,12 @@ import {
 import { useAuth } from "@clerk/clerk-react"
 import { Button } from "@/components/ui/button"
 import { PlatformDataProps } from "@/types"
-import { useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 
 
 export async function getAllClips(token: string, identifier: string) {
+    console.log(identifier)
     const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/video/clip`, 
         {identifier},

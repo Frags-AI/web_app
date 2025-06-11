@@ -1,16 +1,13 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import { toast } from "sonner";
 
-const baseSocketURL = `${import.meta.env.VITE_SOCKET_URL}/ws/status/`
+const baseSocketURL = `${import.meta.env.VITE_SOCKET_URL}/ws`
 
 export async function getProjects(token: string) {
 
-    const config: AxiosRequestConfig = {
-        headers: { Authorization: `Bearer ${token}` }
-    }
     const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/video/project`,
-        config
+        {headers: { Authorization: `Bearer ${token}` }}
     )
     const data = response.data
 
@@ -28,21 +25,30 @@ export async function deleteProject(token: string, identifier: string) {
     return data
 }
 
-type SetProgressProps = (motionProgress: number, clippingProgress: number) => void
+type SetProgressProps = (currentProgress: number) => void;
 
-export async function trackProgress(onProgress: SetProgressProps, jobId: string) {
-    const connectionURL = baseSocketURL + jobId
-    const socket = new WebSocket(connectionURL)
+export async function trackProgress(onProgress: SetProgressProps, taskId: string) {
+    const connectionURL = `${baseSocketURL}/status/${taskId}`;
+    const socket = new WebSocket(connectionURL);
 
     socket.onmessage = (event) => {
-        const data = JSON.parse(event.data)
-        
-        if (data.type === "progress") {
-            const clippingProgress = data.clip_progress as number
-            const motionProgress = data.motion_progress as number
-            onProgress(motionProgress, clippingProgress)
-        } else if (data.type === "connection") {
-            data.ok ? toast.success(data.message) : toast.error(data.message)
+        const data = JSON.parse(event.data);
+        console.log(data)
+
+        if (data.state === "PROGRESS") {
+            onProgress(data.progress);
+        } else if (data.state === "SUCCESS") {
+            toast.success("Processing complete!");
+        } else if (data.state === "FAILURE") {
+            toast.error("Processing failed.");
         }
-    }
+    };
+
+    socket.onerror = () => {
+        toast.error("WebSocket connection error");
+    };
+
+    socket.onclose = () => {
+        console.log("WebSocket closed");
+    };
 }

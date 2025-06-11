@@ -10,7 +10,7 @@ import {
 import {
   addVideoSubtitles
 } from "./transcribingHelper"
-import { useState, useMemo, useCallback } from "react"
+import { useState, useMemo, useCallback, useEffect } from "react"
 import { useAuth } from "@clerk/clerk-react"
 import { useQuery, useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query"
 import ReactPlayer from "react-player"
@@ -64,7 +64,6 @@ import { toast } from "sonner"
 import type { SocialMediaCardProps } from "@/types"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { PlatformDataProps } from "@/types"
-import { faL } from "@fortawesome/free-solid-svg-icons"
 
 
 interface VideoProps {
@@ -75,9 +74,6 @@ interface VideoProps {
   createdAt?: string
   thumbnail?: string
 }
-
-const urlParts = window.location.pathname.split("/")
-const projectIdentifier = urlParts[urlParts.length - 1]
 
 interface VideoCardProps {
   video: VideoProps
@@ -572,7 +568,7 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
   )
 }
 
-function VideoCards({ videos, viewMode }: { videos: VideoProps[]; viewMode: "grid" | "list" }) {
+function VideoCards({ videos, viewMode, projectIdentifier }: { videos: VideoProps[]; viewMode: "grid" | "list", projectIdentifier: string }) {
   const [loadedVideos, setLoadedVideos] = useState<number>(0)
   const [currentIdx, setCurrentIdx] = useState<number>(-1)
   const { getToken } = useAuth()
@@ -741,20 +737,30 @@ export default function Page() {
   const { getToken, isLoaded } = useAuth()
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [searchQuery, setSearchQuery] = useState("")
+  const [projectIdentifier, setProjectIdentifier] = useState("")
 
-  const getVideoClips = useCallback(async () => {
+  useEffect(() => {
+    const urlParts = window.location.pathname.split("/")
+    const urlIdentifier = urlParts[urlParts.length - 1]
+    setProjectIdentifier(urlIdentifier)
+    console.log(projectIdentifier)
+  })
+
+  // const getVideoClips = useCallback(async () => {
+  //   const token = await getToken()
+  //   return await getAllClips(token, projectIdentifier)
+  // }, [getToken])
+
+  const getVideoClips = async () => {
     const token = await getToken()
     return await getAllClips(token, projectIdentifier)
-  }, [getToken])
+  }
 
   const { data, isLoading, error } = useQuery({
-    queryKey: [`ProjectVideoClips${projectIdentifier}`],
+    queryKey: ["ProjectVideoClips", projectIdentifier],
     queryFn: getVideoClips,
     refetchOnWindowFocus: false,
     staleTime: 3600 * 1000,
-    enabled: isLoaded,
-    retry: true,
-    refetchOnReconnect: true,
   })
 
   let videos: VideoProps[] = []
@@ -762,7 +768,7 @@ export default function Page() {
 
   const filteredVideos = videos.filter((video) => video.title.toLowerCase().includes(searchQuery.toLowerCase()))
 
-  if (isLoading) {
+  if (!isLoaded || isLoading) {
     return <LoadingScreen />
   }
 
@@ -789,7 +795,7 @@ export default function Page() {
           </p>
         </div>
       ) : (
-        <VideoCards videos={filteredVideos} viewMode={viewMode} />
+        <VideoCards videos={filteredVideos} viewMode={viewMode} projectIdentifier={projectIdentifier}/>
       )}
     </div>
   )

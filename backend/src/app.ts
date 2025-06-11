@@ -11,6 +11,7 @@ import clerkRouter from "@/routers/clerk";
 import { OAuthRouter } from "@/routers/oauth";
 import { callbackRouter } from "./routers/callback";
 import { socialMediaRouter } from "./routers/social-media";
+import { modelRouter } from "./routers/model";
 
 const app = new Hono()
 
@@ -30,6 +31,7 @@ app.route("/api/stripe", stripeRouter)
 app.route("/api/oauth", OAuthRouter)
 app.route("/api/callback", callbackRouter)
 app.route("/api/social", socialMediaRouter)
+app.route("/api/model", modelRouter)
 app.route("/api", serverRouter)
 
 app.notFound((c) => {

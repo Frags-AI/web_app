@@ -20,13 +20,10 @@ aspectRouter.post("", async (c) => {
   const videoBuffer = await ratioConverter(ratio, link)
 
   if (!videoBuffer) return c.json({"message": "Failed to convert video"}, 400)
+    
+  // const url = await updateVideoClip(userId, videoBuffer, identifier, title, metadata)
+  // const data = {link: url, aspectRatio: ratio}
 
-  if (!videoBuffer) {
-    return c.json({message: "Invalid aspect ratio"}, 400)
-  }
-
-  const url = await updateVideoClip(userId, videoBuffer, identifier, title, metadata)
-  const data = {link: url, aspectRatio: ratio}
-
-  return c.json(data)
+  // return c.json(data)
+  return c.json({"message": "Success"})
 })

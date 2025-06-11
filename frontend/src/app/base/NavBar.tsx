@@ -25,22 +25,22 @@ const NavBar: React.FC<NavBarProps> = ({components}) => {
       <NavigationMenu className="hidden lg:block">
       <NavigationMenuList className="gap-4">
         {components.map((component) => (
-                  <NavigationMenuItem>
-                  <NavigationMenuTrigger>{component.title}</NavigationMenuTrigger>
-                  <NavigationMenuContent className="">
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                      {component.items.map((item) => (
-                        <ListItem
-                          key={item.title}
-                          title={item.title}
-                          href={item.href}
-                        >
-                          {item.description}
-                        </ListItem>
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
+          <NavigationMenuItem key={component.title + "Key"}>
+            <NavigationMenuTrigger>{component.title}</NavigationMenuTrigger>
+            <NavigationMenuContent className="">
+              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                {component.items.map((item) => (
+                  <ListItem
+                    key={item.title}
+                    title={item.title}
+                    href={item.href}
+                  >
+                    {item.description}
+                  </ListItem>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
         ))}
         <NavigationMenuItem>
           <Link to="/pricing">

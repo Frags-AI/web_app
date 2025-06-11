@@ -127,7 +127,6 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     window.addEventListener("click", (e: MouseEvent) => {
-      console.log(e.clientY, headerRef.current?.clientHeight)
       if (isMobileOpen && e.clientY > headerRef.current?.clientHeight!) {
         setIsMobileOpen(false);
       }

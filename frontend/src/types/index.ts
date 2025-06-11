@@ -49,8 +49,8 @@ export interface DefaultPayment {
 }
 
 export interface ProjectProps {
-  status: "processing" | "completed" | "failed",
-  jobId: string,
+  status: "PROCESSING" | "SUCCESS" | "FAILED",
+  taskId?: string,
   thumbnail: string,
   title: string,
   identifier: string,

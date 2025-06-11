@@ -39,7 +39,7 @@ const Credentials = () => {
       <div className="flex flex-wrap items-center justify-center gap-5 mt-5">
         {sponsors.map((sponsor) => {
           return (
-            <img src={sponsor.src} alt={sponsor.alt} className="w-[100px] h-[100px] mx-5" />
+            <img src={sponsor.src} alt={sponsor.alt} className="w-[100px] h-[100px] mx-5" key={sponsor.alt + "Key"}/>
           )
         })}
       </div>
