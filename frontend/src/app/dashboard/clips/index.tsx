@@ -304,10 +304,10 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
                       <Copy className="w-4 h-4 mr-2" />
                       Copy Link
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    {/* <DropdownMenuItem>
                       <Pencil className="w-4 h-4 mr-2" />
                       Edit Clip
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                     <DropdownMenuItem>
                       <Share2 className="w-4 h-4 mr-2" />
                       Share
@@ -422,10 +422,10 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
                     <Copy className="w-4 h-4 mr-2" />
                     Copy Link
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  {/* <DropdownMenuItem>
                     <Pencil className="w-4 h-4 mr-2" />
                     Edit Clip
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                   <DropdownMenuItem>
                     <Share2 className="w-4 h-4 mr-2" />
                     Share
@@ -459,17 +459,17 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
                   <Download className="w-4 h-4" />
                   Download
                 </Button>
-                <Button variant="outline" className="justify-start gap-2">
+                {/* <Button variant="outline" className="justify-start gap-2">
                   <Pencil className="w-4 h-4" />
                   Edit
-                </Button>
-                <Button variant="outline" className="justify-start gap-2" onClick={() => handleSubtitleAddition(video.link, video.title)}>
+                </Button> */}
+                {/* <Button variant="outline" className="justify-start gap-2" onClick={() => handleSubtitleAddition(video.link, video.title)}>
                   <Captions className="w-4 h-4"/>
                   Add Subtitles
-                </Button>
+                </Button> */}
               </div>
 
-              <Separator />
+              {/* <Separator />
 
               <div className="space-y-3">
                 <h4 className="font-semibold text-sm">Aspect Ratio</h4>
@@ -501,7 +501,7 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
                     </DropdownMenuRadioGroup>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
+              </div> */}
 
               <Separator />
 

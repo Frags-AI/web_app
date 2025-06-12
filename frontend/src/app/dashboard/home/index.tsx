@@ -43,6 +43,16 @@ import { toast } from "sonner"
 
 function ProjectProcessingOverlay({ project }: { project: ProjectProps }) {
   const [progress, setProgress] = useState<number>(0)
+  const [currentState, setCurrentState] = useState("")
+
+  const displayAlert = (state: string) => {
+    setCurrentState((prev) => {
+      if (prev !== state) {
+        toast.info(state)
+        return state
+      } else return prev
+    })
+  }
 
   const time = useTime()
 
@@ -56,13 +66,11 @@ function ProjectProcessingOverlay({ project }: { project: ProjectProps }) {
 
   const setProcessingProgress = (currentProgress: number) => setProgress(currentProgress)
 
-  const getProcessingStatus = () => trackProgress(setProcessingProgress, project.taskId)
+  const getProcessingStatus = () => trackProgress(setProcessingProgress, project.taskId, displayAlert)
 
   useEffect(() => {
     getProcessingStatus()
   }, [])
-
-  
 
   return (
     <motion.div
@@ -99,7 +107,7 @@ function ProjectProcessingOverlay({ project }: { project: ProjectProps }) {
 function ProjectCard({ project, onDelete }: { project: ProjectProps; onDelete: (id: string) => void }) {
   const navigate = useNavigate()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-
+ 
   const handleCardClick = () => {
     if (project.status !== "PROCESSING") {
       navigate(`/dashboard/clips/${project.identifier}`)

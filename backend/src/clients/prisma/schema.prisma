@@ -47,6 +47,7 @@ model Video {
   status     String   @default("SUCCESS")
   project_id String
   user_id    String
+  score      Decimal
 
   user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
   project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)

@@ -31,12 +31,12 @@ const sources = [
     icon: <Upload className="w-4 h-4" />,
     description: "Video up to 10GB, maximum duration of 10 hours (mp4, mov, webm)",
   },
-  {
-    name: "drive",
-    label: "Google Drive",
-    icon: <Link className="w-4 h-4" />,
-    description: "Choose a video from Google Drive",
-  },
+  // {
+  //   name: "drive",
+  //   label: "Google Drive",
+  //   icon: <Link className="w-4 h-4" />,
+  //   description: "Choose a video from Google Drive",
+  // },
 ]
 
 type SourceName = (typeof sources)[number]["name"]
@@ -385,12 +385,12 @@ export function VideoUploadForm() {
                   )}
 
                   {/* Demo Button */}
-                  <div className="text-center">
+                  {/* <div className="text-center">
                     <Button variant="outline" className="gap-2" disabled={processing}>
                       <Video className="w-4 h-4" />
                       View Demonstration
                     </Button>
-                  </div>
+                  </div> */}
 
                   {/* Info */}
                   <div className="bg-muted/30 rounded-lg p-4">

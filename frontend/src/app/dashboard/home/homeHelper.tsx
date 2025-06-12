@@ -26,21 +26,29 @@ export async function deleteProject(token: string, identifier: string) {
 }
 
 type SetProgressProps = (currentProgress: number) => void;
+type DisplayAlertProps = (state: string) => void;
+interface WebsocketProgressProps {
+    state: string
+    progress: number
+    stage: string
+}
 
-export async function trackProgress(onProgress: SetProgressProps, taskId: string) {
+export async function trackProgress(onProgress: SetProgressProps, taskId: string, displayAlert: DisplayAlertProps) {
     const connectionURL = `${baseSocketURL}/status/${taskId}`;
     const socket = new WebSocket(connectionURL);
 
     socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        console.log(data)
+        const data = JSON.parse(event.data) as WebsocketProgressProps;
 
         if (data.state === "PROGRESS") {
             onProgress(data.progress);
+            displayAlert(data.stage)
         } else if (data.state === "SUCCESS") {
-            toast.success("Processing complete!");
+            onProgress
+            toast.success(data.stage);
         } else if (data.state === "FAILURE") {
-            toast.error("Processing failed.");
+            onProgress(data.progress)
+            toast.error(data.stage);
         }
     };
 

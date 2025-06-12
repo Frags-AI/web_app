@@ -94,10 +94,10 @@ const componentGroups: ListItemGroupProps[] = [
     title: "Resources",
     items: resourceComponents,
   },
-  {
-    title: "Features",
-    items: featuresComponent
-  }
+  // {
+  //   title: "Features",
+  //   items: featuresComponent
+  // }
 ]
 
 const Header: React.FC = () => {

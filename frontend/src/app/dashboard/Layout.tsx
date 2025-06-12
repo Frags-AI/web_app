@@ -36,7 +36,7 @@ export default function DashboardLayout() {
             </Container> 
           </div>
       </div>
-      <AIChat />
+      {/* <AIChat /> */}
     </div>
   )
 }

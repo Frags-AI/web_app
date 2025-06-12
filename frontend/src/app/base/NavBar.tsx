@@ -42,7 +42,7 @@ const NavBar: React.FC<NavBarProps> = ({components}) => {
             </NavigationMenuContent>
           </NavigationMenuItem>
         ))}
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <Link to="/pricing">
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               <div className={windowName === "/pricing" ? selected : "hover:text-stone-300 transition duration-150"}>Pricing</div>
@@ -55,7 +55,7 @@ const NavBar: React.FC<NavBarProps> = ({components}) => {
               <div className={windowName === "/product" ? selected : "hover:text-stone-300 transition duration-150"}>Product</div>
             </NavigationMenuLink>
           </Link>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
       </NavigationMenuList>
     </NavigationMenu>
   )

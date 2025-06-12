@@ -68,7 +68,6 @@ export default function EnhancedCreatorStudio() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       <div className="flex-1 flex flex-col">
-        {/* Header Section */}
         <motion.div
           className="p-8"
           initial={{ opacity: 0, y: -20 }}

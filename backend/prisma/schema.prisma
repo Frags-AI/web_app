@@ -46,24 +46,25 @@ model Video {
   status      String    @default("SUCCESS")
   project_id  String
   user_id     String
+  score       Decimal
   
   user        User @relation(fields: [user_id], references: [id], onDelete: Cascade)
   project     Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
-  id         String    @id @default(uuid())
-  stripe_id  String 
-  user_id     String    @unique
-  status String
-  plan String
-  period_start DateTime
-  period_end DateTime
-  trial_start DateTime
-  trial_end DateTime
-  created_at DateTime  @default(now())
-  deleted_at DateTime?
-  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id            String    @id @default(uuid())
+  stripe_id     String 
+  user_id       String    @unique
+  status        String
+  plan          String
+  period_start  DateTime
+  period_end    DateTime
+  trial_start   DateTime
+  trial_end     DateTime
+  created_at    DateTime  @default(now())
+  deleted_at    DateTime?
+  user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Platform {

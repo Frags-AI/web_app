@@ -16,6 +16,14 @@ async function getDbProject(taskId: string) {
   return project
 }
 
+function getScoreFromFilename(name: string): number {
+  const match = name.match(/score(\d+)(?=\.mp4$)/);
+  if (!match) return 0;
+
+  const raw = match[1];
+  return Number(raw) / 100;
+}
+
 export async function updateProjectStatus(taskId: string, status: string) {
   const projectData = await prisma.project.findFirst({ where:  { task_id: taskId }})
   if (!projectData) throw new Error("Could not find project")
@@ -40,8 +48,9 @@ export async function uploadToProject(files: File[], jobId: string) {
 
   if (!user) throw new Error("User not found")
 
-  async function addFile(file: File) {
-    const fileName = file.name.replace(/ /g, "_");
+  async function addFile(file: File, idx: number) {
+    const fileName = `clip_${idx}`
+    const viralityScore = getScoreFromFilename(file.name)
     const s3Key = `${user!.clerk_user_id}/${project.identifier}/clips/${fileName}`;
 
     const buffer = await file.arrayBuffer();
@@ -65,7 +74,8 @@ export async function uploadToProject(files: File[], jobId: string) {
       data: {
         name: fileName,
         user_id: user!.id,
-        project_id: project.id
+        project_id: project.id,
+        score: viralityScore
       }
     });
 
@@ -73,6 +83,6 @@ export async function uploadToProject(files: File[], jobId: string) {
     return videoUrl
   }
 
-  const results = await Promise.all(files.map((file) => addFile(file)))
+  const results = await Promise.all(files.map((file, idx) => addFile(file, idx + 1)))
   return results
 }
