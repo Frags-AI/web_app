@@ -12,6 +12,7 @@
     "cdk": "cdk"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "@types/formidable": "^3.4.5",
     "@types/html-to-text": "^9.0.4",
     "@types/jest": "^29.5.14",
@@ -37,6 +38,7 @@
     "@react-email/components": "^0.0.41",
     "@react-email/preview": "^0.0.13",
     "aws-cdk-lib": "2.186.0",
+    "axios": "^1.9.0",
     "constructs": "^10.0.0",
     "cross-env": "^7.0.3",
     "date-fns": "^4.1.0",

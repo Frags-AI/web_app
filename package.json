@@ -22,8 +22,5 @@
   "bugs": {
     "url": "https://github.com/FragsAI/frags_app/issues"
   },
-  "homepage": "https://github.com/FragsAI/frags_app#readme",
-  "dependencies": {
-    "axios": "^1.9.0"
-  }
+  "homepage": "https://github.com/FragsAI/frags_app#readme"
 }

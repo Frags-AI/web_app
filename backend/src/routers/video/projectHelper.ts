@@ -39,7 +39,7 @@ export async function createProject(userId: string, file: File, thumbnail: File,
     contentType: "video/mp4"
   })
 
-  const response = await axios.post(
+  const response: any = await axios.post(
     `${config.MODEL_SERVER_URL}/api/video/upload/`,
     form,
     {headers: form.getHeaders()}

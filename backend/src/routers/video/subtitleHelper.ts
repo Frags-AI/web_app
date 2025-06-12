@@ -19,7 +19,7 @@ export const addSubtitlesToClip = async (link: string) => {
         {headers: form.getHeaders()}
     )
 
-    const taskId = response.data.task_id
+    const taskId =(response.data as any)?.task_id
 
     const data = await prisma.video.updateMany({
         where: {task_id: taskId},
