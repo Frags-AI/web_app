@@ -9,13 +9,8 @@ interface HeaderProps {
 }
 
 export default function Header({className}: HeaderProps) {
-    const [name, setName] = useState<string>("")
-    const user = useUser()
-
-    useEffect(() => {
-        setName(user.user.fullName)
-    })
-    
+    const { isLoaded, user } = useUser()
+    const name = isLoaded && user ? user.fullName : ""
 
     return (
         <div className={`h-[60px] flex mt-4 z-30 ml-[4.5em] ${className ? className : ""}`}>   

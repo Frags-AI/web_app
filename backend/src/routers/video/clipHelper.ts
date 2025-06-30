@@ -1,13 +1,11 @@
 import { prisma } from "@/clients/db";
 import { s3 } from "@/clients/aws";
 import { 
-    S3Client, 
     GetObjectCommand, 
     GetObjectRequest, 
     ListObjectsV2Command, 
     ListObjectsV2Request,
     HeadObjectCommand,
-    HeadObjectCommandInput 
 } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import config from "@/utils/config"

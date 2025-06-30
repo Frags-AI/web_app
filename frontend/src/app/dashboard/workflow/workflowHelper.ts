@@ -12,5 +12,7 @@ export async function createProject(token: string,  file: File, thumbnail: File,
         {headers: {Authorization: `Bearer ${token}`}}
     )
 
-    return response
+    console.log(response)
+
+    return response.data
 }

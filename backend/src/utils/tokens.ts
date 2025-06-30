@@ -1,8 +1,7 @@
-import { PrismaClient } from "@/clients/prisma";
+import { prisma } from "@/clients/db";
 import { OAuth2Client } from "@/clients/google-clients";
 
 export async function getOrRefreshGoogleAccessToken(platformId: string) {
-    const prisma = new PrismaClient()
 
     const platform = await prisma.platform.findUniqueOrThrow({ 
         where: { id: platformId }, 

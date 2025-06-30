@@ -17,7 +17,7 @@ import { toast } from "sonner"
 import { useQuery } from "@tanstack/react-query"
 
 interface ModelProps {
-  name: string
+  name: "Normal" | "Prompted" | "Customized"
   icon: LucideIcon | null
   color: string | null
   description: string
@@ -43,33 +43,33 @@ type SourceName = (typeof sources)[number]["name"]
 
 const models: ModelProps[] = [
   {
-    name: "Basic",
+    name: "Normal",
     icon: null,
     color: null,
-    description: "Perfect for getting started",
+    description: "Perfect for most users",
     features: ["Basic AI processing", "Standard quality", "Fast processing"],
   },
   {
-    name: "Advanced",
-    icon: Sparkles,
-    color: "#bdc936",
-    description: "Enhanced AI capabilities",
-    features: ["Advanced AI processing", "High quality output", "Smart optimization"],
+    name: "Prompted",
+    icon: null,
+    color: null,
+    description: "Create story-based clips on a prompt",
+    features: ["Standard Captioning", "Prompt-based Speaker", "Generate Voiceover Capabilities"],
   },
   {
-    name: "Pro",
-    icon: Gem,
-    color: "#45bde6",
-    description: "Professional-grade results",
-    features: ["Premium AI processing", "Ultra-high quality", "Priority processing"],
+    name: "Customized",
+    icon: null,
+    color: null,
+    description: "Customize the output of your clips",
+    features: ["Customize Clipping Process", "Select Specific Features", "Adjust Aspect Ratio"],
   },
 ]
 
 export function VideoUploadForm() {
   const [uploadLink, setUploadLink] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [selectedModel, setSelectedModel] = useState<"Basic" | "Advanced" | "Pro">("Basic")
-  const [hoveredModel, setHoveredModel] = useState<"Basic" | "Advanced" | "Pro" | null>(null)
+  const [selectedModel, setSelectedModel] = useState<"Normal" | "Prompted" | "Customized">("Normal")
+  const [hoveredModel, setHoveredModel] = useState<"Normal" | "Prompted" | "Customized" | null>(null)
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [hoveredButton, setHoveredButton] = useState<SourceName | null>(null)
   const [videoProgress, setVideoProgress] = useState(0)
@@ -149,13 +149,13 @@ export function VideoUploadForm() {
     },
   })
 
-  const handleModelSelect = (name: string) => {
-    setSelectedModel(name as "Basic" | "Advanced" | "Pro")
+  const handleModelSelect = (name: "Normal" | "Prompted" | "Customized") => {
+    setSelectedModel(name)
   }
 
-  const handleModelHover = (name: string | null) => {
+  const handleModelHover = (name: "Normal" | "Prompted" | "Customized" | null) => {
     if (name) {
-      setHoveredModel(name as "Basic" | "Advanced" | "Pro")
+      setHoveredModel(name)
     } else setHoveredModel(null)
   }
 
@@ -175,7 +175,6 @@ export function VideoUploadForm() {
   return (
     <div className="flex justify-center px-8">
       <div className="w-full max-w-4xl">
-        {/* Model Selection */}
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -183,8 +182,8 @@ export function VideoUploadForm() {
           transition={{ duration: 0.5 }}
         >
           <div className="text-center mb-6">
-            <h3 className="text-xl font-semibold mb-2">Choose Your AI Model</h3>
-            <p className="text-muted-foreground">Select the processing power that fits your needs</p>
+            <h3 className="text-xl font-semibold mb-2">Choose Your Clipping Mode</h3>
+            <p className="text-muted-foreground">Select the style that fits your needs</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -196,7 +195,7 @@ export function VideoUploadForm() {
                 transition={{ duration: 0.2 }}
               >
                 <Card
-                  className={`cursor-pointer transition-all duration-300 hover:shadow-lg ${
+                  className={`cursor-pointer transition-all h-full duration-300 hover:shadow-lg ${
                     model.name === selectedModel ? "ring-2 ring-primary shadow-lg" : "hover:border-primary/50"
                   }`}
                   onClick={() => handleModelSelect(model.name)}
@@ -206,7 +205,7 @@ export function VideoUploadForm() {
                   <CardContent className="p-6 text-center">
                     <div className="flex items-center justify-center mb-3">
                       {model.icon && <model.icon className="w-6 h-6 mr-2" color={model.color} fill={model.color} />}
-                      <h4 className="font-semibold text-lg">{model.name}</h4>
+                      <h4 className="font-semibold text-lg">{model.name} Clipping</h4>
                       {model.name === selectedModel && <CheckCircle2 className="w-5 h-5 text-primary ml-2" />}
                     </div>
                     <p className="text-sm text-muted-foreground mb-4">{model.description}</p>
@@ -221,7 +220,6 @@ export function VideoUploadForm() {
                   </CardContent>
                 </Card>
 
-                {/* Enhanced Tooltip */}
                 <AnimatePresence>
                   {hoveredModel === model.name && (
                     <motion.div
@@ -243,7 +241,6 @@ export function VideoUploadForm() {
           </div>
         </motion.div>
 
-        {/* Upload Area */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -269,7 +266,6 @@ export function VideoUploadForm() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {/* URL Input */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Paste Video URL</label>
                     <div className="relative">
@@ -342,7 +338,6 @@ export function VideoUploadForm() {
                     </div>
                   </div>
 
-                  {/* Processing Status */}
                   {processing && (
                     <motion.div
                       className="space-y-4 p-4 bg-muted/50 rounded-lg"

@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { clerkMiddleware } from "@hono/clerk-auth";
-import { bodyLimit } from "hono/body-limit"
 import { logger } from "hono/logger";
 import serverRouter from "@/routers/server-status";
 import config from "./utils/config";
@@ -15,15 +14,14 @@ import { modelRouter } from "./routers/model";
 
 const app = new Hono()
 
-// app.use(cors({
-//   origin: config.ALLOWED_ORIGINS,
-//   credentials: true
-// }))
-
-app.use(cors())
+app.use(cors({
+  origin: config.ALLOWED_ORIGINS,
+  credentials: true
+}))
 
 app.use(clerkMiddleware())
 app.use(logger())
+
 
 app.route("/api/clerk", clerkRouter)
 app.route("/api/video", videoRouter)
@@ -41,7 +39,7 @@ app.notFound((c) => {
 
 app.onError((err, c) => {
     console.error(err)
-    return c.json({ error: "Internal Server Error", message: err.message, name: err.name}, 500)
+    return c.json({ error: err.message, cause: err.cause, name: err.name}, 500)
 })
 
 export default app
