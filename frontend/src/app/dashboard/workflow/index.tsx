@@ -79,7 +79,7 @@ export default function EnhancedWorkflow() {
       const token: string = await getToken()
       const image = thumbnail ? new File([thumbnail], "project_thumbnail.png", { type: "image/png" }) : null
 
-      const response = await createProject(token, file as File, image, title)
+      const response = await createProject(token, file as File, image, title, model, prompt)
       if (!response) {
         toast.error("Something went wrong, please try again")
         setLoading(false)

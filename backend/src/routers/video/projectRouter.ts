@@ -1,9 +1,10 @@
 import { Hono } from "hono";
-import { createProject, getAllProjects, deleteProject } from "./projectHelper";
+import { createProject, getAllProjects, deleteProject, createPromptedProject } from "./projectHelper";
 import { getAuth } from "@hono/clerk-auth";
 import clerkClient from "@/clients/clerk";
 import { clipsReadyNotification } from "@/lib/resend";
 import { generateThumbnailFromBuffer } from "@/lib/video/thumbnail";
+import { StringDecoder } from "node:string_decoder";
 
 export const projectRouter = new Hono()
 
@@ -25,6 +26,8 @@ projectRouter.post("/create", async (c) => {
     const file = body.file as File
     let thumbnail = body.thumbnail as File | null
     const title = body.title as string
+    const type = body.type as string
+    const prompt = body.prompt as string
 
     if (!thumbnail) {
         const thumbnailBlob = await generateThumbnailFromBuffer(Buffer.from(await file.arrayBuffer()), userId)
@@ -32,7 +35,10 @@ projectRouter.post("/create", async (c) => {
         thumbnail = new File([thumbnailBlob], "project_thumbnail.png", {type: "image/png"})
     }
 
-    const response = await createProject(userId, file, thumbnail, title)
+    let response;
+
+    if (type === "Normal") response = await createProject(userId, file, thumbnail, title, type)
+    else if (type === "Prompted") response = await createPromptedProject(userId, file, thumbnail, title, prompt, type) 
     
     return c.json(response, 200)
 })

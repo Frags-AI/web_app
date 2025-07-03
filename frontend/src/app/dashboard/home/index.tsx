@@ -22,6 +22,9 @@ import {
   Trash2,
   Eye,
   Download,
+  Sparkles,
+  Gem,
+  Settings,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -43,7 +46,7 @@ import { toast } from "sonner"
 
 function ProjectProcessingOverlay({ project }: { project: ProjectProps }) {
   const [progress, setProgress] = useState<number>(0)
-  const [currentState, setCurrentState] = useState("")
+  const [_, setCurrentState] = useState<string>("")
 
   const displayAlert = (state: string) => {
     setCurrentState((prev) => {
@@ -122,6 +125,28 @@ function ProjectCard({ project, onDelete }: { project: ProjectProps; onDelete: (
     })
   }
 
+  const getNameColor = (name: string) => {
+    switch (name) {
+      case "Prompted":
+        return "from-yellow-500 to-orange-500"
+      case "Custom":
+        return "from-blue-500 to-purple-500"
+      default:
+        return "from-gray-500 to-gray-600"
+    }
+  }
+
+  const getNameIcon = (name: string) => {
+    switch (name) {
+      case "Prompted":
+        return <Sparkles className="w-4 h-4" />
+      case "Custom":
+        return <Gem className="w-4 h-4" />
+      default:
+        return <Settings className="w-4 h-4" />
+    }
+  }
+
   return (
     <>
       <motion.div
@@ -170,9 +195,15 @@ function ProjectCard({ project, onDelete }: { project: ProjectProps; onDelete: (
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Badge variant={project.status === "SUCCESS" ? "default" : "secondary"} className="text-xs">
-                    {project.status}
-                  </Badge>
+                  <div className="flex flex-col gap-2">
+                    <Badge variant={project.status === "SUCCESS" ? "default" : "secondary"} className="text-xs font-bold">
+                      {project.status}
+                    </Badge>
+                    <Badge className={`${`bg-gradient-to-r ${getNameColor(project.type)}`} text-xs font-bold flex gap-2`}>
+                      {project.type}
+                      {getNameIcon(project.type)}
+                    </Badge>
+                  </div>
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

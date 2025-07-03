@@ -33,6 +33,7 @@ model Project {
   user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   identifier String
   title      String
+  type       String
   videos     Video[]
 
   @@unique([user_id, title])

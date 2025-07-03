@@ -53,6 +53,7 @@ export interface ProjectProps {
   taskId?: string,
   thumbnail: string,
   title: string,
+  type: string,
   identifier: string,
   createdAt: string
 }

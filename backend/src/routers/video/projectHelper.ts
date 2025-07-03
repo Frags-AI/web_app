@@ -28,7 +28,7 @@ async function getDbUser(userId: string) {
     return user;
 }
 
-export async function createProject(userId: string, file: File, thumbnail: File, title: string) {
+export async function createProject(userId: string, file: File, thumbnail: File, title: string, type: string) {
 
   const fileBuffer =  Buffer.from(await file.arrayBuffer());
   const fileName = title.toLowerCase().replaceAll(" ", "_") + ".mp4"
@@ -40,7 +40,7 @@ export async function createProject(userId: string, file: File, thumbnail: File,
   })
 
   const response: any = await axios.post(
-    `${config.MODEL_SERVER_URL}/api/video/upload/`,
+    `${config.MODEL_SERVER_URL}/api/video`,
     form,
     {headers: form.getHeaders()}
   )
@@ -56,30 +56,47 @@ export async function createProject(userId: string, file: File, thumbnail: File,
   })
 
   if (!user) throw new Error("User does not exist")
-  const projectIdentifier = identifierGenerator()
 
-  const data = await prisma.project.create({
-    data: { 
-      user_id: user.id,
-      task_id: responseData.task_id,
-      status: "PROCESSING",
-      identifier: projectIdentifier,
-      title: title
-    }
-  })
-
-  const s3Key = `${userId}/${data.identifier}/${thumbnail.name}`
-  const params = {
-    Bucket: config.S3_BUCKET,
-    Key: s3Key,
-    Body: new Uint8Array(await thumbnail.arrayBuffer()),
-    ContentType: thumbnail.type,
-    CacheControl: "3600"
-  };
-  const command = new PutObjectCommand(params)
-  await s3.send(command)
+  const data = await saveProjectToBackend(user.id, user.clerk_user_id, responseData.task_id, title, type, thumbnail)
 
   return data
+}
+
+export async function createPromptedProject(userId: string, file: File, thumbnail: File, title: string, prompt: string, type: string) {
+  const fileBuffer =  Buffer.from(await file.arrayBuffer());
+  const fileName = title.toLowerCase().replaceAll(" ", "_") + ".mp4"
+
+  const form = new FormData()
+  form.append("video", fileBuffer, {
+    filename: fileName,
+    contentType: "video/mp4"
+  })
+  form.append("prompt", prompt)
+
+  const response: any = await axios.post(
+    `${config.MODEL_SERVER_URL}/api/video/sematic`,
+    form,
+    {headers: form.getHeaders()}
+  )
+
+  if (response.status >= 400) {
+    throw new Error(response.data.detail)
+  }
+
+  const responseData: {task_id: string, video_name: string, url: string} = response.data
+
+  const user = await prisma.user.findFirst({
+    where: {clerk_user_id: userId}
+  })
+
+  if (!user) throw new Error("User does not exist")
+
+  const data = await saveProjectToBackend(user.id, user.clerk_user_id, responseData.task_id, title, type, thumbnail)
+  return data
+}
+
+export async function createCustomProject(userId: string, file: File, thumbnail: File, title: string, options: Record<string, string>) {
+
 }
 
 export async function getAllProjects(userId: string) {
@@ -101,10 +118,10 @@ export async function getAllProjects(userId: string) {
       identifier: project.identifier,
       taskId: project.task_id,
       status: project.status,
+      type: project.type,
       thumbnail: url,
       title: project.title,
       createdAt: project.created_at
-
     }
   }
 
@@ -114,7 +131,6 @@ export async function getAllProjects(userId: string) {
 
 export async function deleteProject(userId: string , identifier: string) {
   const s3Key = `${userId}/${identifier}`;
-  console.log(s3Key)
 
   const listCommand = new ListObjectsV2Command({
     Bucket: config.S3_BUCKET,
@@ -154,6 +170,32 @@ export async function deleteProject(userId: string , identifier: string) {
   })
 
   return response
+}
+
+async function saveProjectToBackend(userId: string, clerkId: string, taskId: string, title: string, type: string, thumbnail: File) {
+  const projectId = identifierGenerator()
+  const data = await prisma.project.create({
+    data: { 
+      user_id: userId,
+      task_id: taskId,
+      status: "PROCESSING",
+      type: type,
+      identifier: projectId,
+      title: title
+    }
+  })
+
+  const s3Key = `${clerkId}/${data.identifier}/${thumbnail.name}`
+  const params = {
+    Bucket: config.S3_BUCKET,
+    Key: s3Key,
+    Body: new Uint8Array(await thumbnail.arrayBuffer()),
+    ContentType: thumbnail.type,
+    CacheControl: "3600"
+  };
+  const command = new PutObjectCommand(params)
+  await s3.send(command)
+  return data
 }
 
 export const cleanMediaDownloads = async (userId: string) => {
