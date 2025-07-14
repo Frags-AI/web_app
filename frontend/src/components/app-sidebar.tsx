@@ -10,6 +10,7 @@ import {
   Send,
   Settings2,
   SquareTerminal,
+  Scissors,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -52,6 +53,12 @@ const data = {
           url: "#",
         },
       ],
+    },
+    {
+      title: "Clip Anything",
+      url: "/dashboard/clip-anything",
+      icon: Scissors,
+      items: [],
     },
     {
       title: "Models",

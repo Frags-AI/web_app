@@ -3,7 +3,7 @@ import { useState, Fragment } from "react"
 import { Button } from "@/components/ui/button"
 import { UserButton } from "@clerk/clerk-react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faBookOpen, faHouse, faFolderClosed, faCrown, faCalendar, faChartSimple, faLink, faBars, faCircleQuestion } from "@fortawesome/free-solid-svg-icons"
+import { faBookOpen, faHouse, faFolderClosed, faCrown, faCalendar, faChartSimple, faLink, faBars, faCircleQuestion, faMicrophone, faFileAlt, faFileAudio, faImage } from "@fortawesome/free-solid-svg-icons"
 import { motion, AnimatePresence } from "framer-motion"
 import { useLocation } from "react-router-dom"
 import { IconProps, IconPropsGroup } from "@/types"
@@ -55,9 +55,18 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
     // { icon: faCircleQuestion, label: "Help Center", id: "sidebar-help-center", tab: "/help-center" },
   ]
 
+  // New AI Tools group
+  const AITools: IconProps[] = [
+    { icon: faMicrophone, label: "Voiceover", id: "sidebar-voiceover", tab: "/voiceover" },
+    { icon: faFileAlt, label: "Script Gen", id: "sidebar-script", tab: "/script" },
+    { icon: faFileAudio, label: "Transcription", id: "sidebar-transcription", tab: "/transcription" },
+    { icon: faImage, label: "Background", id: "sidebar-background", tab: "/background" },
+  ]
+
   const IconGroups : IconPropsGroup[] = [
     { title: "Create", items: Group1 },
     { title: "Manage", items: Group2 },
+    { title: "AI Tools", items: AITools },
     { title: "Explore", items: Group3 },
   ]
 
