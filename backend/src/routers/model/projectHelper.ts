@@ -49,16 +49,27 @@ export async function uploadToProject(files: File[], jobId: string) {
   if (!user) throw new Error("User not found")
 
   async function addFile(file: File, idx: number) {
-    const fileName = `clip_${idx}`
+    const baseName = `clip_${idx}`
     const viralityScore = getScoreFromFilename(file.name)
-    const s3Key = `${user!.clerk_user_id}/${project.identifier}/clips/${fileName}`;
+    const s3Key = `${user!.clerk_user_id}/${project.identifier}/clips/${baseName}/`;
 
     const buffer = await file.arrayBuffer();
     const arrayBuffer = new Uint8Array(buffer);
   
-    const params: PutObjectCommandInput = {
+    const params1: PutObjectCommandInput = {
       Bucket: config.S3_BUCKET,
-      Key: s3Key,
+      Key: s3Key + "original.mp4",
+      Body: arrayBuffer,
+      ContentType: file.type,
+      CacheControl: "3600",
+      Metadata: {
+        "aspect_ratio": "16:9"
+      }
+    };
+
+    const params2: PutObjectCommandInput = {
+      Bucket: config.S3_BUCKET,
+      Key: s3Key + "main.mp4",
       Body: arrayBuffer,
       ContentType: file.type,
       CacheControl: "3600",
@@ -67,19 +78,22 @@ export async function uploadToProject(files: File[], jobId: string) {
       }
     };
   
-    const command = new PutObjectCommand(params);
-    await s3.send(command);
-  
+    const command1 = new PutObjectCommand(params1);
+    await s3.send(command1);
+
+    const command2 = new PutObjectCommand(params2);
+    await s3.send(command2)
+
     await prisma.video.create({
       data: {
-        name: fileName,
+        name: baseName,
         user_id: user!.id,
         project_id: project.id,
         score: viralityScore
       }
     });
 
-    const videoUrl = `https://${config.S3_BUCKET}.s3.${config.S3_REGION}.amazonaws.com/${s3Key}`;
+    const videoUrl = `https://${config.S3_BUCKET}.s3.${config.S3_REGION}.amazonaws.com/${s3Key}main.mp4`;
     return videoUrl
   }
 

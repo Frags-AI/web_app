@@ -17,7 +17,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -26,10 +25,7 @@ import { Button } from "@/components/ui/button"
 import { PlatformDataProps } from "@/types"
 import { toast } from "sonner"
 
-
-
 export async function getAllClips(token: string, identifier: string) {
-    console.log(identifier)
     const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/video/clip`, 
         {identifier},
@@ -40,13 +36,13 @@ export async function getAllClips(token: string, identifier: string) {
     return data
 }
 
-export async function changeAspectRatio(token: string, identifier: string, ratio: string, link: string, title: string) {
+export async function changeAspectRatio(token: string, ratio: string, link: string, id: string) {
     const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/video/aspect`,
-        { identifier, ratio, link, title },
+        { id, ratio, link },
         { headers: {Authorization: `Bearer ${token}`} }
     )
-    return response.data as {link: string, aspectRatio: string}
+    return response.data as {link: string, aspectRatio: string, clipTitle: string}
 }
 
 export function getMappedProviders(data: PlatformDataProps[], scope: string) {

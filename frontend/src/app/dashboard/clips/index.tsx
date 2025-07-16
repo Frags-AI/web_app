@@ -61,14 +61,15 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
-import type { SocialMediaCardProps } from "@/types"
+import type { SocialMediaCardProps, PlatformDataProps } from "@/types"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { PlatformDataProps } from "@/types"
+import { useAdjustAspectRatio, useAddSubtitles } from "./clipMutations"
 
 
-interface VideoProps {
+export interface VideoProps {
   title: string
   link: string
+  id: string
   aspectRatio: string
   duration?: number
   createdAt?: string
@@ -81,10 +82,10 @@ interface VideoCardProps {
   videoIdx: number
   currentIdx: number
   setCurrentIdx: React.Dispatch<React.SetStateAction<number>>
-  adjustRationMutation: UseMutationResult<
+  adjustRatioMutation: UseMutationResult<
     { clipTitle: string; newRatio: string; newLink: string },
     Error,
-    { clipTitle: string; selectedRatio: string; selectedLink: string }
+    { id: string; selectedRatio: string; selectedLink: string }
   >,
   addSubtitlesMutation: UseMutationResult<
     {newLink: string; title: string}, 
@@ -96,7 +97,7 @@ interface VideoCardProps {
   viewMode: "grid" | "list"
 }
 
-function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx, viewMode, providerData, adjustRationMutation, addSubtitlesMutation }: VideoCardProps) {
+function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx, viewMode, providerData, adjustRatioMutation, addSubtitlesMutation }: VideoCardProps) {
   const [showModal, setShowModal] = useState<boolean>(false)
   const [aspectRatio, setAspectRatio] = useState<string>(video.aspectRatio)
   const [isProcessing, setIsProcessing] = useState<boolean>(false)
@@ -163,8 +164,8 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
 
     setIsProcessing(true)
     toast.info("Starting conversion...")
-    adjustRationMutation.mutate(
-      {clipTitle: video.title, selectedRatio: ratio, selectedLink: video.link},
+    adjustRatioMutation.mutate(
+      {id: video.id, selectedRatio: ratio, selectedLink: video.link},
       {
         onSuccess: (data) => {
           toast.success("Aspect Ratio updated")
@@ -194,7 +195,6 @@ function VideoCard({ video, setVideoNumber, videoIdx, currentIdx, setCurrentIdx,
         }
       }
     )
-    
   }
 
   const formatDuration = (seconds: number) => {
@@ -581,58 +581,13 @@ function VideoCards({ videos, viewMode, projectIdentifier }: { videos: VideoProp
 
   }
 
-  const {data: providerData, isLoading: platformsLoading} = useQuery<PlatformDataProps[]>({
+  const {data: providerData} = useQuery<PlatformDataProps[]>({
     queryKey:["SocialMediaProviderList"],
     queryFn: getPlatforms
   })
 
-  const adjustRatioMutation = useMutation<
-    { clipTitle: string; newRatio: string; newLink: string },
-    Error,
-    { clipTitle: string; selectedRatio: string; selectedLink: string }
-  >({
-    mutationFn: async ({clipTitle, selectedRatio, selectedLink}) => {
-      const token = await getToken()
-      const response = await changeAspectRatio(
-          token,
-          projectIdentifier,
-          selectedRatio,
-          selectedLink,
-          clipTitle
-        ) 
-      return { newRatio: response.aspectRatio, newLink: response.link, clipTitle }
-    },
-    onSuccess: (data) => {
-      queryClient.setQueryData<VideoProps[]>(
-        ["ProjectVideoClips", projectIdentifier],
-        (oldClips) => oldClips?.map((clip) => clip.title === data.clipTitle ? { ...clip, link: data.newLink, aspectRatio: data.newRatio } : clip) || []
-      )
-    },
-    onError: (err) => {
-      toast.error(err.message)
-    }
-  })
-
-  const addSubtitlesMutation = useMutation<
-    {newLink: string, title: string},
-    Error,
-    {selectedLink: string, title: string}
-  >({
-    mutationFn: async ({selectedLink, title}) => {
-      const token = await getToken()
-      const response = await addVideoSubtitles(token, selectedLink, title)
-      return {newLink: response.link, title: response.title}
-    },
-    onSuccess: (data) => {
-      queryClient.setQueryData<VideoProps[]>(
-        ["ProjectVideoClips", projectIdentifier],
-        (oldClips) => oldClips.map((clip) => clip.title === data.title ? { ...clip, link: data.newLink} : clip) || []
-      )
-    },
-    onError: (err) => {
-      toast.error(err.message)
-    }
-  })
+  const adjustRatioMutation = useAdjustAspectRatio(projectIdentifier)
+  const addSubtitlesMutation = useAddSubtitles(projectIdentifier)
 
   const allVideosLoaded = loadedVideos > 0 && loadedVideos >= videos.length
 
@@ -645,7 +600,7 @@ function VideoCards({ videos, viewMode, projectIdentifier }: { videos: VideoProp
         videoIdx={idx}
         currentIdx={currentIdx}
         setCurrentIdx={setCurrentIdx}
-        adjustRationMutation={adjustRatioMutation}
+        adjustRatioMutation={adjustRatioMutation}
         addSubtitlesMutation={addSubtitlesMutation}
         viewMode={viewMode}
         providerData={providerData}
@@ -746,17 +701,12 @@ export default function Page() {
     console.log(projectIdentifier)
   })
 
-  // const getVideoClips = useCallback(async () => {
-  //   const token = await getToken()
-  //   return await getAllClips(token, projectIdentifier)
-  // }, [getToken])
-
   const getVideoClips = async () => {
     const token = await getToken()
     return await getAllClips(token, projectIdentifier)
   }
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<VideoProps[]>({
     queryKey: ["ProjectVideoClips", projectIdentifier],
     queryFn: getVideoClips,
     refetchOnWindowFocus: false,
@@ -764,7 +714,7 @@ export default function Page() {
   })
 
   let videos: VideoProps[] = []
-  if (data) videos = data as VideoProps[]
+  if (data) videos = data
 
   const filteredVideos = videos.filter((video) => video.title.toLowerCase().includes(searchQuery.toLowerCase()))
 

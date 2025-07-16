@@ -8,7 +8,8 @@ import {
   ListObjectsV2Command
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { PrismaClient, Project } from "../../clients/prisma";
+import { Project } from "../../clients/prisma";
+import { prisma } from "@/clients/db"
 import config from '@/utils/config.js';
 import { existsSync, promises } from "fs";
 import { identifierGenerator } from "@/lib/idGenerator";
@@ -16,7 +17,6 @@ import { s3 } from "@/clients/aws";
 import FormData from "form-data";
 import axios from "axios";
 
-const prisma = new PrismaClient();
 
 async function getDbUser(userId: string) {
     const user = await prisma.user.findUnique({
@@ -170,6 +170,15 @@ export async function deleteProject(userId: string , identifier: string) {
   })
 
   return response
+}
+
+export async function getProjectStatus(taskId: string) {
+
+  const project = await prisma.project.findFirst({where: {task_id: taskId}})
+
+  if (!project) return "PROCESSING"
+  
+  return project.status
 }
 
 async function saveProjectToBackend(userId: string, clerkId: string, taskId: string, title: string, type: string, thumbnail: File) {

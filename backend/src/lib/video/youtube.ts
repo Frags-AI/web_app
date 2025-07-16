@@ -27,11 +27,9 @@ export async function youtubeVideo(
   }
 
   const outputPath = path.join(staticDir, "videos", id, `${name + ".%(ext)s"}`)
-  const commandWithCookies = ["--cookies", cookiesPath, "-f", "bestvideo[height<=1080]+bestaudio", "--merge-output-format", "mp4", "-o", outputPath, link]
-  const command = ["-f", "bestvideo[height<=1080]+bestaudio", "--merge-output-format", "mp4", "-o", outputPath, link]
+  const commands = ["--cookies", cookiesPath, "-f", "bestvideo[height<=1080]+bestaudio", "--merge-output-format", "mp4", "-o", outputPath, link]
   
-
-  const process = spawn("yt-dlp", command);
+  const process = spawn("yt-dlp", commands);
 
   return new Promise((resolve, reject) => {
     process.on("error", (err) => {
@@ -96,8 +94,7 @@ export async function youtubeThumbnail(
   }
 
   const outputPath = path.join(staticDir, "videos", id, `${name + ".%(ext)s"}`)
-  const commandsWithCookies = ["--cookies", cookiesPath, "--skip-download", "--write-thumbnail", "--convert-thumbnails", "jpg", "-o", outputPath, link]
-  const commands = ["--skip-download", "--write-thumbnail", "--convert-thumbnails", "jpg", "-o", outputPath, link]
+  const commands = ["--cookies", cookiesPath, "--skip-download", "--write-thumbnail", "--convert-thumbnails", "jpg", "-o", outputPath, link]
 
   const process = spawn("yt-dlp", commands);
 
@@ -142,11 +139,10 @@ export function youtubeTitle(link: string): Promise<Record<string, string>> {
     link = link.substring(0, link.indexOf("&list"));
   }
 
-  const commandWithCookies = `yt-dlp --cookies ${cookiesPath} --get-title "${link}"`
-  const command = `yt-dlp --get-title "${link}"`
+  const commands = `yt-dlp --cookies ${cookiesPath} --get-title "${link}"`
 
   return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
+    exec(commands, (error, stdout, stderr) => {
       if (error) return reject(stderr || error.message);
       resolve({ title: stdout.trim() });
     });

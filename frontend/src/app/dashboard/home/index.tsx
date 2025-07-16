@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
-import { deleteProject, getProjects } from "./homeHelper"
+import { deleteProject, getProjects, checkStatus } from "./homeHelper"
 import { useAuth } from "@clerk/clerk-react"
 import LoadingScreen from "@/app/accessories/LoadingScreen"
 import { useNavigate } from "react-router-dom"
@@ -47,7 +47,8 @@ import { toast } from "sonner"
 function ProjectProcessingOverlay({ project }: { project: ProjectProps }) {
   const [progress, setProgress] = useState<number>(0)
   const [_, setCurrentState] = useState<string>("")
-
+  const [status, setStatus] = useState<"SUCCESS" | "FAILED" | null>(null)
+  const {getToken} = useAuth()
   const displayAlert = (state: string) => {
     setCurrentState((prev) => {
       if (prev !== state) {
@@ -58,7 +59,6 @@ function ProjectProcessingOverlay({ project }: { project: ProjectProps }) {
   }
 
   const time = useTime()
-
   const rotate = useTransform(time, [0, 5000], [0, 360], {
     clamp: false,
   })
@@ -68,8 +68,33 @@ function ProjectProcessingOverlay({ project }: { project: ProjectProps }) {
   })
 
   const setProcessingProgress = (currentProgress: number) => setProgress(currentProgress)
-
   const getProcessingStatus = () => trackProgress(setProcessingProgress, project.taskId, displayAlert)
+  const getProjectStatus = async () => {
+    const token = await getToken()
+    const currentStatus = await checkStatus(token, project.taskId)
+    return currentStatus
+  }
+
+  useEffect(() => {
+    if (progress === 100) {
+      const intervalId = setInterval(async () => {
+        try {
+          const result = await getProjectStatus();
+          const currentStatus = result;
+          if (["SUCCESS", "FAILED"].includes(currentStatus)) {
+            project.status = currentStatus as "SUCCESS" | "FAILED"
+            setStatus(project.status)
+            clearInterval(intervalId);
+          }
+        } catch (error) {
+          console.error("Error fetching status:", error);
+          clearInterval(intervalId);
+        }
+      }, 2500);
+      
+      return () => clearInterval(intervalId);
+    }
+  }, [progress]);
 
   useEffect(() => {
     getProcessingStatus()
@@ -248,12 +273,8 @@ function ProjectCard({ project, onDelete }: { project: ProjectProps; onDelete: (
           <DialogHeader>
             <DialogTitle>Delete Project</DialogTitle>
             <DialogDescription className="space-y-4">
-              <p>
-                You are about to delete <strong>"{project.title}"</strong>. This action cannot be undone.
-              </p>
-              <p>
-                This will permanently delete all project data including clips, transcriptions, and associated files.
-              </p>
+              <div>You are about to delete <strong>"{project.title}"</strong>. This action cannot be undone.</div>
+              <div>This will permanently delete all project data including clips, transcriptions, and associated files.</div>
               <div className="flex gap-3 justify-end pt-4">
                 <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
                   Cancel
@@ -451,7 +472,6 @@ export default function Home() {
             className={`grid gap-6 ${
               viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
             }`}
-            layout
           >
             <AnimatePresence>
               {filteredProjects.map((project) => (

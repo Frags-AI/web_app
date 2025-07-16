@@ -1,10 +1,9 @@
 import { Hono } from "hono";
-import { createProject, getAllProjects, deleteProject, createPromptedProject } from "./projectHelper";
+import { createProject, getAllProjects, deleteProject, createPromptedProject, getProjectStatus } from "./projectHelper";
 import { getAuth } from "@hono/clerk-auth";
 import clerkClient from "@/clients/clerk";
 import { clipsReadyNotification } from "@/lib/resend";
 import { generateThumbnailFromBuffer } from "@/lib/video/thumbnail";
-import { StringDecoder } from "node:string_decoder";
 
 export const projectRouter = new Hono()
 
@@ -54,6 +53,19 @@ projectRouter.post("/delete", async (c) => {
     await deleteProject(userId, identifer)
     
     return c.json({message: "Project has been successfully deleted"}, 200)
+})
+
+projectRouter.post("/status", async (c) => {
+    const userId = getAuth(c)?.userId
+
+    if (!userId) return c.json({message: "User is not authorized"}, 401)
+
+    const body = await c.req.json()
+    const taskId = body.taskId
+
+    const status = await getProjectStatus(taskId)
+
+    return c.json({status}, 200)
 })
 
 projectRouter.post("/testing", async (c) => {

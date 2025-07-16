@@ -33,6 +33,15 @@ interface WebsocketProgressProps {
     stage: string
 }
 
+export async function checkStatus(token: string, taskId: string): Promise<"SUCCESS" | "FAILED" | "PROCESSING"> {
+    const response = await axios.post<{status: "SUCCESS" | "FAILED" | "PROCESSING"}> (
+        `${import.meta.env.VITE_API_URL}/api/video/project/status`,
+        { taskId },
+        {headers: {Authorization: `Bearer ${token}`}}
+    )
+    return response.data.status
+}
+
 export async function trackProgress(onProgress: SetProgressProps, taskId: string, displayAlert: DisplayAlertProps) {
     const connectionURL = `${baseSocketURL}/status/${taskId}`;
     const socket = new WebSocket(connectionURL);
@@ -44,7 +53,7 @@ export async function trackProgress(onProgress: SetProgressProps, taskId: string
             onProgress(data.progress);
             displayAlert(data.stage)
         } else if (data.state === "SUCCESS") {
-            onProgress
+            onProgress(data.progress)
             toast.success(data.stage);
         } else if (data.state === "FAILURE") {
             onProgress(data.progress)
@@ -52,8 +61,9 @@ export async function trackProgress(onProgress: SetProgressProps, taskId: string
         }
     };
 
-    socket.onerror = () => {
-        toast.error("WebSocket connection error");
+    socket.onerror = (event) => {
+        toast.error(`WebSocket connection error`);
+        socket.close()
     };
 
     socket.onclose = () => {

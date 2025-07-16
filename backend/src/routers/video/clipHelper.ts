@@ -11,23 +11,20 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import config from "@/utils/config"
 
 export const getClips = async (userId: string, identifier: string) => {
-    const s3Key = `${userId}/${identifier}/clips`
 
-    const params: ListObjectsV2Request  = {
-        Bucket: config.S3_BUCKET,
-        Prefix: s3Key
-    }
+    const baseKey = `${userId}/${identifier}/clips`
+    const clips = (await prisma.project.findFirst({
+        where: { identifier },
+        include: { videos: true}
+    }))?.videos
 
-    const command = new ListObjectsV2Command(params)
-    const objects = (await s3.send(command)).Contents
-
-    const getClip = async (videoKey: string) => {
+    const getClip = async (videoKey: string, videoTitle: string, id: string) => {
         const params: GetObjectRequest = {
             Bucket: config.S3_BUCKET,
             Key: videoKey
         }
 
-        const videoName = videoKey.substring(videoKey.lastIndexOf("/") + 1).replace(".mp4", "").split("_").map((word) => {
+        const videoName = videoTitle.split("_").map((word) => {
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         }).join(" ")
 
@@ -38,19 +35,19 @@ export const getClips = async (userId: string, identifier: string) => {
         const headResponse = await s3.send(headCommand)
         const aspectRatio = headResponse?.Metadata?.["aspect_ratio"]
 
-
         const object = {
             title: videoName,
             link: URL,
-            aspectRatio
+            aspectRatio,
+            id
         }
 
         return object
     }
 
-    if (!objects) return []
+    if (!clips) return []
 
-    const promiseArray = await Promise.all(objects?.map((object) => getClip(object.Key as string)))
+    const promiseArray = await Promise.all(clips?.map((clip) => getClip(`${baseKey}/${clip.name}/main.mp4`, clip.name, clip.id)))
     
     return promiseArray
 }
