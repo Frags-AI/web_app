@@ -3,7 +3,7 @@ import { useState, Fragment } from "react"
 import { Button } from "@/components/ui/button"
 import { UserButton } from "@clerk/clerk-react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faBookOpen, faHouse, faFolderClosed, faCrown, faCalendar, faChartSimple, faLink, faBars, faCircleQuestion, faMicrophone, faFileAlt, faFileAudio, faImage } from "@fortawesome/free-solid-svg-icons"
+import { faBookOpen, faHouse, faFolderClosed, faCrown, faCalendar, faChartSimple, faLink, faBars, faCircleQuestion, faMicrophone, faFileAlt, faFileAudio, faImage, faScissors } from "@fortawesome/free-solid-svg-icons"
 import { motion, AnimatePresence } from "framer-motion"
 import { useLocation } from "react-router-dom"
 import { IconProps, IconPropsGroup } from "@/types"
@@ -55,18 +55,19 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
     // { icon: faCircleQuestion, label: "Help Center", id: "sidebar-help-center", tab: "/help-center" },
   ]
 
-  // New AI Tools group
+  // AI Tools group with Clip Anything first
   const AITools: IconProps[] = [
+    { icon: faScissors, label: "Clip Anything", id: "sidebar-clip-anything", tab: "/clip-anything" },
     { icon: faMicrophone, label: "Voiceover", id: "sidebar-voiceover", tab: "/voiceover" },
-    { icon: faFileAlt, label: "Script Gen", id: "sidebar-script", tab: "/script" },
+    { icon: faFileAlt, label: "Script Gen", id: "sidebar-script", tab: "/script-generation" },
     { icon: faFileAudio, label: "Transcription", id: "sidebar-transcription", tab: "/transcription" },
-    { icon: faImage, label: "Background", id: "sidebar-background", tab: "/background" },
+    { icon: faImage, label: "Background", id: "sidebar-background", tab: "/background-generation" },
   ]
 
   const IconGroups : IconPropsGroup[] = [
     { title: "Create", items: Group1 },
-    { title: "Manage", items: Group2 },
     { title: "AI Tools", items: AITools },
+    { title: "Manage", items: Group2 },
     { title: "Explore", items: Group3 },
   ]
 
@@ -113,7 +114,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
         {IconGroups.map((group, idx) => (
           <Fragment key={group.title + "Key"}>
             {idx === IconGroups.length - 1 && <div className="grow"/>}
-            <div className="flex flex-col mt-16 w-full">
+            <div className="flex flex-col mt-6 w-full">
                 <AnimatePresence>
                     <motion.div
                         className="text-muted-foreground font-bold"

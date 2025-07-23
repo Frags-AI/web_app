@@ -1,213 +1,248 @@
-import { useState, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import { toast } from "@/components/ui/use-toast";
-import { TranscriptionService } from "./transcriptionService";
+import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
+import { useDropzone } from "react-dropzone";
+import { Loader2, Upload, FileText, X } from "lucide-react";
+import { toast } from "sonner";
 
 export default function TranscriptionPage() {
   const [file, setFile] = useState<File | null>(null);
-  const [isTranscribing, setIsTranscribing] = useState(false);
-  const [transcriptionId, setTranscriptionId] = useState<string | null>(null);
-  const [transcriptionText, setTranscriptionText] = useState<string>("");
-  const [silenceThreshold, setSilenceThreshold] = useState(-50);
-  const [minSilenceLength, setMinSilenceLength] = useState(500);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [includeTimestamps, setIncludeTimestamps] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [transcription, setTranscription] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length === 0) {
+      toast.error("Please upload an audio or video file");
+      return;
     }
-  };
+    
+    const file = acceptedFiles[0];
+    
+    // Check file size
+    if (file.size > 2 * 1024 * 1024 * 1024) { // 2GB
+      toast.error("File size exceeds the 2GB limit");
+      return;
+    }
+    
+    // Check file type
+    const validExtensions = ['.mp3', '.wav', '.mp4', '.avi', '.mov', '.m4a', '.flac', '.ogg'];
+    const validTypes = ['audio/*', 'video/*'];
+    
+    const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+    const hasValidExtension = validExtensions.includes(fileExtension);
+    const hasValidType = validTypes.some(type => file.type.startsWith(type.replace('*', '')));
+    
+    if (!hasValidExtension && !hasValidType) {
+      toast.error("Please upload a valid audio or video file");
+      return;
+    }
+    
+    setFile(file);
+    setProgress(0);
+    setTranscription(null);
+    toast.success("File uploaded", { description: "Your file is ready for transcription" });
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'audio/*': [],
+      'video/*': []
+    },
+    maxFiles: 1
+  });
 
   const handleTranscribe = async () => {
     if (!file) {
-      toast({
-        title: "Error",
-        description: "Please select a video file to transcribe",
-        variant: "destructive",
-      });
+      toast.error("Please upload a file first");
       return;
     }
 
-    setIsTranscribing(true);
+    setIsLoading(true);
+    setProgress(0);
+    
     try {
-      const result = await TranscriptionService.transcribeVideo(file, silenceThreshold, minSilenceLength);
-      if (result.status === "success") {
-        toast({
-          title: "Success",
-          description: "Video transcribed successfully",
+      // Create form data
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('include_timestamps', includeTimestamps.toString());
+      
+      // Simulate progress during upload
+      const progressInterval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 5;
         });
-        setTranscriptionId(result.transcription_id);
+      }, 1000);
+      
+      const response = await fetch('/api/ai/transcription', {
+        method: 'POST',
+        body: formData
+      });
+
+      clearInterval(progressInterval);
+      setProgress(100);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.status === 'success') {
+        toast.success("Transcription completed successfully!");
         
-        // Fetch the transcription text
-        const transcription = await TranscriptionService.getTranscription(result.transcription_id);
-        setTranscriptionText(transcription);
+        // Use the actual transcription text from the backend
+        const transcriptionText = result.transcription_text || "No transcription text available";
+        setTranscription(transcriptionText);
       } else {
-        toast({
-          title: "Error",
-          description: result.error || "Failed to transcribe video",
-          variant: "destructive",
-        });
+        throw new Error(result.message || 'Failed to transcribe file');
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      });
-      console.error(error);
+      console.error("Error transcribing file:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to transcribe file. Please try again.");
     } finally {
-      setIsTranscribing(false);
+      setIsLoading(false);
     }
   };
 
-  const handleDownload = () => {
-    if (transcriptionId) {
-      const downloadUrl = TranscriptionService.getDownloadUrl(transcriptionId);
-      window.open(downloadUrl, "_blank");
-    }
-  };
-
-  const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(transcriptionText);
-    toast({
-      title: "Copied",
-      description: "Transcription copied to clipboard",
-    });
+  const handleClearFile = () => {
+    setFile(null);
+    setProgress(0);
+    setTranscription(null);
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Video Transcription</h1>
+    <div className="container mx-auto py-6">
+      <div className="flex flex-col gap-2 mb-6">
+        <h1 className="text-2xl font-bold">AI Transcription</h1>
+        <p className="text-muted-foreground">Convert audio and video to text with AI</p>
+      </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Upload Video</CardTitle>
+            <CardTitle>Upload Media</CardTitle>
             <CardDescription>
-              Upload a video file to transcribe its audio
+              Upload an audio or video file to transcribe
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6">
-              <div>
-                <Label htmlFor="video-file">Video File</Label>
-                <div className="flex items-center gap-2 mt-1">
-                  <Input
-                    id="video-file"
-                    type="file"
-                    accept="video/*"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="flex-1"
-                  />
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      setFile(null);
-                      if (fileInputRef.current) fileInputRef.current.value = "";
-                    }}
-                  >
-                    Clear
-                  </Button>
-                </div>
-                {file && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Selected: {file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)
-                  </p>
-                )}
+            {!file ? (
+              <div 
+                {...getRootProps()} 
+                className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer h-40 ${
+                  isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
+                }`}
+              >
+                <input {...getInputProps()} />
+                <Upload className="h-10 w-10 text-muted-foreground mb-2" />
+                <p className="text-sm text-center text-muted-foreground">
+                  {isDragActive
+                    ? "Drop the file here"
+                    : "Drag and drop an audio or video file here, or click to select"}
+                </p>
+                <p className="text-xs text-center text-muted-foreground mt-1">
+                  Supports MP3, WAV, MP4, and other audio/video formats (max 2GB)
+                </p>
               </div>
-              
+            ) : (
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label htmlFor="silence-threshold">Silence Threshold (dB)</Label>
-                    <span className="text-sm text-muted-foreground">{silenceThreshold}</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <FileText className="h-8 w-8 text-primary" />
+                    <div>
+                      <p className="text-sm font-medium">{file.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {(file.size / (1024 * 1024)).toFixed(2)} MB
+                      </p>
+                    </div>
                   </div>
-                  <Slider
-                    id="silence-threshold"
-                    min={-80}
-                    max={-20}
-                    step={1}
-                    value={[silenceThreshold]}
-                    onValueChange={(value) => setSilenceThreshold(value[0])}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Lower values detect quieter silences (more sensitive)
-                  </p>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={handleClearFile}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
                 
                 <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label htmlFor="min-silence">Minimum Silence Length (ms)</Label>
-                    <span className="text-sm text-muted-foreground">{minSilenceLength}</span>
+                  <div className="flex items-center space-x-2">
+                    <Switch 
+                      id="timestamps" 
+                      checked={includeTimestamps}
+                      onCheckedChange={setIncludeTimestamps}
+                    />
+                    <Label htmlFor="timestamps">Include timestamps</Label>
                   </div>
-                  <Slider
-                    id="min-silence"
-                    min={100}
-                    max={2000}
-                    step={50}
-                    value={[minSilenceLength]}
-                    onValueChange={(value) => setMinSilenceLength(value[0])}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Minimum duration of silence to be considered a break
-                  </p>
+                  
+                  <Button 
+                    onClick={handleTranscribe}
+                    disabled={isLoading}
+                    className="w-full"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Transcribing...
+                      </>
+                    ) : (
+                      "Transcribe"
+                    )}
+                  </Button>
                 </div>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button 
-              onClick={handleTranscribe} 
-              disabled={isTranscribing || !file}
-              className="w-full"
-            >
-              {isTranscribing ? "Transcribing..." : "Transcribe Video"}
-            </Button>
-          </CardFooter>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Transcription</CardTitle>
-            <CardDescription>
-              The transcribed text from your video
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="min-h-[400px] max-h-[500px] overflow-y-auto">
-            {transcriptionText ? (
-              <div className="p-3 bg-muted rounded-md whitespace-pre-wrap">
-                {transcriptionText}
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-full text-muted-foreground">
-                Transcription will appear here
+                
+                {isLoading && (
+                  <div className="space-y-1">
+                    <Progress value={progress} />
+                    <p className="text-xs text-right text-muted-foreground">
+                      {progress}%
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
-          <CardFooter className="flex flex-col space-y-2">
-            <Button 
-              variant="outline" 
-              className="w-full"
-              disabled={!transcriptionText}
-              onClick={handleCopyToClipboard}
-            >
-              Copy to Clipboard
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full"
-              disabled={!transcriptionId}
-              onClick={handleDownload}
-            >
-              Download Transcription
-            </Button>
-          </CardFooter>
         </Card>
+        
+        {transcription && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Transcription</CardTitle>
+              <CardDescription>
+                Text transcription of your media file
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="relative">
+                <pre className="p-4 rounded-md bg-muted whitespace-pre-wrap text-sm">
+                  {transcription}
+                </pre>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="absolute top-2 right-2"
+                  onClick={() => {
+                    navigator.clipboard.writeText(transcription);
+                    toast.success("Copied!", { description: "Transcription copied to clipboard" });
+                  }}
+                >
+                  Copy
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

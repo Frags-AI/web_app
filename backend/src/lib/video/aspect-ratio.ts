@@ -8,8 +8,13 @@ import { promises } from "fs";
  * @returns A Promise that resolves to an object containing the video Blob.
  */
 export async function convert1to1Ratio(inputPath: string, outputPath: string): Promise<Buffer> {
-  const commands = [ "-y", "-i", inputPath, "-vf", "crop='if(gt(a,1),ih,iw)':'if(gt(a,1),ih,iw)',scale=720:720,setsar=1",
-    "-c:a", "copy", outputPath
+  const commands = [ 
+    "-y", 
+    "-c:v", "libaom-av1", // Force software decoding for AV1
+    "-i", inputPath, 
+    "-vf", "crop='if(gt(a,1),ih,iw)':'if(gt(a,1),ih,iw)',scale=720:720,setsar=1",
+    "-c:a", "copy", 
+    outputPath
   ];
   
   const process = spawn("ffmpeg", commands)
@@ -50,8 +55,13 @@ export async function convert1to1Ratio(inputPath: string, outputPath: string): P
  */
 export async function convert9to16Ratio(inputPath: string, outputPath: string): Promise<Buffer> {
 
-  const commands = [ "-y", "-i", inputPath, "-vf", "scale=w='if(gt(a,9/16),720,-1)':h='if(gt(a,9/16),-1,1280)',pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1", 
-    "-c:a", "copy", outputPath
+  const commands = [ 
+    "-y", 
+    "-c:v", "libaom-av1", // Force software decoding for AV1
+    "-i", inputPath, 
+    "-vf", "scale=w='if(gt(a,9/16),720,-1)':h='if(gt(a,9/16),-1,1280)',pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1", 
+    "-c:a", "copy", 
+    outputPath
   ];
   const process = spawn("ffmpeg", commands)
 
@@ -91,12 +101,22 @@ export async function convert9to16Ratio(inputPath: string, outputPath: string): 
  */
 export async function convert16to9Ratio(inputPath: string, outputPath: string): Promise<Buffer> {
 
-  const paddingCommands = [ "-y", "-i", inputPath, "-vf", "scale=w='if(gt(a,16/9),1280,-1)':h='if(gt(a,16/9),-1,720)',pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1", 
-    "-c:a", "copy", outputPath
+  const paddingCommands = [ 
+    "-y", 
+    "-c:v", "libaom-av1", // Force software decoding for AV1
+    "-i", inputPath, 
+    "-vf", "scale=w='if(gt(a,16/9),1280,-1)':h='if(gt(a,16/9),-1,720)',pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1", 
+    "-c:a", "copy", 
+    outputPath
   ];
 
-  const croppingCommands = [ "-y", "-i", inputPath, "-vf", "crop='if(gt(a,16/9),ih*16/9,iw)':'if(gt(a,16/9),ih,iw*9/16)',scale=1280:720,setsar=1",
-    "-c:a", "copy", outputPath
+  const croppingCommands = [ 
+    "-y", 
+    "-c:v", "libaom-av1", // Force software decoding for AV1
+    "-i", inputPath, 
+    "-vf", "crop='if(gt(a,16/9),ih*16/9,iw)':'if(gt(a,16/9),ih,iw*9/16)',scale=1280:720,setsar=1",
+    "-c:a", "copy", 
+    outputPath
   ];
   
   const process = spawn("ffmpeg", croppingCommands)

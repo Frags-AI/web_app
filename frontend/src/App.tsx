@@ -16,8 +16,14 @@ import CreatorStudio from './app/dashboard/studio';
 import Subscriptions from './app/dashboard/subscriptions';
 import NotFound from './app/accessories/NotFound';
 import DashboardWorkflow from './app/dashboard/workflow';
-import DashboardClips from "./app/dashboard/clips"
-import DashboardSocial from "./app/dashboard/social"
+import DashboardClips from "./app/dashboard/clips";
+import DashboardSocial from "./app/dashboard/social";
+import ClipAnythingPage from "./app/dashboard/clip-anything";
+// Import AI tool components
+import VoiceoverPage from "./app/dashboard/voiceover";
+import ScriptGenerationPage from "./app/dashboard/script-generation";
+import TranscriptionPage from "./app/dashboard/transcription";
+import BackgroundGenerationPage from "./app/dashboard/background-generation";
 
 export default function App () {
   return (
@@ -36,6 +42,13 @@ export default function App () {
             <Route path="clips" element={<Navigate to="/dashboard" />} /> {/* Modify this later to have better error handling and redirection */}
             <Route path="clips/*" element={<DashboardClips />} />
             <Route path="social" element={<DashboardSocial />} />
+            
+            {/* AI Tools Routes */}
+            <Route path="clip-anything" element={<ClipAnythingPage />} />
+            <Route path="voiceover" element={<VoiceoverPage />} />
+            <Route path="script-generation" element={<ScriptGenerationPage />} />
+            <Route path="transcription" element={<TranscriptionPage />} />
+            <Route path="background-generation" element={<BackgroundGenerationPage />} />
           </Route>
           <Route path="/login/*" element={<Login />} />
           <Route path="/signup/*" element={<SignUp />} />

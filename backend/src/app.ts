@@ -12,6 +12,8 @@ import { OAuthRouter } from "@/routers/oauth";
 import { callbackRouter } from "./routers/callback";
 import { socialMediaRouter } from "./routers/social-media";
 import { modelRouter } from "./routers/model";
+import clipAnythingRouter from "./routers/clip-anything";
+import aiServicesRouter from "./routers/ai-services";
 
 const app = new Hono()
 
@@ -21,6 +23,11 @@ const app = new Hono()
 // }))
 
 app.use(cors())
+
+// Increase body limit for large video uploads (1GB)
+app.use(bodyLimit({
+  maxSize: 1024 * 1024 * 1024 // 1GB in bytes
+}))
 
 app.use(clerkMiddleware())
 app.use(logger())
@@ -32,6 +39,8 @@ app.route("/api/oauth", OAuthRouter)
 app.route("/api/callback", callbackRouter)
 app.route("/api/social", socialMediaRouter)
 app.route("/api/model", modelRouter)
+app.route("/api/clip_anything", clipAnythingRouter)
+app.route("/api/ai", aiServicesRouter)
 app.route("/api", serverRouter)
 
 app.notFound((c) => {
