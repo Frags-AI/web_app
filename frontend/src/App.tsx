@@ -24,6 +24,7 @@ import VoiceoverPage from "./app/dashboard/voiceover";
 import ScriptGenerationPage from "./app/dashboard/script-generation";
 import TranscriptionPage from "./app/dashboard/transcription";
 import BackgroundGenerationPage from "./app/dashboard/background-generation";
+import ThumbnailGenerationPage from "./app/dashboard/thumbnail-generation";
 
 export default function App () {
   return (
@@ -45,6 +46,7 @@ export default function App () {
             
             {/* AI Tools Routes */}
             <Route path="clip-anything" element={<ClipAnythingPage />} />
+            <Route path="thumbnail-generation" element={<ThumbnailGenerationPage />} />
             <Route path="voiceover" element={<VoiceoverPage />} />
             <Route path="script-generation" element={<ScriptGenerationPage />} />
             <Route path="transcription" element={<TranscriptionPage />} />

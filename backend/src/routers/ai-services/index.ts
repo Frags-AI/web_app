@@ -299,4 +299,81 @@ aiServicesRouter.post("/voiceover-generation", async (c) => {
   }
 });
 
+// Thumbnail generation endpoint
+aiServicesRouter.post("/thumbnail-generation", async (c) => {
+  try {
+    const auth = getAuth(c);
+    if (!auth?.userId) {
+      return c.json({ status: "error", message: "Authentication required" }, 401);
+    }
+
+    const formData = await c.req.formData();
+    const video = formData.get('video') as File;
+    const prompt = formData.get('prompt') as string;
+    const style = formData.get('style') as string || 'cinematic';
+    const timestamp = formData.get('timestamp') as string || '30';
+
+    if (!video) {
+      return c.json({ status: "error", message: "Video file is required" }, 400);
+    }
+
+    if (!prompt) {
+      return c.json({ status: "error", message: "Prompt is required" }, 400);
+    }
+
+    console.log(`Generating thumbnail for video: ${video.name}, prompt: "${prompt}", style: ${style}, timestamp: ${timestamp}s`);
+
+    // Get AI service URL from environment
+    const aiServiceUrl = process.env.MODEL_SERVER_URL || process.env.HOST_NAME || process.env.PYTHON_AI_SERVICE_URL || "http://localhost:8000";
+
+    try {
+      // Create form data for Python service
+      const pythonFormData = new FormData();
+      pythonFormData.append('video', video);
+      pythonFormData.append('prompt', prompt);
+      pythonFormData.append('style', style);
+      pythonFormData.append('timestamp', timestamp);
+
+      const response = await axios.post(
+        `${aiServiceUrl}/api/thumbnail/generate/`,
+        pythonFormData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          timeout: 300000, // 5 minute timeout
+        }
+      );
+      
+      return c.json({
+        status: "success",
+        data: response.data
+      });
+
+    } catch (aiServiceError: any) {
+      console.error("AI Service Error:", aiServiceError);
+      
+      if (aiServiceError?.response) {
+        const statusCode = aiServiceError.response?.status || 500;
+        const errorMessage = aiServiceError.response?.data?.message || aiServiceError.message;
+        
+        return c.json({
+          status: "error",
+          message: `AI service error: ${errorMessage}`
+        }, statusCode);
+      }
+      
+      throw aiServiceError;
+    }
+
+  } catch (error) {
+    console.error("Error in thumbnail generation endpoint:", error);
+    
+    return c.json({
+      status: "error",
+      message: error instanceof Error ? error.message : "An unknown error occurred"
+    }, 500);
+  }
+});
+
 export default aiServicesRouter;

@@ -41,6 +41,32 @@ app.route("/api/social", socialMediaRouter)
 app.route("/api/model", modelRouter)
 app.route("/api/clip_anything", clipAnythingRouter)
 app.route("/api/ai", aiServicesRouter)
+
+// Proxy route for thumbnails from Python backend
+app.get("/thumbnails/*", async (c) => {
+  const path = c.req.path.replace("/thumbnails/", "");
+  const aiServiceUrl = process.env.MODEL_SERVER_URL || process.env.HOST_NAME || process.env.PYTHON_AI_SERVICE_URL || "http://localhost:8000";
+  const thumbnailUrl = `${aiServiceUrl}/thumbnails/${path}`;
+  
+  try {
+    const response = await fetch(thumbnailUrl);
+    if (!response.ok) {
+      return c.json({ error: "Thumbnail not found" }, 404);
+    }
+    
+    const imageBuffer = await response.arrayBuffer();
+    return new Response(imageBuffer, {
+      headers: {
+        'Content-Type': 'image/jpeg',
+        'Cache-Control': 'public, max-age=3600'
+      }
+    });
+  } catch (error) {
+    console.error('Thumbnail proxy error:', error);
+    return c.json({ error: "Failed to fetch thumbnail" }, 500);
+  }
+});
+
 app.route("/api", serverRouter)
 
 app.notFound((c) => {

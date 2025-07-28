@@ -3,7 +3,7 @@ import { useState, Fragment } from "react"
 import { Button } from "@/components/ui/button"
 import { UserButton } from "@clerk/clerk-react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faBookOpen, faHouse, faFolderClosed, faCrown, faCalendar, faChartSimple, faLink, faBars, faCircleQuestion, faMicrophone, faFileAlt, faFileAudio, faImage, faScissors } from "@fortawesome/free-solid-svg-icons"
+import { faBookOpen, faHouse, faFolderClosed, faCrown, faCalendar, faChartSimple, faLink, faBars, faCircleQuestion, faMicrophone, faFileAlt, faFileAudio, faImage, faScissors, faPhotoFilm } from "@fortawesome/free-solid-svg-icons"
 import { motion, AnimatePresence } from "framer-motion"
 import { useLocation } from "react-router-dom"
 import { IconProps, IconPropsGroup } from "@/types"
@@ -58,6 +58,7 @@ export default function Sidebar({className, sidebarExpanded, setSidebarExpanded}
   // AI Tools group with Clip Anything first
   const AITools: IconProps[] = [
     { icon: faScissors, label: "Clip Anything", id: "sidebar-clip-anything", tab: "/clip-anything" },
+    { icon: faPhotoFilm, label: "Thumbnails", id: "sidebar-thumbnails", tab: "/thumbnail-generation" },
     { icon: faMicrophone, label: "Voiceover", id: "sidebar-voiceover", tab: "/voiceover" },
     { icon: faFileAlt, label: "Script Gen", id: "sidebar-script", tab: "/script-generation" },
     { icon: faFileAudio, label: "Transcription", id: "sidebar-transcription", tab: "/transcription" },
